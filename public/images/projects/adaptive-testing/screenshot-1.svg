@@ -1,0 +1,9 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#18181b"/>
+  <rect x="50" y="50" width="1100" height="530" fill="#27272a" rx="12"/>
+  <circle cx="90" cy="90" r="8" fill="#52525b"/>
+  <circle cx="115" cy="90" r="8" fill="#52525b"/>
+  <circle cx="140" cy="90" r="8" fill="#52525b"/>
+  <text x="600" y="325" font-family="sans-serif" font-size="32" font-weight="600" fill="#a1a1aa" text-anchor="middle">Placeholder Screenshot</text>
+  <text x="600" y="375" font-family="sans-serif" font-size="18" fill="#71717a" text-anchor="middle">Please replace with real media.</text>
+</svg>
