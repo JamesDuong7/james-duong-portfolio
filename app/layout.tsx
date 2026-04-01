@@ -9,6 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://jamesduong.dev"),
   title: "James Duong | Software Engineer",
   description: "Computer Science student at SDSU and aspiring software engineer focused on building performant web experiences.",
   alternates: {
@@ -57,7 +58,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={inter.variable} data-scroll-behavior="smooth">
       <body>
         <a href="#main" className="skip-link">Skip to main content</a>
         <script
