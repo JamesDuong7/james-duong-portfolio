@@ -61,12 +61,6 @@ export const projects = [
       "This project strengthened my experience with React, TypeScript, REST integration, and the day-to-day tradeoffs involved in building production-style frontend features within a team setting.",
     future:
       "Next steps include deeper deployment polish, additional analytics views, and continued refinement of performance and usability across more complex test workflows.",
-    screenshots: [
-      {
-        src: "/images/projects/adaptive-testing/screenshot-1.svg",
-        alt: "Adaptive Testing Platform dashboard interface",
-      },
-    ],
   },
   {
     id: "ai-resume-matcher",
@@ -96,12 +90,6 @@ export const projects = [
       "Through this project, I gained exposure to text preprocessing, document embeddings, similarity scoring, and the importance of clearly documenting technical workflows in collaborative ML projects.",
     future:
       "Future improvements include broader evaluation, stronger ranking logic, and a cleaner demo interface for exploring similarity results more interactively.",
-    screenshots: [
-      {
-        src: "/images/projects/ai-resume-matcher/screenshot-1.svg",
-        alt: "AI Resume Matching Tool workflow or output example",
-      },
-    ],
   },
   {
     id: "medical-summarizer",
@@ -131,11 +119,5 @@ export const projects = [
       "This project gave me hands-on experience working on an ML-focused hackathon prototype, especially around data preparation, model training, and building under tight time constraints.",
     future:
       "Future work would include improving summary quality, refining the structure of generated notes, and exploring stronger privacy and security practices for sensitive conversational data.",
-    screenshots: [
-      {
-        src: "/images/projects/medical-summarizer/screenshot-1.svg",
-        alt: "Medical Conversation Summarizer prototype interface",
-      },
-    ],
   },
 ];
