@@ -4,11 +4,14 @@
  *
  * To access it locally: http://localhost:3000/studio
  * In production: https://jamesduong.dev/studio
+ *
+ * 'use client' is required because NextStudio uses React.createContext
+ * and browser-only APIs that cannot run on the server.
  */
+"use client";
+
 import { NextStudio } from "next-sanity/studio";
 import config from "../../../sanity.config";
-
-export const dynamic = "force-dynamic";
 
 export default function StudioPage() {
   return <NextStudio config={config} />;
