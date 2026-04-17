@@ -1,6 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { draftMode } from "next/headers";
+import { VisualEditing } from "next-sanity/visual-editing";
+import { SanityLive } from "@/sanity/lib/live";
+import { DisableDraftMode } from "@/components/DisableDraftMode";
 import "./globals.css";
 
 const inter = Inter({
@@ -34,7 +38,7 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -68,6 +72,15 @@ export default function RootLayout({
         <div className="layout-wrapper" id="main">
           {children}
         </div>
+        {/* Real-time content subscriptions — active on every page */}
+        <SanityLive />
+        {/* Visual editing overlays — only renders in Draft Mode */}
+        {(await draftMode()).isEnabled && (
+          <>
+            <VisualEditing />
+            <DisableDraftMode />
+          </>
+        )}
         <SpeedInsights />
       </body>
     </html>
