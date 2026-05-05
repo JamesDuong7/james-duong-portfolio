@@ -35,16 +35,24 @@ export default function ProjectCard({ id, title, description, tech, github, live
         </div>
       </div>
       <p className={styles.description}>{description}</p>
-      <div className={styles.footer}>
-        {tech.map((t) => (
-          <span key={t} className={styles.techBadge}>
-            {t}
-          </span>
-        ))}
-      </div>
-      <Link href={`/projects/${id}`} className={styles.studyBtn} aria-label={`Read case study for ${title}`}>
-        Read Case Study
-      </Link>
+      {tech && tech.length > 0 && (
+        <div className={styles.footer}>
+          {tech.map((t) => (
+            <span key={t} className={styles.techBadge}>
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+      {id ? (
+        <Link href={`/projects/${id}`} className={styles.studyBtn} aria-label={`Read case study for ${title}`}>
+          Read Case Study
+        </Link>
+      ) : (
+        <span className={styles.studyBtn} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+          Missing Project Slug
+        </span>
+      )}
     </div>
   );
 }

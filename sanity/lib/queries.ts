@@ -65,6 +65,7 @@ export const PERSONAL_INFO_QUERY = defineQuery(
     name,
     headline,
     intro,
+    aboutMe,
     email,
     location,
     github,

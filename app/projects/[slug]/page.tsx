@@ -6,10 +6,24 @@ import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
 import { sanityFetch } from "@/sanity/lib/live";
+import { PortableText, PortableTextComponents } from "@portabletext/react";
 import {
   ALL_PROJECT_SLUGS_QUERY,
   PROJECT_BY_SLUG_QUERY,
 } from "@/sanity/lib/queries";
+
+// Custom components to ensure Portable Text matches your design
+const ptComponents: PortableTextComponents = {
+  block: {
+    normal: ({ children }) => <p>{children}</p>,
+  },
+  list: {
+    bullet: ({ children }) => <ul className={styles.list}>{children}</ul>,
+  },
+  listItem: {
+    bullet: ({ children }) => <li>{children}</li>,
+  },
+};
 
 export async function generateStaticParams() {
   // Published perspective only — never generate pages for draft slugs
@@ -105,14 +119,18 @@ export default async function ProjectPage({
           <p className={styles.description}>{project.description}</p>
 
           <div className={styles.headerMeta}>
-            <div className={styles.metaBlock}>
-              <h4>Role</h4>
-              <p>{project.role}</p>
-            </div>
-            <div className={styles.metaBlock}>
-              <h4>Tech Stack</h4>
-              <p>{(project.tech ?? []).join(", ")}</p>
-            </div>
+            {project.role && (
+              <div className={styles.metaBlock}>
+                <h4>Role</h4>
+                <p>{project.role}</p>
+              </div>
+            )}
+            {project.tech && project.tech.length > 0 && (
+              <div className={styles.metaBlock}>
+                <h4>Tech Stack</h4>
+                <p>{project.tech.join(", ")}</p>
+              </div>
+            )}
           </div>
         </header>
 
@@ -136,46 +154,58 @@ export default async function ProjectPage({
         )}
 
         <article className={styles.content}>
-          <section className={styles.section}>
-            <h2>Overview</h2>
-            <p>{project.overview}</p>
-          </section>
-
-          <section className={styles.section}>
-            <h2>The Problem</h2>
-            <p>{project.problem}</p>
-          </section>
-
-          <section className={styles.section}>
-            <h2>Key Features</h2>
-            <ul className={styles.list}>
-              {(project.features ?? []).map((feature: string, idx: number) => (
-                <li key={idx}>{feature}</li>
-              ))}
-            </ul>
-          </section>
-
-          {project.implementationDetails && (
+          {project.overview && project.overview.length > 0 && (
             <section className={styles.section}>
-              <h2>Implementation Details</h2>
-              <p>{project.implementationDetails}</p>
+              <h2>Overview</h2>
+              <PortableText value={project.overview} components={ptComponents} />
             </section>
           )}
 
-          <section className={styles.section}>
-            <h2>Technical Challenges</h2>
-            <p>{project.challenges}</p>
-          </section>
+          {project.problem && project.problem.length > 0 && (
+            <section className={styles.section}>
+              <h2>The Problem</h2>
+              <PortableText value={project.problem} components={ptComponents} />
+            </section>
+          )}
 
-          <section className={styles.section}>
-            <h2>Lessons Learned</h2>
-            <p>{project.learning}</p>
-          </section>
+          {project.features && project.features.length > 0 && (
+            <section className={styles.section}>
+              <h2>Key Features</h2>
+              <ul className={styles.list}>
+                {project.features.map((feature: string, idx: number) => (
+                  <li key={idx}>{feature}</li>
+                ))}
+              </ul>
+            </section>
+          )}
 
-          <section className={styles.section}>
-            <h2>Future Improvements</h2>
-            <p>{project.future}</p>
-          </section>
+          {project.implementationDetails && project.implementationDetails.length > 0 && (
+            <section className={styles.section}>
+              <h2>Implementation Details</h2>
+              <PortableText value={project.implementationDetails} components={ptComponents} />
+            </section>
+          )}
+
+          {project.challenges && project.challenges.length > 0 && (
+            <section className={styles.section}>
+              <h2>Technical Challenges</h2>
+              <PortableText value={project.challenges} components={ptComponents} />
+            </section>
+          )}
+
+          {project.learning && project.learning.length > 0 && (
+            <section className={styles.section}>
+              <h2>Lessons Learned</h2>
+              <PortableText value={project.learning} components={ptComponents} />
+            </section>
+          )}
+
+          {project.future && project.future.length > 0 && (
+            <section className={styles.section}>
+              <h2>Future Improvements</h2>
+              <PortableText value={project.future} components={ptComponents} />
+            </section>
+          )}
         </article>
 
         <div className={styles.ctas}>

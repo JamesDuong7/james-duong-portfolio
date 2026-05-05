@@ -1,8 +1,12 @@
 import Link from "next/link";
 import styles from "./Navigation.module.css";
-import { personalInfo } from "@/lib/data";
+import { sanityFetch } from "@/sanity/lib/live";
+import { PERSONAL_INFO_QUERY } from "@/sanity/lib/queries";
 
-export default function Navigation() {
+export default async function Navigation() {
+  const { data: info } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
+  const resumeUrl = info?.resumeUrl;
+
   return (
     <nav className={styles.navbar} aria-label="Main Navigation">
       <div className={styles.container}>
@@ -16,15 +20,17 @@ export default function Navigation() {
           <Link href="/#projects" className={styles.link}>
             Projects
           </Link>
-          <a
-            href={personalInfo.resumeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.resumeBtn}
-            aria-label="View Resume (opens in new tab)"
-          >
-            Resume
-          </a>
+          {resumeUrl && (
+            <a
+              href={resumeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.resumeBtn}
+              aria-label="View Resume (opens in new tab)"
+            >
+              Resume
+            </a>
+          )}
         </div>
       </div>
     </nav>

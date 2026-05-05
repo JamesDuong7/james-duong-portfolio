@@ -22,9 +22,16 @@ export const personalInfo = defineType({
     defineField({
       name: "intro",
       title: "Introduction",
-      type: "text",
-      rows: 5,
-      description: "The paragraph shown in the Hero section.",
+      type: "array",
+      of: [{ type: "block" }],
+      description: "The paragraph shown in the Hero section. Allows for bold text or links.",
+    }),
+    defineField({
+      name: "aboutMe",
+      title: "About Me",
+      type: "array",
+      of: [{ type: "block" }],
+      description: "The multi-paragraph text shown in the About section. Supports paragraphs, bold, and lists.",
     }),
     defineField({
       name: "email",
