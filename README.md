@@ -35,28 +35,42 @@ The project follows a "Documentation as Code" philosophy, with automated quality
 ### Installation
 
 1. **Clone the repository:**
-   ```bash
+  ```bash
    git clone https://github.com/your-username/james-duong-portfolio.git
-   ```
-
+  ```
 2. **Install dependencies:**
-   ```bash
+  ```bash
    npm install
-   ```
-
+  ```
 3. **Set up environment variables:**
-   Create a `.env.local` file in the root and add your Sanity project IDs:
-   ```env
-   NEXT_PUBLIC_SANITY_PROJECT_ID=your_id
-   NEXT_PUBLIC_SANITY_DATASET=production
-   ```
-
+  Create a `.env.local` file in the root and add your Sanity project IDs:
 4. **Run the development server:**
-   ```bash
+  ```bash
    npm run dev
-   ```
+  ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Sanity Studio (CMS)
+
+**Recommended** — Studio embedded in the Next.js app:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000/studio](http://localhost:3000/studio) to edit content.
+
+**Optional** — Standalone Studio on port 3333 (requires Node 22):
+
+```bash
+nvm use 22
+npm run studio:dev
+```
+
+Open [http://localhost:3333](http://localhost:3333).
+
+For standalone Studio, `.env.local` must include `SANITY_STUDIO_PROJECT_ID` and `SANITY_STUDIO_DATASET` (same values as the `NEXT_PUBLIC_SANITY_*` vars).
 
 ## 🧪 Testing
 

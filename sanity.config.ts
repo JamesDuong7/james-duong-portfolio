@@ -2,10 +2,10 @@ import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
 import { presentationTool, defineLocations, type PresentationPluginOptions } from "sanity/presentation";
 import { visionTool } from "@sanity/vision";
+import { assertSanityEnv, dataset, projectId } from "./sanity/env";
 import { schemaTypes } from "./sanity/schemaTypes";
 
-const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!;
-const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET!;
+assertSanityEnv();
 
 export default defineConfig({
   name: "portfolio-studio",
