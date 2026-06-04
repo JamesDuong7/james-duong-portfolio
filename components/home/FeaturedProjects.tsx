@@ -1,10 +1,9 @@
 import styles from "./FeaturedProjects.module.css";
 import ProjectCard from "@/components/ui/ProjectCard";
-import { sanityFetch } from "@/sanity/lib/live";
-import { FEATURED_PROJECTS_QUERY } from "@/sanity/lib/queries";
+import { fetchFeaturedProjects } from "@/sanity/lib/fetch";
 
 export default async function FeaturedProjects() {
-  const { data: projects } = await sanityFetch({ query: FEATURED_PROJECTS_QUERY });
+  const projects = await fetchFeaturedProjects();
 
   if (!projects || projects.length === 0) return null;
 
@@ -12,7 +11,7 @@ export default async function FeaturedProjects() {
     <section id="projects" className={styles.section} aria-label="Featured Projects">
       <h2 className={styles.title}>Featured Work</h2>
       <div className={styles.grid}>
-        {projects.map((project: NonNullable<typeof projects>[number], idx: number) => (
+        {projects.map((project, idx) => (
           <ProjectCard
             key={project.id || `fallback-key-${idx}`}
             id={project.id ?? ""}

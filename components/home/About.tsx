@@ -1,6 +1,5 @@
 import styles from "./About.module.css";
-import { sanityFetch } from "@/sanity/lib/live";
-import { PERSONAL_INFO_QUERY } from "@/sanity/lib/queries";
+import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
 
 // Custom components to ensure Portable Text matches your design
@@ -17,7 +16,7 @@ const ptComponents: PortableTextComponents = {
 };
 
 export default async function About() {
-  const { data: info } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
+  const info = await fetchPersonalInfo();
 
   const languages = info?.skills?.languages ?? [];
   const frameworks = info?.skills?.frameworks ?? [];

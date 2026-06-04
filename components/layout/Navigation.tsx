@@ -1,10 +1,9 @@
 import Link from "next/link";
 import styles from "./Navigation.module.css";
-import { sanityFetch } from "@/sanity/lib/live";
-import { PERSONAL_INFO_QUERY } from "@/sanity/lib/queries";
+import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
 export default async function Navigation() {
-  const { data: info } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
+  const info = await fetchPersonalInfo();
   const resumeUrl = info?.resumeUrl;
 
   return (

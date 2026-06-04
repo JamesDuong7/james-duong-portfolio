@@ -1,9 +1,8 @@
 import styles from "./Footer.module.css";
-import { sanityFetch } from "@/sanity/lib/live";
-import { PERSONAL_INFO_QUERY } from "@/sanity/lib/queries";
+import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
 export default async function Footer() {
-  const { data: info } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
+  const info = await fetchPersonalInfo();
   const currentYear = new Date().getFullYear();
 
   const name = info?.name ?? "James Duong";

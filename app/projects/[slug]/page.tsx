@@ -5,12 +5,8 @@ import styles from "./Project.module.css";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
-import { sanityFetch } from "@/sanity/lib/live";
+import { fetchAllProjectSlugs, fetchProjectBySlug } from "@/sanity/lib/fetch";
 import { PortableText, PortableTextComponents } from "@portabletext/react";
-import {
-  ALL_PROJECT_SLUGS_QUERY,
-  PROJECT_BY_SLUG_QUERY,
-} from "@/sanity/lib/queries";
 
 // Custom components to ensure Portable Text matches your design
 const ptComponents: PortableTextComponents = {
@@ -26,13 +22,8 @@ const ptComponents: PortableTextComponents = {
 };
 
 export async function generateStaticParams() {
-  // Published perspective only — never generate pages for draft slugs
-  const { data } = await sanityFetch({
-    query: ALL_PROJECT_SLUGS_QUERY,
-    perspective: "published",
-    stega: false,
-  });
-  return (data ?? []).map((p: { slug: string | null }) => ({ slug: p.slug ?? "" }));
+  const slugs = await fetchAllProjectSlugs();
+  return slugs.map((p) => ({ slug: p.slug ?? "" }));
 }
 
 export async function generateMetadata({
@@ -42,11 +33,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   // stega: false keeps invisible characters out of <title> and <meta> tags
-  const { data: project } = await sanityFetch({
-    query: PROJECT_BY_SLUG_QUERY,
-    params: { slug },
-    stega: false,
-  });
+  const project = await fetchProjectBySlug(slug, { stega: false });
 
   if (!project) return { title: "Project Not Found" };
 
@@ -77,10 +64,7 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data: project } = await sanityFetch({
-    query: PROJECT_BY_SLUG_QUERY,
-    params: { slug },
-  });
+  const project = await fetchProjectBySlug(slug);
 
   if (!project) {
     notFound();
@@ -128,7 +112,13 @@ export default async function ProjectPage({
             {project.tech && project.tech.length > 0 && (
               <div className={styles.metaBlock}>
                 <h4>Tech Stack</h4>
-                <p>{project.tech.join(", ")}</p>
+                <div className={styles.techList}>
+                  {project.tech.map((t: string) => (
+                    <span key={t} className={styles.techBadge}>
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
           </div>

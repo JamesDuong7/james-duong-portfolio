@@ -1,12 +1,11 @@
 import styles from "./Hero.module.css";
 import Link from "next/link";
-import { sanityFetch } from "@/sanity/lib/live";
-import { PERSONAL_INFO_QUERY } from "@/sanity/lib/queries";
+import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
 import { PortableText } from "@portabletext/react";
 
 export default async function Hero() {
-  const { data: info } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
+  const info = await fetchPersonalInfo();
 
   const name = info?.name ?? "James Duong";
   const headline = info?.headline ?? "Computer Science Student & Software Engineer";
