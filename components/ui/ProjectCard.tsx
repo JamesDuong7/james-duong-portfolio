@@ -1,5 +1,6 @@
 import Link from "next/link";
 import styles from "./ProjectCard.module.css";
+import { stegaClean } from "@sanity/client/stega";
 
 interface ProjectCardProps {
   id: string;
@@ -45,7 +46,7 @@ export default function ProjectCard({ id, title, description, tech, github, live
         </div>
       )}
       {id ? (
-        <Link href={`/projects/${id}`} className={styles.studyBtn} aria-label={`Read case study for ${title}`}>
+        <Link href={`/projects/${stegaClean(id)}`} className={styles.studyBtn} aria-label={`Read case study for ${title}`}>
           Read Case Study
         </Link>
       ) : (

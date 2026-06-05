@@ -60,6 +60,23 @@
   color: var(--foreground);
 }
 
+.techList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.techBadge {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.6rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--foreground);
+  border-radius: 9999px;
+  border: 1px solid var(--surface-border);
+}
+
 .content {
   display: flex;
   flex-direction: column;
