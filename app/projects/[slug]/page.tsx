@@ -23,7 +23,10 @@ const ptComponents: PortableTextComponents = {
 
 export async function generateStaticParams() {
   const slugs = await fetchAllProjectSlugs();
-  return slugs.map((p) => ({ slug: p.slug ?? "" }));
+  return slugs
+    .map((p) => p.slug)
+    .filter((slug): slug is string => Boolean(slug))
+    .map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({

@@ -15,7 +15,7 @@ export default function NotFound() {
       <h1 style={{ fontSize: '4rem', fontWeight: '800', lineHeight: 1 }}>404</h1>
       <h2 style={{ fontSize: '1.5rem', color: 'var(--text-muted)' }}>Page Not Found</h2>
       <p style={{ color: 'var(--accent-muted)', maxWidth: '500px' }}>
-        The page you are looking for doesn't exist or has been moved.
+        The page you are looking for does not exist or has been moved.
       </p>
       <Link 
         href="/" 

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Portfolio E2E', () => {
-  test('homepage renders correctly and nav works', async ({ page, isMobile }) => {
+  test('homepage renders correctly and nav works', async ({ page }) => {
     await page.goto('/');
     
     // Verify title
@@ -29,12 +29,7 @@ test.describe('Portfolio E2E', () => {
   });
 
   test('invalid project slug renders not-found page', async ({ page }) => {
-    const response = await page.goto('/projects/this-does-not-exist');
-    
-    // Expect the Not Found page content
-    await expect(page.getByRole('heading', { level: 2, name: /Not Found/i })).toBeVisible();
-    
-    // Expect the Not Found page content
+    await page.goto('/projects/this-does-not-exist');
     await expect(page.getByRole('heading', { level: 2, name: /Not Found|404/i })).toBeVisible();
   });
 });

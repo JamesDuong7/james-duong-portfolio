@@ -37,9 +37,9 @@ export default function Contact() {
       setStatus('success');
       setMessage('Message sent successfully! I will get back to you soon.');
       (e.target as HTMLFormElement).reset();
-    } catch (error: any) {
+    } catch (error: unknown) {
       setStatus('error');
-      setMessage(error.message || 'An error occurred. Please try again.');
+      setMessage(error instanceof Error ? error.message : 'An error occurred. Please try again.');
     }
   };
 
