@@ -39,7 +39,8 @@ test.describe('Portfolio E2E', () => {
     await page.goto('/');
 
     await page.getByRole('button', { name: /Open menu/i }).click();
-    await expect(page.getByRole('navigation', { name: /Mobile Navigation/i })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Contact' })).toBeVisible();
+    const mobileNav = page.getByRole('navigation', { name: /Mobile Navigation/i });
+    await expect(mobileNav).toBeVisible();
+    await expect(mobileNav.getByRole('link', { name: 'Contact' })).toBeVisible();
   });
 });
