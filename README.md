@@ -43,7 +43,12 @@ The project follows a "Documentation as Code" philosophy, with automated quality
    npm install
   ```
 3. **Set up environment variables:**
-  Create a `.env.local` file in the root and add your Sanity project IDs:
+  Create a `.env.local` file in the root and add your Sanity project IDs and contact form key:
+  ```bash
+  NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
+  NEXT_PUBLIC_SANITY_DATASET=production
+  WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
+  ```
 4. **Run the development server:**
   ```bash
    npm run dev

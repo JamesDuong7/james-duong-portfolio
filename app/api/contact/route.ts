@@ -1,25 +1,16 @@
 import { NextResponse } from "next/server";
-import { Resend } from "resend";
 
 function getContactConfig() {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.CONTACT_EMAIL;
-  const from =
-    process.env.RESEND_FROM_EMAIL ??
-    (process.env.NODE_ENV === "development"
-      ? "Portfolio Contact Form <onboarding@resend.dev>"
-      : undefined);
-
-  if (!apiKey || !to || !from) return null;
-
-  return { apiKey, to, from };
+  const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+  if (!accessKey) return null;
+  return { accessKey };
 }
 
 export async function POST(request: Request) {
   const config = getContactConfig();
   if (!config) {
     console.error(
-      "Contact form misconfigured. Set RESEND_API_KEY, CONTACT_EMAIL, and RESEND_FROM_EMAIL.",
+      "Contact form misconfigured. Set WEB3FORMS_ACCESS_KEY.",
     );
     return NextResponse.json(
       { error: "Contact form is temporarily unavailable." },
@@ -39,17 +30,37 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
     }
 
-    const resend = new Resend(config.apiKey);
-    const { error } = await resend.emails.send({
-      from: config.from,
-      to: config.to,
-      replyTo: email,
-      subject: `New Portfolio Message from ${name}`,
-      text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+    const web3FormsResponse = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        access_key: config.accessKey,
+        name,
+        email,
+        message,
+        // Web3Forms uses `email` as the sender/reply address.
+        subject: `New Portfolio Message from ${name}`,
+      }),
     });
 
-    if (error) {
-      console.error("Resend API error:", error);
+    let web3FormsResult: unknown = null;
+    try {
+      web3FormsResult = await web3FormsResponse.json();
+    } catch {
+      web3FormsResult = null;
+    }
+    const isFailedSend =
+      !web3FormsResponse.ok ||
+      typeof web3FormsResult !== "object" ||
+      web3FormsResult === null ||
+      !("success" in web3FormsResult) ||
+      web3FormsResult.success !== true;
+
+    if (isFailedSend) {
+      console.error("Web3Forms API error:", web3FormsResult);
       return NextResponse.json(
         { error: "Failed to send message. Please try again later." },
         { status: 500 },
