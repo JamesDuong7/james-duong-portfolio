@@ -1,15 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+import { useEffect, useRef, useState } from 'react';
+import type HCaptcha from '@hcaptcha/react-hcaptcha';
 import styles from './Contact.module.css';
+
+const HCaptchaWidget = dynamic(() => import('./ContactCaptcha'), { ssr: false });
 
 const STATUS_VISIBLE_MS = 3500;
 const STATUS_FADE_MS = 1500;
+const MIN_MESSAGE_LENGTH = 30;
+const MIN_SUBMIT_MS = 3000;
+const WEB3FORMS_HCAPTCHA_SITE_KEY = '50b2fe65-b00b-4b9e-ad62-3ba471098be2';
 
 export default function Contact() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [isFadingOut, setIsFadingOut] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState('');
+  const formReadyAt = useRef(Date.now());
+  const captchaRef = useRef<HCaptcha>(null);
 
   useEffect(() => {
     if (status !== 'success' && status !== 'error') {
@@ -35,15 +45,23 @@ export default function Contact() {
     };
   }, [status, message]);
 
+  const resetCaptcha = () => {
+    setCaptchaToken('');
+    captchaRef.current?.resetCaptcha();
+  };
+
+  const showError = (errorMessage: string) => {
+    setStatus('error');
+    setMessage(errorMessage);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStatus('loading');
     setMessage('');
 
     const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
     if (!accessKey) {
-      setStatus('error');
-      setMessage('Contact form is temporarily unavailable.');
+      showError('Contact form is temporarily unavailable.');
       return;
     }
 
@@ -52,17 +70,37 @@ export default function Contact() {
     const email = String(formData.get('email') ?? '').trim();
     const messageText = String(formData.get('message') ?? '').trim();
 
+    if (formData.get('botcheck')) {
+      showError('Unable to send message. Please try again.');
+      return;
+    }
+
     if (!name || !email || !messageText) {
-      setStatus('error');
-      setMessage('All fields are required');
+      showError('All fields are required.');
       return;
     }
 
     if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setStatus('error');
-      setMessage('Invalid email format');
+      showError('Invalid email format.');
       return;
     }
+
+    if (messageText.length < MIN_MESSAGE_LENGTH) {
+      showError(`Please write at least ${MIN_MESSAGE_LENGTH} characters in your message.`);
+      return;
+    }
+
+    if (Date.now() - formReadyAt.current < MIN_SUBMIT_MS) {
+      showError('Please take a moment to review your message before sending.');
+      return;
+    }
+
+    if (!captchaToken) {
+      showError('Please complete the verification check below.');
+      return;
+    }
+
+    setStatus('loading');
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
@@ -77,7 +115,7 @@ export default function Contact() {
           email,
           message: messageText,
           subject: `New Portfolio Message from ${name}`,
-          botcheck: false,
+          'h-captcha-response': captchaToken,
         }),
       });
 
@@ -90,9 +128,11 @@ export default function Contact() {
       setStatus('success');
       setMessage('Message sent successfully! I will get back to you soon.');
       (e.target as HTMLFormElement).reset();
+      resetCaptcha();
+      formReadyAt.current = Date.now();
     } catch (error: unknown) {
-      setStatus('error');
-      setMessage(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+      showError(error instanceof Error ? error.message : 'An error occurred. Please try again.');
+      resetCaptcha();
     }
   };
 
@@ -111,7 +151,7 @@ export default function Contact() {
             name="botcheck"
             tabIndex={-1}
             autoComplete="off"
-            style={{ display: 'none' }}
+            className={styles.honeypot}
             aria-hidden="true"
           />
 
@@ -127,14 +167,38 @@ export default function Contact() {
 
           <div className={styles.formGroup}>
             <label htmlFor="message" className={styles.label}>Message</label>
-            <textarea id="message" name="message" className={styles.textarea} required placeholder="Write your message here..."></textarea>
+            <textarea
+              id="message"
+              name="message"
+              className={styles.textarea}
+              required
+              minLength={MIN_MESSAGE_LENGTH}
+              placeholder="Tell me about your project, role, or question..."
+            />
+            <span className={styles.fieldHint}>Minimum {MIN_MESSAGE_LENGTH} characters</span>
           </div>
 
-          <button 
-            type="submit" 
-            className={styles.submitBtn} 
-            disabled={status === 'loading'}
-            aria-disabled={status === 'loading'}
+          <div className={styles.formGroup}>
+            <span className={styles.label} id="captcha-label">Verification</span>
+            <div className={styles.captchaWrapper} aria-labelledby="captcha-label">
+              <HCaptchaWidget
+                ref={captchaRef}
+                sitekey={WEB3FORMS_HCAPTCHA_SITE_KEY}
+                theme="dark"
+                size="normal"
+                reCaptchaCompat={false}
+                onVerify={setCaptchaToken}
+                onExpire={() => setCaptchaToken('')}
+                onError={() => showError('Verification failed to load. Please refresh and try again.')}
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className={styles.submitBtn}
+            disabled={status === 'loading' || !captchaToken}
+            aria-disabled={status === 'loading' || !captchaToken}
           >
             {status === 'loading' ? 'Sending...' : 'Send Message'}
           </button>

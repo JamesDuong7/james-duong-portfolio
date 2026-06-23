@@ -49,6 +49,7 @@ The project follows a "Documentation as Code" philosophy, with automated quality
   NEXT_PUBLIC_SANITY_DATASET=production
   WEB3FORMS_ACCESS_KEY=your_web3forms_access_key  # Web3Forms requires client-side submission; this key is exposed in the browser bundle
   ```
+  Enable **hCaptcha** for your form in the [Web3Forms dashboard](https://app.web3forms.com) so the contact form verification check works.
 4. **Run the development server:**
   ```bash
    npm run dev
