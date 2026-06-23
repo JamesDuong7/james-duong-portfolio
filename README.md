@@ -37,7 +37,7 @@ Every push and pull request to `main` triggers an automated pipeline:
 | **Quality** | TypeScript typecheck, ESLint, Vitest unit tests |
 | **Build & E2E** | Production Next.js build, then Playwright tests on Chromium and Mobile Safari |
 
-Pull requests get preview deployments on Vercel. Merging to `main` deploys to production at [jamesduong.dev](https://jamesduong.dev).
+Pull requests get preview deployments on Vercel. Merging to `main` deploys to production at [https://james-duong-portfolio.vercel.app](https://james-duong-portfolio.vercel.app).
 
 View live runs: [GitHub Actions](https://github.com/JamesDuong7/james-duong-portfolio/actions)
 
