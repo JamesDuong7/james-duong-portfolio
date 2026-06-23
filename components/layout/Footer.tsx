@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./Footer.module.css";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
@@ -15,6 +16,9 @@ export default async function Footer() {
       <div className={styles.container}>
         <h2 className={styles.title}>Let&apos;s Connect</h2>
         <div className={styles.links}>
+          <Link href="/#contact" className={styles.link}>
+            Contact
+          </Link>
           {github && (
             <a
               href={github}
@@ -37,7 +41,7 @@ export default async function Footer() {
           )}
           {email && (
             <a href={`mailto:${email}`} className={styles.link}>
-              Email
+              {email}
             </a>
           )}
         </div>

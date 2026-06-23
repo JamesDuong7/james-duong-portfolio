@@ -30,6 +30,16 @@ test.describe('Portfolio E2E', () => {
 
   test('invalid project slug renders not-found page', async ({ page }) => {
     await page.goto('/projects/this-does-not-exist');
-    await expect(page.getByRole('heading', { level: 2, name: /Not Found|404/i })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /Page Not Found/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Return Home/i })).toBeVisible();
+  });
+
+  test('mobile menu opens and shows navigation links', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/');
+
+    await page.getByRole('button', { name: /Open menu/i }).click();
+    await expect(page.getByRole('navigation', { name: /Mobile Navigation/i })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Contact' })).toBeVisible();
   });
 });

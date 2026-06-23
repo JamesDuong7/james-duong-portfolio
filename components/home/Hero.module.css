@@ -36,6 +36,12 @@
   font-weight: 700;
   color: var(--text-muted);
   line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+.location {
+  font-size: 1rem;
+  color: var(--accent-muted);
   margin-bottom: 1.5rem;
 }
 

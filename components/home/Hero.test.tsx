@@ -43,8 +43,18 @@ describe('Hero Component', () => {
     render(await Hero());
 
     expect(screen.getByRole('link', { name: /View Projects/i })).toHaveAttribute('href', '#projects');
+    expect(screen.getByRole('link', { name: /Contact/i })).toHaveAttribute('href', '#contact');
     expect(screen.getByRole('link', { name: /Resume/i })).toHaveAttribute('href', mockPersonalInfo.resumeUrl);
     expect(screen.getByRole('link', { name: /GitHub Profile/i })).toHaveAttribute('href', mockPersonalInfo.github);
     expect(screen.getByRole('link', { name: /LinkedIn Profile/i })).toHaveAttribute('href', mockPersonalInfo.linkedin);
+  });
+
+  it('renders location when provided', async () => {
+    vi.mocked(fetchPersonalInfo).mockResolvedValue({
+      ...mockPersonalInfo,
+      location: 'San Diego, CA',
+    });
+    render(await Hero());
+    expect(screen.getByText('San Diego, CA')).toBeInTheDocument();
   });
 });

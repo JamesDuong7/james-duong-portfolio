@@ -5,6 +5,7 @@ import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SanityLive } from "@/sanity/lib/live";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
+import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 import "./globals.css";
 
 const inter = Inter({
@@ -43,22 +44,30 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
-  // JSON-LD Schema for Person
+  const info = await fetchPersonalInfo();
+
+  const sameAs = [info?.github, info?.linkedin].filter(
+    (url): url is string => Boolean(url),
+  );
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: "James Duong",
+    name: info?.name ?? "James Duong",
     jobTitle: "Software Engineer",
     url: "https://jamesduong.dev",
-    sameAs: [
-      "https://github.com/",
-      "https://linkedin.com/in/"
-    ],
+    ...(info?.email && { email: info.email }),
+    ...(info?.location && {
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: info.location,
+      },
+    }),
+    ...(sameAs.length > 0 && { sameAs }),
     alumniOf: {
       "@type": "CollegeOrUniversity",
-      name: "San Diego State University"
-    }
+      name: "San Diego State University",
+    },
   };
 
   return (
@@ -69,7 +78,7 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <div className="layout-wrapper" id="main">
+        <div className="layout-wrapper">
           {children}
         </div>
         {/* Real-time content subscriptions — active on every page */}

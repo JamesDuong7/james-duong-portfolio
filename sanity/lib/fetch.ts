@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { sanityFetch } from "./live";
 import {
   ALL_PROJECT_SLUGS_QUERY,
@@ -14,10 +15,10 @@ import type {
 
 /** Typed wrappers — sanityFetch infers `{}` without Sanity typegen. */
 
-export async function fetchPersonalInfo() {
+export const fetchPersonalInfo = cache(async () => {
   const { data } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
   return (data ?? null) as PersonalInfo | null;
-}
+});
 
 export async function fetchFeaturedProjects() {
   const { data } = await sanityFetch({ query: FEATURED_PROJECTS_QUERY });

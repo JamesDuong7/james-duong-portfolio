@@ -25,8 +25,26 @@
   color: var(--color-text-muted);
   font-size: 1.125rem;
   max-width: 600px;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
+}
+
+.emailAlt {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.emailLink {
+  color: var(--foreground, #ededed);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity var(--transition, 0.2s ease-in-out);
+}
+
+.emailLink:hover {
+  opacity: 0.85;
 }
 
 .form {
@@ -53,6 +71,10 @@
 .fieldHint {
   font-size: 0.75rem;
   color: var(--color-text-muted);
+}
+
+.fieldHintMet {
+  color: #00c853;
 }
 
 .honeypot {

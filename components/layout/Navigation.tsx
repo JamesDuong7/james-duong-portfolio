@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styles from "./Navigation.module.css";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
+import MobileNav from "./MobileNav";
 
 export default async function Navigation() {
   const info = await fetchPersonalInfo();
@@ -19,6 +20,9 @@ export default async function Navigation() {
           <Link href="/#projects" className={styles.link}>
             Projects
           </Link>
+          <Link href="/#contact" className={styles.link}>
+            Contact
+          </Link>
           {resumeUrl && (
             <a
               href={resumeUrl}
@@ -31,6 +35,7 @@ export default async function Navigation() {
             </a>
           )}
         </div>
+        <MobileNav resumeUrl={resumeUrl} />
       </div>
     </nav>
   );

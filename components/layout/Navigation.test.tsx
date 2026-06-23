@@ -36,6 +36,7 @@ describe('Navigation Component', () => {
     render(await Navigation());
     expect(screen.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/#about');
     expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/#projects');
+    expect(screen.getByRole('link', { name: 'Contact' })).toHaveAttribute('href', '/#contact');
   });
 
   it('renders resume link', async () => {

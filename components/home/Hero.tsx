@@ -10,6 +10,7 @@ export default async function Hero() {
   const name = info?.name ?? "James Duong";
   const headline = info?.headline ?? "Computer Science Student & Software Engineer";
   const intro = info?.intro ?? [];
+  const location = info?.location;
   const resumeUrl = info?.resumeUrl;
   const github = info?.github;
   const linkedin = info?.linkedin;
@@ -20,12 +21,18 @@ export default async function Hero() {
         <p className={styles.greeting}>Hi, I&apos;m</p>
         <h1 className={styles.name}>{name}.</h1>
         <h2 className={styles.headline}>{headline}.</h2>
+        {location && (
+          <p className={styles.location}>{location}</p>
+        )}
         <div className={styles.intro}>
           <PortableText value={intro} />
         </div>
         <div className={styles.ctas}>
           <Link href="#projects" className={styles.primaryBtn} aria-label="View Projects">
             View Projects
+          </Link>
+          <Link href="#contact" className={styles.secondaryBtn} aria-label="Contact">
+            Contact
           </Link>
           {resumeUrl && (
             <a
