@@ -10,6 +10,11 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+  NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
+  WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
+
 jobs:
   quality:
     name: Lint & Unit Tests
@@ -37,15 +42,10 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
-  build:
-    name: Production Build
+  build-and-e2e:
+    name: Build & E2E Tests
     runs-on: ubuntu-latest
     needs: quality
-
-    env:
-      NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
-      NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
-      WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
 
     steps:
       - name: Checkout repository
@@ -69,46 +69,6 @@ jobs:
 
       - name: Build Next.js
         run: npm run build
-
-      - name: Upload Next.js build
-        uses: actions/upload-artifact@v4
-        with:
-          name: next-build
-          path: |
-            .next
-            public
-            package.json
-            package-lock.json
-            next.config.ts
-          retention-days: 1
-
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: build
-
-    env:
-      NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
-      NEXT_PUBLIC_SANITY_DATASET: ${{ secrets.NEXT_PUBLIC_SANITY_DATASET }}
-      WEB3FORMS_ACCESS_KEY: ${{ secrets.WEB3FORMS_ACCESS_KEY }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Download Next.js build
-        uses: actions/download-artifact@v4
-        with:
-          name: next-build
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium webkit

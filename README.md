@@ -35,8 +35,7 @@ Every push and pull request to `main` triggers an automated pipeline:
 | Stage | What it checks |
 |-------|----------------|
 | **Quality** | TypeScript typecheck, ESLint, Vitest unit tests |
-| **Build** | Production Next.js build with Sanity CMS integration |
-| **E2E** | Playwright tests on Chromium and Mobile Safari against the production build |
+| **Build & E2E** | Production Next.js build, then Playwright tests on Chromium and Mobile Safari |
 
 Pull requests get preview deployments on Vercel. Merging to `main` deploys to production at [jamesduong.dev](https://jamesduong.dev).
 
