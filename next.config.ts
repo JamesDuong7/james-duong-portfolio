@@ -7,6 +7,10 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  env: {
+    // Web3Forms requires client-side submission; map the server env var for the contact form.
+    NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY: process.env.WEB3FORMS_ACCESS_KEY,
+  },
   images: {
     remotePatterns: [
       {

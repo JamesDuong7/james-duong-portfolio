@@ -1,37 +1,90 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './Contact.module.css';
+
+const STATUS_VISIBLE_MS = 3500;
+const STATUS_FADE_MS = 1500;
 
 export default function Contact() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [isFadingOut, setIsFadingOut] = useState(false);
+
+  useEffect(() => {
+    if (status !== 'success' && status !== 'error') {
+      setIsFadingOut(false);
+      return;
+    }
+
+    setIsFadingOut(false);
+
+    const fadeStartTimer = window.setTimeout(() => {
+      setIsFadingOut(true);
+    }, STATUS_VISIBLE_MS);
+
+    const clearTimer = window.setTimeout(() => {
+      setStatus('idle');
+      setMessage('');
+      setIsFadingOut(false);
+    }, STATUS_VISIBLE_MS + STATUS_FADE_MS);
+
+    return () => {
+      window.clearTimeout(fadeStartTimer);
+      window.clearTimeout(clearTimer);
+    };
+  }, [status, message]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setStatus('loading');
     setMessage('');
 
+    const accessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+    if (!accessKey) {
+      setStatus('error');
+      setMessage('Contact form is temporarily unavailable.');
+      return;
+    }
+
     const formData = new FormData(e.currentTarget);
-    const data = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      message: formData.get('message'),
-    };
+    const name = String(formData.get('name') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+    const messageText = String(formData.get('message') ?? '').trim();
+
+    if (!name || !email || !messageText) {
+      setStatus('error');
+      setMessage('All fields are required');
+      return;
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setStatus('error');
+      setMessage('Invalid email format');
+      return;
+    }
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          access_key: accessKey,
+          name,
+          email,
+          message: messageText,
+          subject: `New Portfolio Message from ${name}`,
+          botcheck: false,
+        }),
       });
 
-      const result = await response.json();
+      const result = (await response.json()) as { success?: boolean; message?: string };
 
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to send message');
+      if (!response.ok || result.success !== true) {
+        throw new Error(result.message || 'Failed to send message. Please try again later.');
       }
 
       setStatus('success');
@@ -53,6 +106,15 @@ export default function Contact() {
         </p>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
+          <input
+            type="checkbox"
+            name="botcheck"
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ display: 'none' }}
+            aria-hidden="true"
+          />
+
           <div className={styles.formGroup}>
             <label htmlFor="name" className={styles.label}>Name</label>
             <input type="text" id="name" name="name" className={styles.input} required placeholder="Your Name" />
@@ -77,14 +139,11 @@ export default function Contact() {
             {status === 'loading' ? 'Sending...' : 'Send Message'}
           </button>
 
-          {status === 'success' && (
-            <div className={`${styles.statusMessage} ${styles.success}`} role="alert">
-              {message}
-            </div>
-          )}
-
-          {status === 'error' && (
-            <div className={`${styles.statusMessage} ${styles.error}`} role="alert">
+          {(status === 'success' || status === 'error') && (
+            <div
+              className={`${styles.statusMessage} ${status === 'success' ? styles.success : styles.error} ${isFadingOut ? styles.fadeOut : ''}`}
+              role="alert"
+            >
               {message}
             </div>
           )}

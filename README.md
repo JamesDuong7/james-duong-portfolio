@@ -47,7 +47,7 @@ The project follows a "Documentation as Code" philosophy, with automated quality
   ```bash
   NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
   NEXT_PUBLIC_SANITY_DATASET=production
-  WEB3FORMS_ACCESS_KEY=your_web3forms_access_key
+  WEB3FORMS_ACCESS_KEY=your_web3forms_access_key  # Web3Forms requires client-side submission; this key is exposed in the browser bundle
   ```
 4. **Run the development server:**
   ```bash

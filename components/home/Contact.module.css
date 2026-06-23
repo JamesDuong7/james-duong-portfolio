@@ -104,6 +104,18 @@
   margin-top: 1rem;
   padding: 0.75rem;
   border-radius: 6px;
+  opacity: 1;
+  transition: opacity 1.5s ease;
+}
+
+.fadeOut {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .statusMessage {
+    transition: none;
+  }
 }
 
 .success {
