@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseAnchorHref, shouldForceSectionScroll } from './anchorNavigation';
+import { getScrollBlock, parseAnchorHref, shouldForceSectionScroll } from './anchorNavigation';
 
 describe('parseAnchorHref', () => {
   it('parses hash-only links', () => {
@@ -20,6 +20,17 @@ describe('parseAnchorHref', () => {
 
   it('returns null for non-anchor links', () => {
     expect(parseAnchorHref('/projects/foo')).toBeNull();
+  });
+});
+
+describe('getScrollBlock', () => {
+  it('centers the contact form in the viewport', () => {
+    expect(getScrollBlock('contact')).toBe('center');
+  });
+
+  it('aligns other sections to the start', () => {
+    expect(getScrollBlock('projects')).toBe('start');
+    expect(getScrollBlock('about')).toBe('start');
   });
 });
 

@@ -5,6 +5,7 @@ import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
 import { SanityLive } from "@/sanity/lib/live";
 import { DisableDraftMode } from "@/components/DisableDraftMode";
+import HashScrollHandler from "@/components/HashScrollHandler";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 import "./globals.css";
 
@@ -79,6 +80,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <div className="layout-wrapper">
+          <HashScrollHandler />
           {children}
         </div>
         {/* Real-time content subscriptions — active on every page */}
