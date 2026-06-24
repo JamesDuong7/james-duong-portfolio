@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import Link from 'next/link';
 import AnchorLink from '@/components/ui/AnchorLink';
 import styles from './Navigation.module.css';
 
