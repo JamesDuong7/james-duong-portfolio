@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
+import AnchorLink from '@/components/ui/AnchorLink';
 import styles from './Navigation.module.css';
 
 interface MobileNavProps {
@@ -89,7 +90,7 @@ export default function MobileNav({ resumeUrl }: MobileNavProps) {
       >
         <nav aria-label="Mobile Navigation">
           {NAV_LINKS.map(({ href, label }) => (
-            <Link
+            <AnchorLink
               key={href}
               href={href}
               className={styles.mobileLink}
@@ -97,7 +98,7 @@ export default function MobileNav({ resumeUrl }: MobileNavProps) {
               tabIndex={isOpen ? 0 : -1}
             >
               {label}
-            </Link>
+            </AnchorLink>
           ))}
           {resumeUrl && (
             <a

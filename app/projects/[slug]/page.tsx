@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import AnchorLink from "@/components/ui/AnchorLink";
 import Image from "next/image";
 import styles from "./Project.module.css";
 import Navigation from "@/components/layout/Navigation";
@@ -93,13 +93,13 @@ export default async function ProjectPage({
       />
       <Navigation />
       <main id="main" className={styles.page}>
-        <Link href="/#projects" className={styles.backBtn} aria-label="Back to projects">
+        <AnchorLink href="/#projects" className={styles.backBtn} aria-label="Back to projects">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="19" y1="12" x2="5" y2="12"></line>
             <polyline points="12 19 5 12 12 5"></polyline>
           </svg>
           Back to Projects
-        </Link>
+        </AnchorLink>
 
         <header className={styles.header}>
           <h1 className={styles.title}>{project.title}</h1>

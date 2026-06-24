@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AnchorLink from "@/components/ui/AnchorLink";
 import styles from "./Navigation.module.css";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 import MobileNav from "./MobileNav";
@@ -14,15 +15,15 @@ export default async function Navigation() {
           JD.
         </Link>
         <div className={styles.links}>
-          <Link href="/#about" className={styles.link}>
+          <AnchorLink href="/#about" className={styles.link}>
             About
-          </Link>
-          <Link href="/#projects" className={styles.link}>
+          </AnchorLink>
+          <AnchorLink href="/#projects" className={styles.link}>
             Projects
-          </Link>
-          <Link href="/#contact" className={styles.link}>
+          </AnchorLink>
+          <AnchorLink href="/#contact" className={styles.link}>
             Contact
-          </Link>
+          </AnchorLink>
           {resumeUrl && (
             <a
               href={resumeUrl}

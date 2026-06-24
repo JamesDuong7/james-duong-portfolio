@@ -1,4 +1,4 @@
-import Link from "next/link";
+import AnchorLink from "@/components/ui/AnchorLink";
 import styles from "./Footer.module.css";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
@@ -16,9 +16,9 @@ export default async function Footer() {
       <div className={styles.container}>
         <h2 className={styles.title}>Let&apos;s Connect</h2>
         <div className={styles.links}>
-          <Link href="/#contact" className={styles.link}>
+          <AnchorLink href="/#contact" className={styles.link}>
             Contact
-          </Link>
+          </AnchorLink>
           {github && (
             <a
               href={github}

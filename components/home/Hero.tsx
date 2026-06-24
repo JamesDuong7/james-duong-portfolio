@@ -1,5 +1,5 @@
 import styles from "./Hero.module.css";
-import Link from "next/link";
+import AnchorLink from "@/components/ui/AnchorLink";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 
 import { PortableText } from "@portabletext/react";
@@ -28,12 +28,12 @@ export default async function Hero() {
           <PortableText value={intro} />
         </div>
         <div className={styles.ctas}>
-          <Link href="#projects" className={styles.primaryBtn} aria-label="View Projects">
+          <AnchorLink href="#projects" className={styles.primaryBtn} aria-label="View Projects">
             View Projects
-          </Link>
-          <Link href="#contact" className={styles.secondaryBtn} aria-label="Contact">
+          </AnchorLink>
+          <AnchorLink href="#contact" className={styles.secondaryBtn} aria-label="Contact">
             Contact
-          </Link>
+          </AnchorLink>
           {resumeUrl && (
             <a
               href={resumeUrl}
