@@ -28,9 +28,6 @@ export default function FeaturedWorkPage({
 }: FeaturedWorkPageProps) {
   const cleanSlug = stegaClean(slug);
   const href = cleanSlug ? `/projects/${cleanSlug}` : undefined;
-  const caption = empty
-    ? "FIG. — set coming soon"
-    : `FIG. ${String(index).padStart(2, "0")} — ${title}`;
 
   return (
     <div className={styles.page}>
@@ -44,11 +41,12 @@ export default function FeaturedWorkPage({
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.description}>{description}</p>
 
-      <FolioFigure
-        screenshot={screenshot}
-        caption={caption}
-        emptyHint={empty ? "FIG. — set coming soon" : "FIG. — awaiting print"}
-      />
+      {screenshot?.url ? (
+        <FolioFigure
+          screenshot={screenshot}
+          caption={`FIG. ${String(index).padStart(2, "0")} — ${title}`}
+        />
+      ) : null}
 
       {tech.length > 0 && (
         <div className={styles.tags}>

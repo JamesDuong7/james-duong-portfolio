@@ -68,3 +68,10 @@ export function primaryScreenshot(
 ): FolioScreenshot | null {
   return shots?.find((shot) => Boolean(shot.url)) ?? null;
 }
+
+/** Screenshots that have a usable CDN URL */
+export function usableScreenshots(
+  shots: FolioScreenshot[] | null | undefined,
+): FolioScreenshot[] {
+  return shots?.filter((shot) => Boolean(shot.url)) ?? [];
+}

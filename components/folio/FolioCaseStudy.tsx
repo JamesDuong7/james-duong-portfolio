@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import { primaryScreenshot, type ProjectDetail } from "@/sanity/lib/types";
+import { usableScreenshots, type ProjectDetail } from "@/sanity/lib/types";
 import FolioFigure from "./FolioFigure";
 import { FolioLinkButton, FolioPrimaryButton } from "./FolioControls";
 import styles from "./FolioCaseStudy.module.css";
@@ -50,7 +50,7 @@ export default function FolioCaseStudy({
   next,
 }: FolioCaseStudyProps) {
   const stack = (project.tech ?? []).join(" · ");
-  const hero = primaryScreenshot(project.screenshots);
+  const figures = usableScreenshots(project.screenshots);
 
   return (
     <div className={styles.spread} aria-label={`${project.title} case study`}>
@@ -70,13 +70,19 @@ export default function FolioCaseStudy({
               <p className={styles.description}>{project.description}</p>
             )}
 
-            <FolioFigure
-              screenshot={hero}
-              caption={`FIG. ${String(index).padStart(2, "0")} — ${project.title}`}
-              priority
-              tone="ink"
-              emptyHint="FIG. — awaiting print"
-            />
+            {figures.length > 0 && (
+              <div className={styles.figures}>
+                {figures.map((shot, figIndex) => (
+                  <FolioFigure
+                    key={shot.url}
+                    screenshot={shot}
+                    caption={`FIG. ${String(figIndex + 1).padStart(2, "0")} — ${project.title}`}
+                    priority={figIndex === 0}
+                    tone="ink"
+                  />
+                ))}
+              </div>
+            )}
 
             <div className={styles.meta}>
               {project.role && (
