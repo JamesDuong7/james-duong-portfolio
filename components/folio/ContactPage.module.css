@@ -1,9 +1,16 @@
+/* Shared styles for the Contact spread: ink intro (left) + form (right). */
+
 .page {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 2rem 3.5rem 4.5rem 3rem;
+  padding: 2.5rem 3.25rem 4.5rem 3rem;
   position: relative;
+}
+
+.ink {
+  background: var(--folio-ink);
+  color: var(--folio-on-ink);
 }
 
 .masthead {
@@ -13,7 +20,7 @@
   font-family: var(--folio-font-mono);
   font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   margin-bottom: 1rem;
 }
 
@@ -25,92 +32,92 @@
   color: var(--folio-on-paper-muted);
 }
 
-.split {
-  flex: 1;
+.ink .mastMuted {
+  color: var(--folio-on-ink-muted);
+}
+
+/* ── Intro (left, ink) ─────────────────────────────────────────── */
+
+.introBody {
+  margin-top: auto;
+  margin-bottom: auto;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-}
-
-.aboutHalf,
-.contactHalf {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.85rem;
-  min-height: 0;
-}
-
-.aboutHalf {
-  padding-bottom: 1rem;
-}
-
-.contactHalf {
-  padding-top: 1rem;
-  overflow-y: auto;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-shrink: 0;
-}
-
-.dividerAccent {
-  width: 1.5rem;
-  height: 1.5px;
-  background: var(--folio-pink);
-  flex-shrink: 0;
-}
-
-.dividerRule {
-  flex: 1;
-  height: 1px;
-  background: var(--folio-border);
-  border: 0;
+  gap: 1.1rem;
 }
 
 .title {
+  font-family: var(--folio-font-display);
+  font-size: clamp(2.2rem, 4vw, 3.25rem);
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--folio-on-ink);
+}
+
+.lead {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--folio-on-ink-muted);
+  max-width: 24rem;
+}
+
+.contactList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.contactRow {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.contactLabel {
+  font-family: var(--folio-font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+}
+
+.contactValue {
+  font-size: 0.85rem;
+  color: var(--folio-on-ink);
+  word-break: break-word;
+}
+
+.contactValue a:hover {
+  color: var(--folio-pink);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ── Form (right, paper) ───────────────────────────────────────── */
+
+.formTitle {
   font-family: var(--folio-font-display);
   font-size: clamp(1.75rem, 2.5vw, 2rem);
   color: var(--folio-on-paper);
   line-height: 1.1;
 }
 
-.copy {
-  font-size: 0.8125rem;
-  line-height: 1.5;
-  color: var(--folio-on-paper-muted);
-}
-
-.skills {
+.formIntro {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-  margin-top: 0.15rem;
-}
-
-.skillLine {
-  display: grid;
-  grid-template-columns: 6.5rem 1fr;
-  gap: 0.65rem;
-  align-items: baseline;
-}
-
-.skillLabel {
-  font-family: var(--folio-font-mono);
-  font-size: 0.625rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--folio-pink);
-}
-
-.skillList {
-  font-size: 0.8125rem;
-  color: var(--folio-on-paper);
-  line-height: 1.45;
+  gap: 0.6rem;
+  padding-right: 0.25rem;
 }
 
 .emailAlt {
@@ -129,14 +136,6 @@
 
 .emailLink:hover {
   opacity: 0.85;
-}
-
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: auto;
-  padding-top: 0.35rem;
 }
 
 .form {
@@ -238,31 +237,17 @@
   border: 1px solid color-mix(in srgb, #d50f25 25%, transparent);
 }
 
-.fadeOut {
-  opacity: 0;
-  transition: opacity 1.5s ease;
-}
-
 @media (max-width: 900px) {
   .page {
     padding: 2rem 1.5rem 2.5rem;
     min-height: 100dvh;
   }
 
-  .split {
-    flex: none;
-  }
-
-  .aboutHalf,
-  .contactHalf {
-    flex: none;
-  }
-
-  .contactHalf {
+  .formIntro {
     overflow: visible;
   }
 
-  .skillLine {
+  .contactRow {
     grid-template-columns: 1fr;
     gap: 0.15rem;
   }

@@ -37,6 +37,27 @@
   outline: none;
 }
 
+/* Bound gutter shadow down the centre, so facing pages read as one magazine. */
+.spread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 46px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.1) 42%,
+    rgba(0, 0, 0, 0.16) 50%,
+    rgba(0, 0, 0, 0.1) 58%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
 .page {
   height: 100%;
   min-height: 0;
@@ -72,6 +93,10 @@
     display: flex;
     flex-direction: column;
     scroll-snap-align: none;
+  }
+
+  .spread::after {
+    display: none;
   }
 
   .page {

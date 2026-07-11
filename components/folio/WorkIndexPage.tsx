@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { stegaClean } from "@sanity/client/stega";
+import FolioFlip from "./FolioFlip";
 import styles from "./WorkIndexPage.module.css";
 
 export type WorkIndexItem = {
@@ -16,8 +17,8 @@ export default function WorkIndexPage({ projects }: WorkIndexPageProps) {
   return (
     <div className={styles.page} id="projects">
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>ALL WORK</span>
-        <span className={styles.mastMuted}>04</span>
+        <span className={styles.mastPink}>03 · ALL WORKS</span>
+        <span className={styles.mastMuted}>Index</span>
       </header>
 
       <p className={styles.hint}>Click a project to open its case study.</p>
@@ -59,6 +60,8 @@ export default function WorkIndexPage({ projects }: WorkIndexPageProps) {
           );
         })}
       </ul>
+
+      <FolioFlip direction="forward" label="Flip → Contact" />
     </div>
   );
 }

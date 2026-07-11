@@ -19,6 +19,7 @@ import type {
 export type ProjectIndexItem = {
   slug: string | null;
   title: string | null;
+  description: string | null;
 };
 
 export const fetchPersonalInfo = cache(async () => {

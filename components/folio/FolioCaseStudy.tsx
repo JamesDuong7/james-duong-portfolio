@@ -129,12 +129,12 @@ export default function FolioCaseStudy({
         </div>
 
         <Link
-          href="/#work"
+          href="/#works"
           className={`${styles.flip} ${styles.flipBack}`}
           aria-label="Flip back to work index"
         >
           <span className={`${styles.curl} ${styles.curlBack}`} aria-hidden />
-          <span className={styles.flipLabel}>← Flip back · Work</span>
+          <span className={styles.flipLabel}>← Flip back · Works</span>
         </Link>
       </article>
 

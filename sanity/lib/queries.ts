@@ -38,7 +38,8 @@ export const FEATURED_PROJECTS_QUERY = defineQuery(
 export const PROJECTS_INDEX_QUERY = defineQuery(
   `*[_type == "project" && defined(id.current)] | order(order asc) {
     "slug": id.current,
-    title
+    title,
+    description
   }`
 );
 

@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type HCaptcha from "@hcaptcha/react-hcaptcha";
 import { FolioPrimaryButton } from "./FolioControls";
-import styles from "./AboutContactPage.module.css";
+import styles from "./ContactPage.module.css";
 import {
   MIN_MESSAGE_LENGTH,
   WEB3FORMS_HCAPTCHA_SITE_KEY,

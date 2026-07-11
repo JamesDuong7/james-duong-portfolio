@@ -19,14 +19,19 @@ type GoToSpreadOptions = {
   animate?: boolean;
 };
 
-function hashForSpread(index: number) {
-  return index === 1 ? "work" : "profile";
-}
+/** The cover always sits first and keeps the URL hash clean. */
+const COVER_INDEX = 0;
 
-function spreadIndexFromHash(hash: string) {
-  if (hash === "work" || hash === "projects") return 1;
-  if (hash === "profile" || hash === "about" || hash === "contact") return 0;
-  return null;
+/** Legacy hash aliases so older links (/#work, /#profile) still resolve. */
+const HASH_ALIASES: Record<string, string> = {
+  work: "works",
+  projects: "works",
+  profile: "contents",
+  about: "contents",
+};
+
+function spreadEls(book: HTMLDivElement) {
+  return [...book.querySelectorAll<HTMLElement>("[data-folio-spread]")];
 }
 
 function currentSpreadIndex(book: HTMLDivElement) {
@@ -37,17 +42,32 @@ function isNarrowViewport() {
   return window.matchMedia("(max-width: 900px)").matches;
 }
 
+/** Resolve a URL hash id (or alias) to a spread index, or null when unknown. */
+function indexFromHash(book: HTMLDivElement, rawId: string) {
+  if (!rawId) return null;
+  const id = HASH_ALIASES[rawId] ?? rawId;
+  const index = spreadEls(book).findIndex((spread) => spread.id === id);
+  return index >= 0 ? index : null;
+}
+
 export default function FolioBook({ children }: FolioBookProps) {
   const bookRef = useRef<HTMLDivElement>(null);
 
-  /** Desktop only: keep the off-spread out of tab order. Mobile stacks both. */
+  /** Desktop only: keep the off-spread out of tab order. Mobile stacks all. */
   const syncSpreadInteractivity = useCallback((activeIndex: number) => {
     const book = bookRef.current;
     if (!book) return;
     const narrow = isNarrowViewport();
-    book.querySelectorAll<HTMLElement>("[data-folio-spread]").forEach((spread, i) => {
+    const spreads = spreadEls(book);
+    spreads.forEach((spread, i) => {
       spread.inert = !narrow && i !== activeIndex;
     });
+    // Let fixed chrome (the Contents nav) react to the active spread.
+    window.dispatchEvent(
+      new CustomEvent("folio:spreadchange", {
+        detail: { index: activeIndex, id: spreads[activeIndex]?.id ?? "" },
+      }),
+    );
   }, []);
 
   const goToSpread = useCallback(
@@ -55,7 +75,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       const { syncHash = true, animate = true } = options;
       const book = bookRef.current;
       if (!book) return;
-      const spreads = book.querySelectorAll<HTMLElement>("[data-folio-spread]");
+      const spreads = spreadEls(book);
       const target = spreads[index];
       if (!target) return;
 
@@ -83,9 +103,13 @@ export default function FolioBook({ children }: FolioBookProps) {
       }
 
       if (syncHash) {
-        const nextHash = `#${hashForSpread(index)}`;
-        if (window.location.hash !== nextHash) {
-          window.history.replaceState(null, "", nextHash);
+        const id = spreads[index]?.id ?? "";
+        const nextHash = index === COVER_INDEX || !id ? "" : `#${id}`;
+        const currentHash = window.location.hash;
+        if (currentHash !== nextHash) {
+          const url =
+            nextHash || `${window.location.pathname}${window.location.search}`;
+          window.history.replaceState(null, "", url);
         }
       }
     },
@@ -99,19 +123,29 @@ export default function FolioBook({ children }: FolioBookProps) {
     const onFlip = (event: Event) => {
       const detail = (
         event as CustomEvent<{
-          to: "work" | "profile";
+          id?: string;
+          dir?: "next" | "prev";
           animate?: boolean;
         }>
       ).detail;
       if (!detail) return;
-      goToSpread(detail.to === "work" ? 1 : 0, {
-        animate: detail.animate ?? true,
-      });
+
+      let target: number | null = null;
+      if (typeof detail.id === "string") {
+        target = indexFromHash(book, detail.id);
+      } else if (detail.dir === "next") {
+        target = Math.min(currentSpreadIndex(book) + 1, spreadEls(book).length - 1);
+      } else if (detail.dir === "prev") {
+        target = Math.max(currentSpreadIndex(book) - 1, 0);
+      }
+
+      if (target === null) return;
+      goToSpread(target, { animate: detail.animate ?? true });
     };
 
     const syncFromHash = (animate: boolean) => {
       const id = window.location.hash.slice(1);
-      const index = spreadIndexFromHash(id);
+      const index = indexFromHash(book, id);
       if (index === null) {
         syncSpreadInteractivity(currentSpreadIndex(book));
         return;
@@ -137,7 +171,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     window.addEventListener("hashchange", onHashChange);
     book.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
-    // Silent land on hash so project → /#work doesn't animate through Profile.
+    // Silent land on hash so project → /#works doesn't animate through the cover.
     requestAnimationFrame(() =>
       requestAnimationFrame(() => syncFromHash(false)),
     );
@@ -156,7 +190,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     if (isNarrowViewport()) return;
     const book = bookRef.current;
     if (!book) return;
-    const spreads = [...book.querySelectorAll<HTMLElement>("[data-folio-spread]")];
+    const spreads = spreadEls(book);
     if (spreads.length < 2) return;
 
     const current = currentSpreadIndex(book);
@@ -184,13 +218,26 @@ export default function FolioBook({ children }: FolioBookProps) {
   );
 }
 
-export function flipFolio(
-  to: "work" | "profile",
+/** Flip to a specific spread by its id (e.g. "contents", "works"). */
+export function flipFolioTo(
+  id: string,
   options: { animate?: boolean } = {},
 ) {
   window.dispatchEvent(
     new CustomEvent("folio:flip", {
-      detail: { to, animate: options.animate ?? true },
+      detail: { id, animate: options.animate ?? true },
+    }),
+  );
+}
+
+/** Flip one spread forward or backward, following the table of contents order. */
+export function flipFolioStep(
+  dir: "next" | "prev",
+  options: { animate?: boolean } = {},
+) {
+  window.dispatchEvent(
+    new CustomEvent("folio:flip", {
+      detail: { dir, animate: options.animate ?? true },
     }),
   );
 }

@@ -1,20 +1,20 @@
 "use client";
 
-import { flipFolio } from "./FolioBook";
+import { flipFolioStep } from "./FolioBook";
 import styles from "./FolioFlip.module.css";
 
 type FolioFlipProps = {
+  /** "forward" flips to the next spread, "back" to the previous one. */
   direction: "forward" | "back";
   label: string;
-  to: "work" | "profile";
 };
 
-export default function FolioFlip({ direction, label, to }: FolioFlipProps) {
+export default function FolioFlip({ direction, label }: FolioFlipProps) {
   return (
     <button
       type="button"
       className={`${styles.flip} ${direction === "forward" ? styles.forward : styles.back}`}
-      onClick={() => flipFolio(to)}
+      onClick={() => flipFolioStep(direction === "forward" ? "next" : "prev")}
       aria-label={label}
     >
       {direction === "back" && (
