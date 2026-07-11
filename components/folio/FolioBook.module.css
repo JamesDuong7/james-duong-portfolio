@@ -32,6 +32,11 @@
   position: relative;
 }
 
+/* Programmatic focus target after page flips — no visible ring on the spread. */
+.spread:focus {
+  outline: none;
+}
+
 .page {
   height: 100%;
   min-height: 0;

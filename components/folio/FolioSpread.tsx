@@ -15,6 +15,7 @@ export default function FolioSpread({ id, label, left, right }: FolioSpreadProps
       className={styles.spread}
       data-folio-spread
       aria-label={label}
+      tabIndex={-1}
     >
       {left}
       {right}
