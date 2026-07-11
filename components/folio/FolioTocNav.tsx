@@ -47,7 +47,7 @@ export default function FolioTocNav() {
       <span className={styles.icon} aria-hidden>
         ☰
       </span>
-      <span className={styles.label}>Contents</span>
+      <span className={styles.label}>Back to Contents</span>
     </button>
   );
 }

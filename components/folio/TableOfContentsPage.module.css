@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 2.5rem 2.5rem 4.5rem 3.25rem;
+  padding: 2.5rem 2.75rem 4.5rem 3.25rem;
   gap: 0.5rem;
   position: relative;
 }
@@ -33,101 +33,98 @@
   margin-top: 0.75rem;
 }
 
-.hint {
-  font-size: 0.8125rem;
+/* Column headers, like a real contents table. */
+.tableHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--folio-on-paper);
+  font-family: var(--folio-font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--folio-on-paper-muted);
-  margin-bottom: 0.4rem;
 }
 
-.list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
+.table {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.entry {
-  border-top: 1px solid var(--folio-border);
-  padding: 0.9rem 0 0.75rem;
-}
-
-.entry:last-child {
+.group {
+  display: flex;
+  flex-direction: column;
+  padding: 0.55rem 0;
   border-bottom: 1px solid var(--folio-border);
 }
 
-.entryButton {
+/* Shared row layout: title on the left, dotted leader, page number on the right. */
+.sectionRow,
+.itemRow {
   width: 100%;
-  display: grid;
-  grid-template-columns: 2.25rem 1fr auto auto;
+  display: flex;
   align-items: baseline;
-  gap: 0.75rem;
-  padding: 0;
+  gap: 0.5rem;
   text-align: left;
   color: inherit;
+  padding: 0.28rem 0;
 }
 
-.number {
-  font-family: var(--folio-font-mono);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--folio-pink);
-}
-
-.entryTitle {
+.sectionTitle {
   font-family: var(--folio-font-body);
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--folio-on-paper);
   transition: color var(--transition);
 }
 
+.itemRow {
+  padding-left: 1.25rem;
+}
+
+.itemTitle {
+  font-family: var(--folio-font-body);
+  font-size: 0.85rem;
+  color: var(--folio-on-paper-muted);
+  transition: color var(--transition);
+}
+
+/* The dotted line that fills the space between title and page number. */
 .leader {
+  flex: 1;
   align-self: center;
   height: 0;
+  margin: 0 0.15rem;
   border-bottom: 1px dotted var(--folio-border);
 }
 
-.arrow {
+.page {
   font-family: var(--folio-font-mono);
-  color: var(--folio-on-paper-muted);
-  transition: transform var(--transition), color var(--transition);
-}
-
-.entryButton:hover .entryTitle,
-.entryButton:focus-visible .entryTitle {
+  font-size: 0.95rem;
+  font-weight: 500;
   color: var(--folio-pink);
+  min-width: 1.75rem;
+  text-align: right;
 }
 
-.entryButton:hover .arrow,
-.entryButton:focus-visible .arrow {
-  color: var(--folio-pink);
-  transform: translateX(3px);
-}
-
-.subList {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 0.9rem;
-  margin: 0.55rem 0 0 3rem;
-}
-
-.subItem {
-  position: relative;
+.itemPage {
   font-family: var(--folio-font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.02em;
+  font-size: 0.78rem;
   color: var(--folio-on-paper-muted);
-  padding-left: 0.85rem;
+  min-width: 1.75rem;
+  text-align: right;
 }
 
-.subItem::before {
-  content: "·";
-  position: absolute;
-  left: 0.15rem;
+.sectionRow:hover .sectionTitle,
+.sectionRow:focus-visible .sectionTitle,
+.itemRow:hover .itemTitle,
+.itemRow:focus-visible .itemTitle {
   color: var(--folio-pink);
 }
 
@@ -137,15 +134,7 @@
     min-height: 100dvh;
   }
 
-  .entryButton {
-    grid-template-columns: 2rem 1fr auto;
-  }
-
-  .leader {
-    display: none;
-  }
-
-  .subList {
-    margin-left: 2rem;
+  .table {
+    overflow: visible;
   }
 }

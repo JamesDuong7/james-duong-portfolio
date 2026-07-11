@@ -62,25 +62,37 @@ export default async function FolioHome() {
   const sections: TocSection[] = [
     {
       id: "contents",
-      number: "01",
+      page: "01",
       title: "About Me",
       items: hobbies
         .map((h) => (h.title ? stegaClean(h.title) : ""))
-        .filter(Boolean),
+        .filter(Boolean)
+        .map((label) => ({ label })),
     },
     {
       id: "featured",
-      number: "02",
+      page: "02",
       title: "Featured Work",
-      items: featured.map((p) => stegaClean(p.title ?? "")).filter(Boolean),
+      items: featured
+        .map((p) => {
+          const slug = stegaClean(p.id ?? "");
+          return {
+            label: stegaClean(p.title ?? "Untitled"),
+            href: slug ? `/projects/${slug}` : undefined,
+          };
+        })
+        .filter((entry) => Boolean(entry.label)),
     },
     {
       id: "works",
-      number: "03",
+      page: "03",
       title: "All Works",
-      items: allWorks.map((p) => p.title),
+      items: allWorks.map((p) => ({
+        label: p.title,
+        href: p.slug ? `/projects/${p.slug}` : undefined,
+      })),
     },
-    { id: "contact", number: "04", title: "Contact", items: [] },
+    { id: "contact", page: "04", title: "Contact", items: [] },
   ];
 
   const featuredBlurb =
