@@ -34,13 +34,18 @@ test.describe('Portfolio E2E', () => {
     await expect(page.getByRole('link', { name: /Return Home/i })).toBeVisible();
   });
 
-  test('mobile menu opens and shows navigation links', async ({ page }) => {
+  test('folio flip affordance moves to work spread', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByRole('button', { name: /Flip page → Work/i }).click();
+    await expect(page.getByRole('heading', { name: /Aztec Assess|Featured|Projects coming soon/i }).first()).toBeVisible();
+  });
+
+  test('mobile stack shows about and contact sections', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');
 
-    await page.getByRole('button', { name: /Open menu/i }).click();
-    const mobileNav = page.getByRole('navigation', { name: /Mobile Navigation/i });
-    await expect(mobileNav).toBeVisible();
-    await expect(mobileNav.getByRole('link', { name: 'Contact' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /About/i })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Say hello/i })).toBeVisible();
   });
 });

@@ -1,0 +1,261 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem 3.5rem 4.5rem 3rem;
+  position: relative;
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+.mastPink {
+  color: var(--folio-pink);
+}
+
+.mastMuted {
+  color: var(--folio-on-paper-muted);
+}
+
+.split {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.aboutHalf,
+.contactHalf {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 0;
+}
+
+.aboutHalf {
+  padding-bottom: 1rem;
+}
+
+.contactHalf {
+  padding-top: 1rem;
+  overflow-y: auto;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.dividerAccent {
+  width: 1.5rem;
+  height: 1.5px;
+  background: var(--folio-pink);
+  flex-shrink: 0;
+}
+
+.dividerRule {
+  flex: 1;
+  height: 1px;
+  background: var(--folio-border);
+  border: 0;
+}
+
+.title {
+  font-family: var(--folio-font-display);
+  font-size: clamp(1.75rem, 2.5vw, 2rem);
+  color: var(--folio-on-paper);
+  line-height: 1.1;
+}
+
+.copy {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--folio-on-paper-muted);
+}
+
+.skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.skillBox {
+  border: 1px solid var(--folio-border);
+  border-radius: 2px;
+  padding: 0.55rem 0.75rem;
+}
+
+.skillLabel {
+  display: block;
+  font-family: var(--folio-font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--folio-pink);
+  margin-bottom: 0.2rem;
+}
+
+.skillList {
+  font-size: 0.8125rem;
+  color: var(--folio-on-paper);
+  line-height: 1.4;
+}
+
+.emailAlt {
+  font-size: 0.75rem;
+  color: var(--folio-on-paper-muted);
+}
+
+.emailLink {
+  color: var(--folio-pink);
+  font-family: var(--folio-font-mono);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: 0.35rem;
+}
+
+.emailLink:hover {
+  opacity: 0.85;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.25rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.label {
+  font-family: var(--folio-font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  color: var(--folio-on-paper);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--folio-border);
+  border-radius: 2px;
+  background: var(--folio-paper-soft);
+  color: var(--folio-on-paper);
+  font-family: var(--folio-font-body);
+  font-size: 0.8125rem;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--folio-pink);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--folio-pink) 25%, transparent);
+}
+
+.textarea {
+  min-height: 3.5rem;
+  resize: vertical;
+}
+
+.hint {
+  font-family: var(--folio-font-mono);
+  font-size: 0.5625rem;
+  color: var(--folio-on-paper-muted);
+}
+
+.hintMet {
+  color: #1a7f4b;
+}
+
+.captcha {
+  min-height: 3rem;
+  padding: 0.5rem;
+  border: 1px solid var(--folio-border);
+  border-radius: 2px;
+  background: var(--folio-paper-soft);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.status {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: 2px;
+}
+
+.success {
+  background: color-mix(in srgb, #1a7f4b 12%, transparent);
+  color: #1a7f4b;
+  border: 1px solid color-mix(in srgb, #1a7f4b 25%, transparent);
+}
+
+.error {
+  background: color-mix(in srgb, #d50f25 10%, transparent);
+  color: #d50f25;
+  border: 1px solid color-mix(in srgb, #d50f25 25%, transparent);
+}
+
+.fadeOut {
+  opacity: 0;
+  transition: opacity 1.5s ease;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 2rem 1.5rem 2.5rem;
+    min-height: 100dvh;
+  }
+
+  .split {
+    flex: none;
+  }
+
+  .aboutHalf,
+  .contactHalf {
+    flex: none;
+  }
+
+  .row {
+    grid-template-columns: 1fr;
+  }
+}

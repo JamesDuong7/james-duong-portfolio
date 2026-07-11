@@ -1,0 +1,77 @@
+.book {
+  height: 100dvh;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 100%;
+  grid-template-rows: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: none;
+  background: var(--folio-ink);
+  scrollbar-width: none;
+}
+
+.book::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .book {
+    scroll-behavior: smooth;
+  }
+}
+
+.spread {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  height: 100%;
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+}
+
+.page {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  position: relative;
+}
+
+.pageInk {
+  background: var(--folio-ink);
+  color: var(--folio-on-ink);
+}
+
+.pagePaper {
+  background: var(--folio-paper);
+  color: var(--folio-on-paper);
+}
+
+/* Mobile: stack pages vertically inside each spread, snap per spread still */
+@media (max-width: 900px) {
+  .book {
+    height: auto;
+    min-height: 100dvh;
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-snap-type: none;
+  }
+
+  .spread {
+    min-width: 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    scroll-snap-align: none;
+  }
+
+  .page {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: visible;
+  }
+}

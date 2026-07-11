@@ -1,0 +1,103 @@
+.bone {
+  border-radius: 2px;
+  animation: folioPulse 1.4s ease-in-out infinite;
+}
+
+.ink {
+  background: color-mix(in srgb, var(--folio-on-ink-muted) 28%, transparent);
+}
+
+.paper {
+  background: color-mix(in srgb, var(--folio-border) 90%, transparent);
+}
+
+.mast {
+  width: 10rem;
+  height: 0.75rem;
+}
+
+.title {
+  width: min(18rem, 80%);
+  height: 2.75rem;
+  margin-top: 0.5rem;
+}
+
+.desc {
+  width: min(28rem, 95%);
+  height: 2.5rem;
+}
+
+.metaStack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.metaLabel {
+  width: 3.5rem;
+  height: 0.55rem;
+}
+
+.metaValue {
+  width: min(16rem, 70%);
+  height: 0.9rem;
+  margin-bottom: 0.35rem;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.tag {
+  width: 4.5rem;
+  height: 1.75rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.sectionTitle {
+  width: 8rem;
+  height: 1.35rem;
+}
+
+.sectionBody {
+  width: 100%;
+  height: 3.25rem;
+}
+
+.sectionBodyShort {
+  width: 85%;
+  height: 2.25rem;
+}
+
+.button {
+  width: 11rem;
+  height: 2.4rem;
+  margin-top: 0.5rem;
+  background: color-mix(in srgb, var(--folio-ink) 35%, transparent);
+}
+
+@keyframes folioPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bone {
+    animation: none;
+  }
+}

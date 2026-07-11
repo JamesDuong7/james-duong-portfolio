@@ -27,6 +27,16 @@ export const FEATURED_PROJECTS_QUERY = defineQuery(
 );
 
 /**
+ * All projects for index / next-prev navigation, ordered for display.
+ */
+export const PROJECTS_INDEX_QUERY = defineQuery(
+  `*[_type == "project" && defined(id.current)] | order(order asc) {
+    "slug": id.current,
+    title
+  }`
+);
+
+/**
  * A single project by its slug.
  * Used on /projects/[slug] case study pages.
  */

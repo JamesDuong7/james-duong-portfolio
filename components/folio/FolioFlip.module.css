@@ -1,0 +1,60 @@
+.flip {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.65rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--folio-pink);
+  background: transparent;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.flip:hover,
+.flip:focus-visible {
+  opacity: 0.85;
+}
+
+.curl {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  background: var(--folio-pink);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+.curlBack {
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+.forward {
+  right: 0;
+  bottom: 0;
+}
+
+.back {
+  left: 0;
+  bottom: 0;
+}
+
+@media (max-width: 900px) {
+  .flip {
+    position: static;
+    margin-top: auto;
+    padding: 1.25rem 0 0;
+    align-self: flex-start;
+  }
+
+  .forward {
+    align-self: flex-end;
+  }
+
+  .curl {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}

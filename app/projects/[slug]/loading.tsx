@@ -1,34 +1,61 @@
-import styles from "./Project.module.css";
-import Navigation from "@/components/layout/Navigation";
-import Footer from "@/components/layout/Footer";
+import styles from "@/components/folio/FolioCaseStudy.module.css";
+import loadingStyles from "./loading.module.css";
+
+function Bone({
+  tone,
+  className,
+}: {
+  tone: "ink" | "paper";
+  className: string;
+}) {
+  return (
+    <div
+      className={`${loadingStyles.bone} ${tone === "ink" ? loadingStyles.ink : loadingStyles.paper} ${className}`}
+    />
+  );
+}
 
 export default function Loading() {
   return (
-    <>
-      <Navigation />
-      <main className={styles.page}>
-        <div style={{ width: '150px', height: '20px', backgroundColor: 'var(--surface-border)', borderRadius: '4px', marginBottom: '3rem', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
-        
-        <header className={styles.header}>
-          <div style={{ width: '70%', height: '48px', backgroundColor: 'var(--surface-border)', borderRadius: '8px', marginBottom: '1rem', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
-          <div style={{ width: '100%', height: '80px', backgroundColor: 'var(--surface-border)', borderRadius: '8px', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
-        </header>
+    <main id="main" aria-busy="true" aria-label="Loading case study">
+      <div className={styles.spread}>
+        <article className={`${styles.page} ${styles.pageInk}`}>
+          <div className={styles.inner}>
+            <Bone tone="ink" className={loadingStyles.mast} />
+            <Bone tone="ink" className={loadingStyles.title} />
+            <Bone tone="ink" className={loadingStyles.desc} />
+            <div className={loadingStyles.metaStack}>
+              <Bone tone="ink" className={loadingStyles.metaLabel} />
+              <Bone tone="ink" className={loadingStyles.metaValue} />
+              <Bone tone="ink" className={loadingStyles.metaLabel} />
+              <Bone tone="ink" className={loadingStyles.metaValue} />
+            </div>
+            <div className={loadingStyles.tags}>
+              <Bone tone="ink" className={loadingStyles.tag} />
+              <Bone tone="ink" className={loadingStyles.tag} />
+              <Bone tone="ink" className={loadingStyles.tag} />
+            </div>
+          </div>
+        </article>
 
-        <div className={styles.imageGallery}>
-           <div className={styles.imageWrapper} style={{ backgroundColor: 'var(--surface-border)', animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite' }} />
-        </div>
-      </main>
-      <Footer />
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 1;
-          }
-          50% {
-            opacity: .5;
-          }
-        }
-      `}} />
-    </>
+        <article className={`${styles.page} ${styles.pagePaper}`}>
+          <div className={`${styles.inner} ${styles.innerPaper}`}>
+            <div className={loadingStyles.section}>
+              <Bone tone="paper" className={loadingStyles.sectionTitle} />
+              <Bone tone="paper" className={loadingStyles.sectionBody} />
+            </div>
+            <div className={loadingStyles.section}>
+              <Bone tone="paper" className={loadingStyles.sectionTitle} />
+              <Bone tone="paper" className={loadingStyles.sectionBody} />
+            </div>
+            <div className={loadingStyles.section}>
+              <Bone tone="paper" className={loadingStyles.sectionTitle} />
+              <Bone tone="paper" className={loadingStyles.sectionBodyShort} />
+            </div>
+            <Bone tone="paper" className={loadingStyles.button} />
+          </div>
+        </article>
+      </div>
+    </main>
   );
 }

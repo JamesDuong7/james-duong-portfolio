@@ -1,0 +1,105 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2.5rem 3.5rem 4.5rem 3rem;
+  gap: 1rem;
+  position: relative;
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.mastPink {
+  color: var(--folio-pink);
+}
+
+.mastMuted {
+  color: var(--folio-on-paper-muted);
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: var(--folio-on-paper-muted);
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.5rem;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr auto;
+  gap: 1rem;
+  align-items: baseline;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--folio-border);
+  color: inherit;
+  text-decoration: none;
+}
+
+.row:last-child {
+  border-bottom: 1px solid var(--folio-border);
+}
+
+.row:hover .title,
+.row:focus-visible .title {
+  color: var(--folio-pink);
+}
+
+.number {
+  font-family: var(--folio-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--folio-pink);
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--folio-font-body);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--folio-on-paper);
+  transition: color var(--transition);
+}
+
+.blurb {
+  font-size: 0.8125rem;
+  color: var(--folio-on-paper-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrow {
+  font-family: var(--folio-font-mono);
+  color: var(--folio-on-paper-muted);
+  font-size: 0.875rem;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 2rem 1.5rem 2.5rem;
+    min-height: 100dvh;
+  }
+
+  .blurb {
+    white-space: normal;
+  }
+}

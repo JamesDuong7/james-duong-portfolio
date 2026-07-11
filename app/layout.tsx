@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Archivo, Archivo_Black, IBM_Plex_Mono } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -9,8 +9,20 @@ import HashScrollHandler from "@/components/HashScrollHandler";
 import { fetchPersonalInfo } from "@/sanity/lib/fetch";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+});
+
+const archivoBlack = Archivo_Black({
+  variable: "--font-archivo-black",
+  weight: "400",
+  subsets: ["latin"],
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-plex-mono",
+  weight: ["400", "500"],
   subsets: ["latin"],
 });
 
@@ -37,7 +49,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#1f2438",
 };
 
 export default async function RootLayout({
@@ -72,7 +84,11 @@ export default async function RootLayout({
   };
 
   return (
-    <html lang="en" className={inter.variable} data-scroll-behavior="smooth">
+    <html
+      lang="en"
+      className={`${archivo.variable} ${archivoBlack.variable} ${ibmPlexMono.variable}`}
+      data-scroll-behavior="smooth"
+    >
       <body>
         <a href="#main" className="skip-link">Skip to main content</a>
         <script

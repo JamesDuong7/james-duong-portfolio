@@ -1,0 +1,80 @@
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1.5px solid var(--folio-pink);
+  border-radius: 2px;
+  background: var(--folio-paper-soft);
+  color: var(--folio-on-paper);
+  line-height: 1;
+}
+
+.ghost:hover,
+.ghost:focus-visible {
+  background: color-mix(in srgb, var(--folio-pink) 12%, var(--folio-paper));
+}
+
+.onInk {
+  background: color-mix(in srgb, var(--folio-pink) 12%, transparent);
+  color: var(--folio-on-ink);
+}
+
+.onInk:hover,
+.onInk:focus-visible {
+  background: color-mix(in srgb, var(--folio-pink) 22%, transparent);
+}
+
+.arrow {
+  color: var(--folio-pink);
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background: var(--folio-ink);
+  color: var(--folio-on-ink);
+  border-radius: 2px;
+  border: 0;
+}
+
+.primary:hover,
+.primary:focus-visible {
+  opacity: 0.9;
+}
+
+.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  background: var(--folio-paper-soft);
+  border: 1px solid var(--folio-border);
+  border-radius: 2px;
+  color: var(--folio-on-paper);
+}
+
+.dot {
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 50%;
+  background: var(--folio-pink);
+  flex-shrink: 0;
+}

@@ -5,6 +5,7 @@ import {
   FEATURED_PROJECTS_QUERY,
   PERSONAL_INFO_QUERY,
   PROJECT_BY_SLUG_QUERY,
+  PROJECTS_INDEX_QUERY,
 } from "./queries";
 import type {
   FeaturedProject,
@@ -14,6 +15,11 @@ import type {
 } from "./types";
 
 /** Typed wrappers — sanityFetch infers `{}` without Sanity typegen. */
+
+export type ProjectIndexItem = {
+  slug: string | null;
+  title: string | null;
+};
 
 export const fetchPersonalInfo = cache(async () => {
   const { data } = await sanityFetch({ query: PERSONAL_INFO_QUERY });
@@ -34,6 +40,12 @@ export async function fetchAllProjectSlugs() {
   });
   if (!Array.isArray(data)) return [];
   return data as ProjectSlugRow[];
+}
+
+export async function fetchProjectsIndex() {
+  const { data } = await sanityFetch({ query: PROJECTS_INDEX_QUERY });
+  if (!Array.isArray(data)) return [];
+  return data as ProjectIndexItem[];
 }
 
 export async function fetchProjectBySlug(

@@ -4,8 +4,8 @@
   width: 100%;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  background-color: rgba(0, 0, 0, 0.75);
-  border-bottom: 1px solid var(--surface-border);
+  background-color: color-mix(in srgb, var(--folio-ink) 88%, transparent);
+  border-bottom: 1px solid var(--folio-border-ink);
   z-index: 100;
   display: flex;
   justify-content: center;

@@ -2,6 +2,7 @@
   padding: 6rem 2rem;
   max-width: 800px; /* reading width */
   margin: 0 auto;
+  color: var(--folio-on-ink);
 }
 
 .backBtn {

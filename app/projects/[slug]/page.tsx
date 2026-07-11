@@ -1,25 +1,12 @@
 import { notFound } from "next/navigation";
-import AnchorLink from "@/components/ui/AnchorLink";
-import Image from "next/image";
-import styles from "./Project.module.css";
-import Navigation from "@/components/layout/Navigation";
-import Footer from "@/components/layout/Footer";
 import { Metadata } from "next";
-import { fetchAllProjectSlugs, fetchProjectBySlug } from "@/sanity/lib/fetch";
-import { PortableText, PortableTextComponents } from "@portabletext/react";
-
-// Custom components to ensure Portable Text matches your design
-const ptComponents: PortableTextComponents = {
-  block: {
-    normal: ({ children }) => <p>{children}</p>,
-  },
-  list: {
-    bullet: ({ children }) => <ul className={styles.list}>{children}</ul>,
-  },
-  listItem: {
-    bullet: ({ children }) => <li>{children}</li>,
-  },
-};
+import { stegaClean } from "@sanity/client/stega";
+import FolioCaseStudy from "@/components/folio/FolioCaseStudy";
+import {
+  fetchAllProjectSlugs,
+  fetchProjectBySlug,
+  fetchProjectsIndex,
+} from "@/sanity/lib/fetch";
 
 export async function generateStaticParams() {
   const slugs = await fetchAllProjectSlugs();
@@ -35,7 +22,6 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  // stega: false keeps invisible characters out of <title> and <meta> tags
   const project = await fetchProjectBySlug(slug, { stega: false });
 
   if (!project) return { title: "Project Not Found" };
@@ -67,13 +53,30 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await fetchProjectBySlug(slug);
+  const [project, indexItems] = await Promise.all([
+    fetchProjectBySlug(slug),
+    fetchProjectsIndex(),
+  ]);
 
   if (!project) {
     notFound();
   }
 
-  // JSON-LD Schema
+  const cleanedIndex = indexItems
+    .map((item) => ({
+      slug: item.slug ? stegaClean(item.slug) : "",
+      title: item.title ?? "Untitled",
+    }))
+    .filter((item) => Boolean(item.slug));
+
+  const currentIndex = cleanedIndex.findIndex((item) => item.slug === slug);
+  const position = currentIndex >= 0 ? currentIndex + 1 : 1;
+  const total = Math.max(cleanedIndex.length, 1);
+  const nextItem =
+    currentIndex >= 0 && currentIndex < cleanedIndex.length - 1
+      ? cleanedIndex[currentIndex + 1]
+      : null;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareSourceCode",
@@ -91,130 +94,14 @@ export default async function ProjectPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Navigation />
-      <main id="main" className={styles.page}>
-        <AnchorLink href="/#projects" className={styles.backBtn} aria-label="Back to projects">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          Back to Projects
-        </AnchorLink>
-
-        <header className={styles.header}>
-          <h1 className={styles.title}>{project.title}</h1>
-          <p className={styles.description}>{project.description}</p>
-
-          <div className={styles.headerMeta}>
-            {project.role && (
-              <div className={styles.metaBlock}>
-                <h4>Role</h4>
-                <p>{project.role}</p>
-              </div>
-            )}
-            {project.tech && project.tech.length > 0 && (
-              <div className={styles.metaBlock}>
-                <h4>Tech Stack</h4>
-                <div className={styles.techList}>
-                  {project.tech.map((t: string) => (
-                    <span key={t} className={styles.techBadge}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </header>
-
-        {project.screenshots && project.screenshots.length > 0 && (
-          <div className={styles.imageGallery}>
-            {project.screenshots.map((shot: { src?: string | null; alt?: string | null }, idx: number) => (
-              shot?.src && (
-                <div key={idx} className={styles.imageWrapper}>
-                  <Image
-                    src={shot.src}
-                    alt={shot.alt ?? project.title ?? ""}
-                    fill
-                    className={styles.screenshot}
-                    priority={idx === 0}
-                    sizes="(max-width: 800px) 100vw, 800px"
-                  />
-                </div>
-              )
-            ))}
-          </div>
-        )}
-
-        <article className={styles.content}>
-          {project.overview && project.overview.length > 0 && (
-            <section className={styles.section}>
-              <h2>Overview</h2>
-              <PortableText value={project.overview} components={ptComponents} />
-            </section>
-          )}
-
-          {project.problem && project.problem.length > 0 && (
-            <section className={styles.section}>
-              <h2>The Problem</h2>
-              <PortableText value={project.problem} components={ptComponents} />
-            </section>
-          )}
-
-          {project.features && project.features.length > 0 && (
-            <section className={styles.section}>
-              <h2>Key Features</h2>
-              <ul className={styles.list}>
-                {project.features.map((feature: string, idx: number) => (
-                  <li key={idx}>{feature}</li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {project.implementationDetails && project.implementationDetails.length > 0 && (
-            <section className={styles.section}>
-              <h2>Implementation Details</h2>
-              <PortableText value={project.implementationDetails} components={ptComponents} />
-            </section>
-          )}
-
-          {project.challenges && project.challenges.length > 0 && (
-            <section className={styles.section}>
-              <h2>Technical Challenges</h2>
-              <PortableText value={project.challenges} components={ptComponents} />
-            </section>
-          )}
-
-          {project.learning && project.learning.length > 0 && (
-            <section className={styles.section}>
-              <h2>Lessons Learned</h2>
-              <PortableText value={project.learning} components={ptComponents} />
-            </section>
-          )}
-
-          {project.future && project.future.length > 0 && (
-            <section className={styles.section}>
-              <h2>Future Improvements</h2>
-              <PortableText value={project.future} components={ptComponents} />
-            </section>
-          )}
-        </article>
-
-        <div className={styles.ctas}>
-          {project.github && (
-            <a href={project.github} target="_blank" rel="noopener noreferrer" className={styles.btn}>
-              View Source on GitHub
-            </a>
-          )}
-          {project.live && (
-            <a href={project.live} target="_blank" rel="noopener noreferrer" className={styles.btn}>
-              Live Demo
-            </a>
-          )}
-        </div>
+      <main id="main">
+        <FolioCaseStudy
+          project={project}
+          index={position}
+          total={total}
+          next={nextItem}
+        />
       </main>
-      <Footer />
     </>
   );
 }
