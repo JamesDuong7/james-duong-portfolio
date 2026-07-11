@@ -111,28 +111,6 @@
   gap: 0.5rem;
 }
 
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: auto;
-  padding-top: 1.5rem;
-}
-
-.tagInk {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.45rem 0.75rem;
-  font-family: var(--folio-font-mono);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--folio-on-ink);
-  border: 1px solid var(--folio-pink);
-  border-radius: 2px;
-  background: transparent;
-}
-
 .section {
   display: flex;
   flex-direction: column;
@@ -275,9 +253,5 @@
   .curl {
     width: 2.5rem;
     height: 2.5rem;
-  }
-
-  .tags {
-    margin-top: 1.5rem;
   }
 }

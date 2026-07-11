@@ -49,7 +49,6 @@ export default function FolioCaseStudy({
   next,
 }: FolioCaseStudyProps) {
   const stack = (project.tech ?? []).join(" · ");
-  const techTags = (project.tech ?? []).slice(0, 6);
 
   return (
     <div className={styles.spread} aria-label={`${project.title} case study`}>
@@ -106,16 +105,6 @@ export default function FolioCaseStudy({
                 </div>
               )}
             </div>
-
-            {techTags.length > 0 && (
-              <div className={styles.tags}>
-                {techTags.map((tag) => (
-                  <span key={tag} className={styles.tagInk}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 
