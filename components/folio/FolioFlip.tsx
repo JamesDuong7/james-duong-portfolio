@@ -20,7 +20,7 @@ export default function FolioFlip({ direction, label, to }: FolioFlipProps) {
       {direction === "back" && (
         <span className={`${styles.curl} ${styles.curlBack}`} aria-hidden />
       )}
-      <span>{label}</span>
+      <span className={styles.label}>{label}</span>
       {direction === "forward" && <span className={styles.curl} aria-hidden />}
     </button>
   );
