@@ -1,5 +1,11 @@
 import type { PortableTextBlock } from "@portabletext/types";
 
+/** A single hobby / activity entry from personalInfo.hobbies */
+export type Hobby = {
+  title: string | null;
+  description: string | null;
+};
+
 /** GROQ result shape for PERSONAL_INFO_QUERY */
 export type PersonalInfo = {
   name: string;
@@ -11,6 +17,7 @@ export type PersonalInfo = {
   github: string | null;
   linkedin: string | null;
   resumeUrl: string | null;
+  hobbies: Hobby[] | null;
   skills: {
     languages: string[] | null;
     frameworks: string[] | null;

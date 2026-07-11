@@ -1,4 +1,4 @@
-import { defineType, defineField } from "sanity";
+import { defineType, defineField, defineArrayMember } from "sanity";
 
 export const personalInfo = defineType({
   name: "personalInfo",
@@ -59,6 +59,38 @@ export const personalInfo = defineType({
       type: "string",
       description:
         'Path to the resume file (e.g. "/James_Duong_CS_Resume_2026.pdf") or an external link.',
+    }),
+    defineField({
+      name: "hobbies",
+      title: "Hobbies & Activities",
+      type: "array",
+      description:
+        "Personal hobbies, activities, and interests shown in the About Me section of the magazine.",
+      of: [
+        defineArrayMember({
+          type: "object",
+          name: "hobby",
+          fields: [
+            defineField({
+              name: "title",
+              title: "Name",
+              type: "string",
+              description: 'e.g. "Bouldering", "Film photography", "Cooking"',
+              validation: (rule) => rule.required(),
+            }),
+            defineField({
+              name: "description",
+              title: "Short Note",
+              type: "text",
+              rows: 2,
+              description: "Optional one-liner about this hobby or activity.",
+            }),
+          ],
+          preview: {
+            select: { title: "title", subtitle: "description" },
+          },
+        }),
+      ],
     }),
     defineField({
       name: "skills",

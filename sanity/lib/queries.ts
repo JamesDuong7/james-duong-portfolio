@@ -90,6 +90,10 @@ export const PERSONAL_INFO_QUERY = defineQuery(
     github,
     linkedin,
     resumeUrl,
+    hobbies[]{
+      title,
+      description
+    },
     skills {
       languages,
       frameworks,
