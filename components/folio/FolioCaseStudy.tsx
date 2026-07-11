@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
 import type { ProjectDetail } from "@/sanity/lib/types";
-import { portableTextToPlain } from "@/lib/portableText";
 import { FolioLinkButton, FolioPrimaryButton } from "./FolioControls";
 import styles from "./FolioCaseStudy.module.css";
 
@@ -24,15 +23,31 @@ type FolioCaseStudyProps = {
   next?: { slug: string; title: string } | null;
 };
 
+function RichSection({
+  title,
+  value,
+}: {
+  title: string;
+  value: ProjectDetail["overview"];
+}) {
+  if (!value?.length) return null;
+
+  return (
+    <section className={styles.section}>
+      <h2 className={styles.sectionTitle}>{title}</h2>
+      <div className={styles.sectionBody}>
+        <PortableText value={value} components={ptComponents} />
+      </div>
+    </section>
+  );
+}
+
 export default function FolioCaseStudy({
   project,
   index,
   total,
   next,
 }: FolioCaseStudyProps) {
-  const overviewText = portableTextToPlain(project.overview);
-  const problemText = portableTextToPlain(project.problem);
-  const learningText = portableTextToPlain(project.learning);
   const stack = (project.tech ?? []).join(" · ");
   const techTags = (project.tech ?? []).slice(0, 6);
 
@@ -114,31 +129,8 @@ export default function FolioCaseStudy({
 
       <article className={`${styles.page} ${styles.pagePaper}`} aria-label="Case study article">
         <div className={`${styles.inner} ${styles.innerPaper}`}>
-          {(project.overview?.length || overviewText) && (
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Overview</h2>
-              <div className={styles.sectionBody}>
-                {project.overview?.length ? (
-                  <PortableText value={project.overview} components={ptComponents} />
-                ) : (
-                  <p>{overviewText}</p>
-                )}
-              </div>
-            </section>
-          )}
-
-          {(project.problem?.length || problemText) && (
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>The Problem</h2>
-              <div className={styles.sectionBody}>
-                {project.problem?.length ? (
-                  <PortableText value={project.problem} components={ptComponents} />
-                ) : (
-                  <p>{problemText}</p>
-                )}
-              </div>
-            </section>
-          )}
+          <RichSection title="Overview" value={project.overview} />
+          <RichSection title="The Problem" value={project.problem} />
 
           {project.features && project.features.length > 0 && (
             <section className={styles.section}>
@@ -151,39 +143,10 @@ export default function FolioCaseStudy({
             </section>
           )}
 
-          {(project.learning?.length || learningText) && (
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Lessons Learned</h2>
-              <div className={styles.sectionBody}>
-                {project.learning?.length ? (
-                  <PortableText value={project.learning} components={ptComponents} />
-                ) : (
-                  <p>{learningText}</p>
-                )}
-              </div>
-            </section>
-          )}
-
-          {project.implementationDetails && project.implementationDetails.length > 0 && (
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Implementation</h2>
-              <div className={styles.sectionBody}>
-                <PortableText
-                  value={project.implementationDetails}
-                  components={ptComponents}
-                />
-              </div>
-            </section>
-          )}
-
-          {project.challenges && project.challenges.length > 0 && (
-            <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Challenges</h2>
-              <div className={styles.sectionBody}>
-                <PortableText value={project.challenges} components={ptComponents} />
-              </div>
-            </section>
-          )}
+          <RichSection title="Lessons Learned" value={project.learning} />
+          <RichSection title="Implementation" value={project.implementationDetails} />
+          <RichSection title="Challenges" value={project.challenges} />
+          <RichSection title="Future" value={project.future} />
 
           <div className={styles.actions}>
             {project.github && (

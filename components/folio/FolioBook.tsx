@@ -13,10 +13,20 @@ type FolioBookProps = {
   children: ReactNode;
 };
 
+function hashForSpread(index: number) {
+  return index === 1 ? "work" : "profile";
+}
+
+function spreadIndexFromHash(hash: string) {
+  if (hash === "work" || hash === "projects") return 1;
+  if (hash === "profile" || hash === "about" || hash === "contact") return 0;
+  return null;
+}
+
 export default function FolioBook({ children }: FolioBookProps) {
   const bookRef = useRef<HTMLDivElement>(null);
 
-  const goToSpread = useCallback((index: number) => {
+  const goToSpread = useCallback((index: number, syncHash = true) => {
     const book = bookRef.current;
     if (!book) return;
     const spreads = book.querySelectorAll<HTMLElement>("[data-folio-spread]");
@@ -27,6 +37,13 @@ export default function FolioBook({ children }: FolioBookProps) {
       left: target.offsetLeft,
       behavior: reduceMotion ? "auto" : "smooth",
     });
+
+    if (syncHash) {
+      const nextHash = `#${hashForSpread(index)}`;
+      if (window.location.hash !== nextHash) {
+        window.history.replaceState(null, "", nextHash);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -41,13 +58,9 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     const syncFromHash = () => {
       const id = window.location.hash.slice(1);
-      if (id === "work" || id === "projects") {
-        goToSpread(1);
-        return;
-      }
-      if (id === "profile" || id === "about" || id === "contact") {
-        goToSpread(0);
-      }
+      const index = spreadIndexFromHash(id);
+      if (index === null) return;
+      goToSpread(index, false);
     };
 
     window.addEventListener("folio:flip", onFlip);
@@ -67,7 +80,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     const spreads = [...book.querySelectorAll<HTMLElement>("[data-folio-spread]")];
     if (spreads.length < 2) return;
 
-    const current = Math.round(book.scrollLeft / book.clientWidth);
+    const current = Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
     const next =
       event.key === "ArrowRight"
         ? Math.min(current + 1, spreads.length - 1)

@@ -11,8 +11,7 @@ export const ALL_PROJECT_SLUGS_QUERY = defineQuery(
 );
 
 /**
- * All featured projects, ordered by the display order field.
- * Used on the homepage FeaturedProjects section.
+ * Featured projects for the Folio work spread, ordered by display order.
  */
 export const FEATURED_PROJECTS_QUERY = defineQuery(
   `*[_type == "project" && featured == true] | order(order asc) {
@@ -56,11 +55,7 @@ export const PROJECT_BY_SLUG_QUERY = defineQuery(
     implementationDetails,
     challenges,
     learning,
-    future,
-    "screenshots": screenshots[] {
-      "src": asset->url,
-      alt
-    }
+    future
   }`
 );
 
@@ -68,7 +63,7 @@ export const PROJECT_BY_SLUG_QUERY = defineQuery(
 
 /**
  * The singleton personalInfo document.
- * Used in Hero, About, Navigation.
+ * Used by Folio identity, about/contact, and site metadata.
  */
 export const PERSONAL_INFO_QUERY = defineQuery(
   `*[_type == "personalInfo"][0] {

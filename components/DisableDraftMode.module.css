@@ -1,0 +1,19 @@
+.button {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  z-index: 9999;
+  background: var(--folio-ink);
+  color: var(--folio-on-ink);
+  padding: 0.5rem 1rem;
+  border-radius: 2px;
+  font-size: 0.875rem;
+  font-family: var(--folio-font-mono);
+  text-decoration: none;
+  border: 1px solid var(--folio-pink);
+}
+
+.button:hover,
+.button:focus-visible {
+  opacity: 0.9;
+}

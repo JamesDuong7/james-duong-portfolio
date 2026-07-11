@@ -49,5 +49,4 @@ export type ProjectDetail = {
   challenges: PortableTextBlock[] | null;
   learning: PortableTextBlock[] | null;
   future: PortableTextBlock[] | null;
-  screenshots: { src: string | null; alt: string | null }[] | null;
 };

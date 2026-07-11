@@ -95,10 +95,8 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <div className="layout-wrapper">
-          <HashScrollHandler />
-          {children}
-        </div>
+        <HashScrollHandler />
+        {children}
         {/* Real-time content subscriptions — active on every page */}
         <SanityLive />
         {/* Visual editing overlays — only renders in Draft Mode */}

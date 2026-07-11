@@ -1,66 +1,56 @@
 .page {
-  min-height: calc(100vh - 80px);
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  gap: 1.5rem;
+  gap: 1rem;
   text-align: center;
+  background: var(--folio-ink);
+  color: var(--folio-on-ink);
+}
+
+.mast {
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--folio-pink);
 }
 
 .code {
-  font-size: clamp(4rem, 12vw, 6rem);
-  font-weight: 800;
-  line-height: 1;
-  color: var(--foreground);
+  font-family: var(--folio-font-display);
+  font-size: clamp(4rem, 14vw, 7rem);
+  line-height: 0.95;
+  color: var(--folio-on-ink);
 }
 
 .title {
-  font-size: 1.5rem;
-  color: var(--text-muted);
+  font-family: var(--folio-font-display);
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--folio-on-ink);
 }
 
 .description {
-  color: var(--accent-muted);
-  max-width: 500px;
+  font-size: 1rem;
   line-height: 1.6;
+  color: var(--folio-on-ink-muted);
+  max-width: 28rem;
 }
 
 .homeBtn {
-  margin-top: 1rem;
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--surface-border);
-  border-radius: 8px;
+  margin-top: 1.25rem;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.8125rem;
   font-weight: 500;
-  transition: all var(--transition);
-  background-color: var(--foreground);
-  color: var(--background);
+  background: var(--folio-pink);
+  color: var(--folio-on-ink);
+  border-radius: 2px;
 }
 
-.homeBtn:hover {
-  background-color: transparent;
-  color: var(--foreground);
-}
-
-.retryBtn {
-  padding: 0.75rem 1.5rem;
-  border: 1px solid var(--surface-border);
-  border-radius: 8px;
-  font-weight: 500;
-  color: var(--foreground);
-  background-color: transparent;
-  transition: all var(--transition);
-}
-
-.retryBtn:hover {
-  background-color: var(--surface-hover);
-  border-color: var(--text-muted);
-}
-
-.actions {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  justify-content: center;
+.homeBtn:hover,
+.homeBtn:focus-visible {
+  opacity: 0.9;
 }

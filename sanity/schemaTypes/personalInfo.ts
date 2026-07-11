@@ -24,14 +24,14 @@ export const personalInfo = defineType({
       title: "Introduction",
       type: "array",
       of: [{ type: "block" }],
-      description: "The paragraph shown in the Hero section. Allows for bold text or links.",
+      description: "Short intro paragraph on the Folio identity page. Plain text is used in the magazine layout.",
     }),
     defineField({
       name: "aboutMe",
       title: "About Me",
       type: "array",
       of: [{ type: "block" }],
-      description: "The multi-paragraph text shown in the About section. Supports paragraphs, bold, and lists.",
+      description: "About copy on the Folio profile page. Plain text is used in the magazine layout.",
     }),
     defineField({
       name: "email",
