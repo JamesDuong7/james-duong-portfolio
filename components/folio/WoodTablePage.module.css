@@ -2,45 +2,43 @@
   position: relative;
   height: 100%;
   overflow: hidden;
-  /* Warm brown wood base */
+  /* Warm brown wood base, lit slightly from the top like a desk surface. */
   background:
     linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.28) 0%,
-      rgba(0, 0, 0, 0) 8%
-    ),
-    linear-gradient(
-      100deg,
-      #6b4326 0%,
-      #7c4e2c 30%,
-      #8a5a33 55%,
-      #6f4526 100%
+      180deg,
+      #8a5a33 0%,
+      #7c4e2c 45%,
+      #6b4326 100%
     );
 }
 
-/* Layered plank + grain streaks for a wooden-table feel. */
+/* Horizontal planks + fine grain streaks for a wooden-table surface. */
 .grain {
   position: absolute;
   inset: 0;
   background-image:
+    /* long horizontal grain streaks */
     repeating-linear-gradient(
-      92deg,
-      rgba(60, 34, 16, 0.55) 0px,
-      rgba(60, 34, 16, 0) 3px,
-      rgba(120, 78, 44, 0.35) 7px,
-      rgba(60, 34, 16, 0) 14px
+      1.5deg,
+      rgba(60, 34, 16, 0.35) 0px,
+      rgba(60, 34, 16, 0) 2px,
+      rgba(120, 78, 44, 0.28) 5px,
+      rgba(60, 34, 16, 0) 11px
     ),
+    /* subtle warm highlights */
     repeating-linear-gradient(
-      88deg,
-      rgba(255, 214, 170, 0.06) 0px,
-      rgba(255, 214, 170, 0) 26px
+      -1deg,
+      rgba(255, 214, 170, 0.05) 0px,
+      rgba(255, 214, 170, 0) 18px
     ),
+    /* horizontal plank seams */
     repeating-linear-gradient(
       0deg,
-      rgba(0, 0, 0, 0.16) 0px,
-      rgba(0, 0, 0, 0) 2px,
-      rgba(0, 0, 0, 0) 180px,
-      rgba(0, 0, 0, 0.2) 182px
+      rgba(0, 0, 0, 0.28) 0px,
+      rgba(0, 0, 0, 0.28) 2px,
+      rgba(0, 0, 0, 0) 3px,
+      rgba(0, 0, 0, 0) 148px,
+      rgba(0, 0, 0, 0.28) 150px
     );
   mix-blend-mode: multiply;
 }
