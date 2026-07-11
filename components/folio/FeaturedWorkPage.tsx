@@ -1,4 +1,6 @@
 import { stegaClean } from "@sanity/client/stega";
+import type { FolioScreenshot } from "@/sanity/lib/types";
+import FolioFigure from "./FolioFigure";
 import FolioFlip from "./FolioFlip";
 import { FolioPrimaryButton, FolioTechTag } from "./FolioControls";
 import styles from "./FeaturedWorkPage.module.css";
@@ -10,6 +12,8 @@ type FeaturedWorkPageProps = {
   slug: string;
   index: number;
   total: number;
+  screenshot?: FolioScreenshot | null;
+  empty?: boolean;
 };
 
 export default function FeaturedWorkPage({
@@ -19,9 +23,14 @@ export default function FeaturedWorkPage({
   slug,
   index,
   total,
+  screenshot,
+  empty = false,
 }: FeaturedWorkPageProps) {
   const cleanSlug = stegaClean(slug);
   const href = cleanSlug ? `/projects/${cleanSlug}` : undefined;
+  const caption = empty
+    ? "FIG. — set coming soon"
+    : `FIG. ${String(index).padStart(2, "0")} — ${title}`;
 
   return (
     <div className={styles.page}>
@@ -35,11 +44,11 @@ export default function FeaturedWorkPage({
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.description}>{description}</p>
 
-      <div className={styles.visual} aria-hidden>
-        <div className={styles.caption}>
-          FIG. {String(index).padStart(2, "0")} — {title}
-        </div>
-      </div>
+      <FolioFigure
+        screenshot={screenshot}
+        caption={caption}
+        emptyHint={empty ? "FIG. — set coming soon" : "FIG. — awaiting print"}
+      />
 
       {tech.length > 0 && (
         <div className={styles.tags}>
@@ -54,6 +63,8 @@ export default function FeaturedWorkPage({
           <FolioPrimaryButton href={href} ariaLabel={`Read case study for ${title}`}>
             Read Case Study
           </FolioPrimaryButton>
+        ) : empty ? (
+          <FolioPrimaryButton disabled>Coming soon</FolioPrimaryButton>
         ) : (
           <FolioPrimaryButton disabled>Missing Project Slug</FolioPrimaryButton>
         )}

@@ -21,7 +21,14 @@ export const FEATURED_PROJECTS_QUERY = defineQuery(
     tech,
     github,
     live,
-    featured
+    featured,
+    screenshots[]{
+      alt,
+      "url": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height,
+      "lqip": asset->metadata.lqip
+    }
   }`
 );
 
@@ -48,6 +55,13 @@ export const PROJECT_BY_SLUG_QUERY = defineQuery(
     github,
     live,
     featured,
+    screenshots[]{
+      alt,
+      "url": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height,
+      "lqip": asset->metadata.lqip
+    },
     overview,
     problem,
     role,

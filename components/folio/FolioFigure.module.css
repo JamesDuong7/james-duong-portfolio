@@ -1,0 +1,84 @@
+.figure {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 18rem;
+  border-radius: 2px;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.paper {
+  background: linear-gradient(
+    105deg,
+    var(--folio-ink) 0%,
+    #5a1a3d 45%,
+    var(--folio-pink) 100%
+  );
+}
+
+.ink {
+  background: color-mix(in srgb, var(--folio-on-ink) 8%, var(--folio-ink));
+  border: 1px solid var(--folio-border-ink);
+  max-height: 14rem;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.empty {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+}
+
+.emptyFrame {
+  position: absolute;
+  inset: 0.85rem;
+  border: 1px dashed color-mix(in srgb, var(--folio-on-ink) 45%, transparent);
+  border-radius: 2px;
+  background:
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 0.5px),
+      color-mix(in srgb, var(--folio-on-ink) 28%, transparent) 50%,
+      transparent calc(50% + 0.5px)
+    ),
+    linear-gradient(
+      to top right,
+      transparent calc(50% - 0.5px),
+      color-mix(in srgb, var(--folio-on-ink) 18%, transparent) 50%,
+      transparent calc(50% + 0.5px)
+    );
+}
+
+.emptyHint {
+  position: relative;
+  z-index: 1;
+  font-family: var(--folio-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--folio-on-ink) 78%, transparent);
+  text-align: center;
+  max-width: 14rem;
+}
+
+.caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.65rem 0.85rem;
+  background: color-mix(in srgb, var(--folio-ink) 92%, transparent);
+  color: var(--folio-on-ink);
+  font-family: var(--folio-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}

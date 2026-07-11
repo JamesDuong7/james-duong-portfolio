@@ -22,13 +22,15 @@ export default function HashScrollHandler() {
         return;
       }
 
+      // Silent — FolioBook also syncs on mount. Animating here made
+      // project → /#work look like a forward flip through Profile.
       if (id === "work" || id === "projects") {
-        flipFolio("work");
+        flipFolio("work", { animate: false });
         return;
       }
 
       if (id === "profile" || id === "about" || id === "contact") {
-        flipFolio("profile");
+        flipFolio("profile", { animate: false });
       }
     });
   }, [pathname]);

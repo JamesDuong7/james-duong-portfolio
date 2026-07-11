@@ -14,6 +14,16 @@ type AboutContactPageProps = {
   tools: string[];
 };
 
+function SkillLine({ label, values }: { label: string; values: string[] }) {
+  if (values.length === 0) return null;
+  return (
+    <p className={styles.skillLine}>
+      <span className={styles.skillLabel}>{label}</span>
+      <span className={styles.skillList}>{values.join(" · ")}</span>
+    </p>
+  );
+}
+
 export default function AboutContactPage({
   about,
   email,
@@ -37,23 +47,26 @@ export default function AboutContactPage({
           {about && <p className={styles.copy}>{about}</p>}
 
           <div className={styles.skills}>
-            {languages.length > 0 && (
-              <div className={styles.skillBox}>
-                <span className={styles.skillLabel}>LANGUAGES</span>
-                <p className={styles.skillList}>{languages.join(" · ")}</p>
-              </div>
+            <SkillLine label="Languages" values={languages} />
+            <SkillLine label="Frameworks" values={frameworks} />
+            <SkillLine label="Tools" values={tools} />
+          </div>
+
+          <div className={styles.links}>
+            {github && (
+              <FolioLinkButton href={github} ariaLabel="GitHub Profile">
+                GitHub
+              </FolioLinkButton>
             )}
-            {frameworks.length > 0 && (
-              <div className={styles.skillBox}>
-                <span className={styles.skillLabel}>FRAMEWORKS</span>
-                <p className={styles.skillList}>{frameworks.join(" · ")}</p>
-              </div>
+            {linkedin && (
+              <FolioLinkButton href={linkedin} ariaLabel="LinkedIn Profile">
+                LinkedIn
+              </FolioLinkButton>
             )}
-            {tools.length > 0 && (
-              <div className={styles.skillBox}>
-                <span className={styles.skillLabel}>TOOLS</span>
-                <p className={styles.skillList}>{tools.join(" · ")}</p>
-              </div>
+            {resumeUrl && (
+              <FolioLinkButton href={resumeUrl} arrow="→" ariaLabel="View Resume">
+                Resume
+              </FolioLinkButton>
             )}
           </div>
         </section>
@@ -74,24 +87,6 @@ export default function AboutContactPage({
               </a>
             </p>
           )}
-
-          <div className={styles.links}>
-            {github && (
-              <FolioLinkButton href={github} ariaLabel="GitHub Profile">
-                GitHub
-              </FolioLinkButton>
-            )}
-            {linkedin && (
-              <FolioLinkButton href={linkedin} ariaLabel="LinkedIn Profile">
-                LinkedIn
-              </FolioLinkButton>
-            )}
-            {resumeUrl && (
-              <FolioLinkButton href={resumeUrl} arrow="→" ariaLabel="View Resume">
-                Resume
-              </FolioLinkButton>
-            )}
-          </div>
 
           <FolioContactForm />
         </section>

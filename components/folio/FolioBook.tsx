@@ -13,6 +13,12 @@ type FolioBookProps = {
   children: ReactNode;
 };
 
+type GoToSpreadOptions = {
+  syncHash?: boolean;
+  /** Smooth scroll between spreads. False for silent hash landings. */
+  animate?: boolean;
+};
+
 function hashForSpread(index: number) {
   return index === 1 ? "work" : "profile";
 }
@@ -23,20 +29,34 @@ function spreadIndexFromHash(hash: string) {
   return null;
 }
 
+function currentSpreadIndex(book: HTMLDivElement) {
+  return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
+}
+
 export default function FolioBook({ children }: FolioBookProps) {
   const bookRef = useRef<HTMLDivElement>(null);
 
-  const goToSpread = useCallback((index: number, syncHash = true) => {
+  const goToSpread = useCallback((index: number, options: GoToSpreadOptions = {}) => {
+    const { syncHash = true, animate = true } = options;
     const book = bookRef.current;
     if (!book) return;
     const spreads = book.querySelectorAll<HTMLElement>("[data-folio-spread]");
     const target = spreads[index];
     if (!target) return;
+
+    const from = currentSpreadIndex(book);
+    if (from === index) return;
+
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    book.scrollTo({
-      left: target.offsetLeft,
-      behavior: reduceMotion ? "auto" : "smooth",
-    });
+
+    if (!animate || reduceMotion) {
+      const previousBehavior = book.style.scrollBehavior;
+      book.style.scrollBehavior = "auto";
+      book.scrollLeft = target.offsetLeft;
+      book.style.scrollBehavior = previousBehavior;
+    } else {
+      book.scrollLeft = target.offsetLeft;
+    }
 
     if (syncHash) {
       const nextHash = `#${hashForSpread(index)}`;
@@ -51,25 +71,35 @@ export default function FolioBook({ children }: FolioBookProps) {
     if (!book) return;
 
     const onFlip = (event: Event) => {
-      const detail = (event as CustomEvent<{ to: "work" | "profile" }>).detail;
+      const detail = (
+        event as CustomEvent<{
+          to: "work" | "profile";
+          animate?: boolean;
+        }>
+      ).detail;
       if (!detail) return;
-      goToSpread(detail.to === "work" ? 1 : 0);
+      goToSpread(detail.to === "work" ? 1 : 0, {
+        animate: detail.animate ?? true,
+      });
     };
 
-    const syncFromHash = () => {
+    const syncFromHash = (animate: boolean) => {
       const id = window.location.hash.slice(1);
       const index = spreadIndexFromHash(id);
       if (index === null) return;
-      goToSpread(index, false);
+      goToSpread(index, { syncHash: false, animate });
     };
 
+    const onHashChange = () => syncFromHash(true);
+
     window.addEventListener("folio:flip", onFlip);
-    window.addEventListener("hashchange", syncFromHash);
-    requestAnimationFrame(syncFromHash);
+    window.addEventListener("hashchange", onHashChange);
+    // Silent land on hash so project → /#work doesn't animate through Profile.
+    requestAnimationFrame(() => requestAnimationFrame(() => syncFromHash(false)));
 
     return () => {
       window.removeEventListener("folio:flip", onFlip);
-      window.removeEventListener("hashchange", syncFromHash);
+      window.removeEventListener("hashchange", onHashChange);
     };
   }, [goToSpread]);
 
@@ -80,7 +110,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     const spreads = [...book.querySelectorAll<HTMLElement>("[data-folio-spread]")];
     if (spreads.length < 2) return;
 
-    const current = Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
+    const current = currentSpreadIndex(book);
     const next =
       event.key === "ArrowRight"
         ? Math.min(current + 1, spreads.length - 1)
@@ -105,6 +135,13 @@ export default function FolioBook({ children }: FolioBookProps) {
   );
 }
 
-export function flipFolio(to: "work" | "profile") {
-  window.dispatchEvent(new CustomEvent("folio:flip", { detail: { to } }));
+export function flipFolio(
+  to: "work" | "profile",
+  options: { animate?: boolean } = {},
+) {
+  window.dispatchEvent(
+    new CustomEvent("folio:flip", {
+      detail: { to, animate: options.animate ?? true },
+    }),
+  );
 }

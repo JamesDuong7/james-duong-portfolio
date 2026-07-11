@@ -24,16 +24,12 @@ export default function Loading() {
             <Bone tone="ink" className={loadingStyles.mast} />
             <Bone tone="ink" className={loadingStyles.title} />
             <Bone tone="ink" className={loadingStyles.desc} />
+            <Bone tone="ink" className={loadingStyles.figure} />
             <div className={loadingStyles.metaStack}>
               <Bone tone="ink" className={loadingStyles.metaLabel} />
               <Bone tone="ink" className={loadingStyles.metaValue} />
               <Bone tone="ink" className={loadingStyles.metaLabel} />
               <Bone tone="ink" className={loadingStyles.metaValue} />
-            </div>
-            <div className={loadingStyles.tags}>
-              <Bone tone="ink" className={loadingStyles.tag} />
-              <Bone tone="ink" className={loadingStyles.tag} />
-              <Bone tone="ink" className={loadingStyles.tag} />
             </div>
           </div>
         </article>

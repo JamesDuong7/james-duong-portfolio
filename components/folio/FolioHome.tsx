@@ -6,6 +6,7 @@ import FeaturedWorkPage from "./FeaturedWorkPage";
 import WorkIndexPage from "./WorkIndexPage";
 import { fetchFeaturedProjects, fetchPersonalInfo } from "@/sanity/lib/fetch";
 import { portableTextToPlain } from "@/lib/portableText";
+import { primaryScreenshot } from "@/sanity/lib/types";
 
 export default async function FolioHome() {
   const [info, projects] = await Promise.all([
@@ -80,6 +81,7 @@ export default async function FolioHome() {
                 slug={featured.id ?? ""}
                 index={1}
                 total={Math.max(indexItems.length, 1)}
+                screenshot={primaryScreenshot(featured.screenshots)}
               />
             ) : (
               <FeaturedWorkPage
@@ -89,6 +91,7 @@ export default async function FolioHome() {
                 slug=""
                 index={1}
                 total={1}
+                empty
               />
             )}
           </FolioPage>

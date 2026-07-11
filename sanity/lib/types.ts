@@ -18,6 +18,15 @@ export type PersonalInfo = {
   } | null;
 };
 
+/** Project screenshot from Sanity image assets */
+export type FolioScreenshot = {
+  alt: string | null;
+  url: string | null;
+  width: number | null;
+  height: number | null;
+  lqip: string | null;
+};
+
 /** GROQ row shape for FEATURED_PROJECTS_QUERY */
 export type FeaturedProject = {
   id: string;
@@ -27,6 +36,7 @@ export type FeaturedProject = {
   github: string | null;
   live: string | null;
   featured: boolean | null;
+  screenshots: FolioScreenshot[] | null;
 };
 
 /** GROQ row shape for ALL_PROJECT_SLUGS_QUERY */
@@ -41,6 +51,7 @@ export type ProjectDetail = {
   github: string | null;
   live: string | null;
   featured: boolean | null;
+  screenshots: FolioScreenshot[] | null;
   overview: PortableTextBlock[] | null;
   problem: PortableTextBlock[] | null;
   role: string | null;
@@ -50,3 +61,10 @@ export type ProjectDetail = {
   learning: PortableTextBlock[] | null;
   future: PortableTextBlock[] | null;
 };
+
+/** First screenshot with a usable CDN URL, if any */
+export function primaryScreenshot(
+  shots: FolioScreenshot[] | null | undefined,
+): FolioScreenshot | null {
+  return shots?.find((shot) => Boolean(shot.url)) ?? null;
+}

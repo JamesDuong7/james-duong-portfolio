@@ -50,7 +50,7 @@
   color: var(--folio-on-paper);
 }
 
-/* Mobile: stack pages vertically inside each spread, snap per spread still */
+/* Mobile: stack pages vertically inside each spread */
 @media (max-width: 900px) {
   .book {
     height: auto;

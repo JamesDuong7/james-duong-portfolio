@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import type { ProjectDetail } from "@/sanity/lib/types";
+import { primaryScreenshot, type ProjectDetail } from "@/sanity/lib/types";
+import FolioFigure from "./FolioFigure";
 import { FolioLinkButton, FolioPrimaryButton } from "./FolioControls";
 import styles from "./FolioCaseStudy.module.css";
 
@@ -49,9 +50,14 @@ export default function FolioCaseStudy({
   next,
 }: FolioCaseStudyProps) {
   const stack = (project.tech ?? []).join(" · ");
+  const hero = primaryScreenshot(project.screenshots);
 
   return (
     <div className={styles.spread} aria-label={`${project.title} case study`}>
+      <Link href="/" className={styles.homeMark} aria-label="Return to portfolio home">
+        JD.
+      </Link>
+
       <article className={`${styles.page} ${styles.pageInk}`} aria-label="Case study summary">
         <div className={`${styles.scroll} ${styles.scrollInk}`}>
           <div className={styles.inner}>
@@ -63,6 +69,14 @@ export default function FolioCaseStudy({
             {project.description && (
               <p className={styles.description}>{project.description}</p>
             )}
+
+            <FolioFigure
+              screenshot={hero}
+              caption={`FIG. ${String(index).padStart(2, "0")} — ${project.title}`}
+              priority
+              tone="ink"
+              emptyHint="FIG. — awaiting print"
+            />
 
             <div className={styles.meta}>
               {project.role && (
