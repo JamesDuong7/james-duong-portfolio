@@ -7,7 +7,12 @@ import styles from "./TableOfContentsPage.module.css";
 
 export type TocEntry = {
   label: string;
+  /** External/route link (e.g. a case study). Takes priority over `target`. */
   href?: string;
+  /** Spread id to flip to when there is no `href`. */
+  target?: string;
+  /** Running page number shown on the right. */
+  page?: string;
 };
 
 export type TocSection = {
@@ -53,27 +58,38 @@ export default function TableOfContentsPage({
             </button>
 
             {section.items.map((item) => {
+              const itemPage = item.page ?? section.page;
               const content = (
                 <>
                   <span className={styles.itemTitle}>{item.label}</span>
                   <span className={styles.leader} aria-hidden />
-                  <span className={styles.itemPage}>{section.page}</span>
+                  <span className={styles.itemPage}>{itemPage}</span>
                 </>
               );
 
-              return item.href ? (
-                <Link
+              if (item.href) {
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={styles.itemRow}
+                    aria-label={`${item.label}, page ${itemPage}`}
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <button
                   key={item.label}
-                  href={item.href}
+                  type="button"
                   className={styles.itemRow}
-                  aria-label={`${item.label}, page ${section.page}`}
+                  onClick={() => flipFolioTo(item.target ?? section.id)}
+                  aria-label={`${item.label}, page ${itemPage}`}
                 >
                   {content}
-                </Link>
-              ) : (
-                <div key={item.label} className={styles.itemRow}>
-                  {content}
-                </div>
+                </button>
               );
             })}
           </div>

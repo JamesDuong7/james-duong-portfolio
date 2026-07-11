@@ -4,7 +4,10 @@ import FolioSpread, { FolioPage } from "./FolioSpread";
 import FolioTocNav from "./FolioTocNav";
 import WoodTablePage from "./WoodTablePage";
 import CoverPage from "./CoverPage";
-import TableOfContentsPage, { type TocSection } from "./TableOfContentsPage";
+import TableOfContentsPage, {
+  type TocEntry,
+  type TocSection,
+} from "./TableOfContentsPage";
 import AboutMePage from "./AboutMePage";
 import SectionOpenerPage from "./SectionOpenerPage";
 import FeaturedListPage from "./FeaturedListPage";
@@ -59,19 +62,19 @@ export default async function FolioHome() {
     description: item.description ?? "",
   }));
 
-  const sections: TocSection[] = [
+  // Build sections, then hand out one continuous page number per row so the
+  // count carries on down the contents instead of resetting at each section.
+  const rawSections: { id: string; title: string; items: TocEntry[] }[] = [
     {
       id: "contents",
-      page: "01",
       title: "About Me",
       items: hobbies
         .map((h) => (h.title ? stegaClean(h.title) : ""))
         .filter(Boolean)
-        .map((label) => ({ label })),
+        .map((label) => ({ label, target: "contents" })),
     },
     {
       id: "featured",
-      page: "02",
       title: "Featured Work",
       items: featured
         .map((p) => {
@@ -79,21 +82,36 @@ export default async function FolioHome() {
           return {
             label: stegaClean(p.title ?? "Untitled"),
             href: slug ? `/projects/${slug}` : undefined,
+            target: "featured",
           };
         })
         .filter((entry) => Boolean(entry.label)),
     },
     {
       id: "works",
-      page: "03",
       title: "All Works",
       items: allWorks.map((p) => ({
         label: p.title,
         href: p.slug ? `/projects/${p.slug}` : undefined,
+        target: "works",
       })),
     },
-    { id: "contact", page: "04", title: "Contact", items: [] },
+    { id: "contact", title: "Contact", items: [] },
   ];
+
+  const pad = (n: number) => String(n).padStart(2, "0");
+  let counter = 0;
+  const sections: TocSection[] = rawSections.map((section) => {
+    counter += 1;
+    const page = pad(counter);
+    const items = section.items.map((item) => {
+      counter += 1;
+      return { ...item, page: pad(counter) };
+    });
+    return { ...section, page, items };
+  });
+
+  const pageOf = Object.fromEntries(sections.map((s) => [s.id, s.page]));
 
   const featuredBlurb =
     "A closer look at the projects I'm proudest of — the problems they solve, the stacks behind them, and what I learned building them.";
@@ -127,6 +145,7 @@ export default async function FolioHome() {
           right={
             <FolioPage tone="paper" label="About Me">
               <AboutMePage
+                page={pageOf.contents}
                 about={about}
                 hobbies={hobbies}
                 languages={languages}
@@ -147,7 +166,7 @@ export default async function FolioHome() {
           left={
             <FolioPage tone="ink" label="Featured Work section">
               <SectionOpenerPage
-                number="02"
+                number={pageOf.featured}
                 kicker="SECTION"
                 title="Featured Work"
                 blurb={featuredBlurb}
@@ -159,7 +178,7 @@ export default async function FolioHome() {
           }
           right={
             <FolioPage tone="paper" label="Featured projects">
-              <FeaturedListPage projects={featured} />
+              <FeaturedListPage page={pageOf.featured} projects={featured} />
             </FolioPage>
           }
         />
@@ -171,7 +190,7 @@ export default async function FolioHome() {
           left={
             <FolioPage tone="paper" label="All Works section">
               <SectionOpenerPage
-                number="03"
+                number={pageOf.works}
                 kicker="SECTION"
                 title="All Works"
                 blurb={worksBlurb}
@@ -182,7 +201,7 @@ export default async function FolioHome() {
           }
           right={
             <FolioPage tone="paper" label="Project index">
-              <WorkIndexPage projects={allWorks} />
+              <WorkIndexPage page={pageOf.works} projects={allWorks} />
             </FolioPage>
           }
         />
@@ -194,6 +213,7 @@ export default async function FolioHome() {
           left={
             <FolioPage tone="ink" label="Contact intro">
               <ContactIntroPage
+                page={pageOf.contact}
                 email={email}
                 location={location}
                 github={github}

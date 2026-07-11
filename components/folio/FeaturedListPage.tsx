@@ -7,15 +7,19 @@ import { FolioPrimaryButton, FolioTechTag } from "./FolioControls";
 import styles from "./FeaturedListPage.module.css";
 
 type FeaturedListPageProps = {
+  page: string;
   projects: FeaturedProject[];
 };
 
-export default function FeaturedListPage({ projects }: FeaturedListPageProps) {
+export default function FeaturedListPage({
+  page,
+  projects,
+}: FeaturedListPageProps) {
   return (
     <div className={styles.page} id="featured">
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>FEATURED WORK</span>
-        <span className={styles.mastMuted}>02</span>
+        <span className={styles.mastPink}>{page} · FEATURED WORK</span>
+        <span className={styles.mastMuted}>Work</span>
       </header>
 
       <div className={styles.scroll}>

@@ -3,6 +3,7 @@ import { FolioLinkButton } from "./FolioControls";
 import styles from "./ContactPage.module.css";
 
 type ContactIntroPageProps = {
+  page: string;
   email?: string | null;
   location?: string | null;
   github?: string | null;
@@ -11,6 +12,7 @@ type ContactIntroPageProps = {
 };
 
 export default function ContactIntroPage({
+  page,
   email,
   location,
   github,
@@ -20,7 +22,7 @@ export default function ContactIntroPage({
   return (
     <div className={`${styles.page} ${styles.ink}`}>
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>04 · CONTACT</span>
+        <span className={styles.mastPink}>{page} · CONTACT</span>
         <span className={styles.mastMuted}>Last page</span>
       </header>
 

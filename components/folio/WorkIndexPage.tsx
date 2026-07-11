@@ -10,14 +10,15 @@ export type WorkIndexItem = {
 };
 
 type WorkIndexPageProps = {
+  page: string;
   projects: WorkIndexItem[];
 };
 
-export default function WorkIndexPage({ projects }: WorkIndexPageProps) {
+export default function WorkIndexPage({ page, projects }: WorkIndexPageProps) {
   return (
     <div className={styles.page} id="projects">
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>03 · ALL WORKS</span>
+        <span className={styles.mastPink}>{page} · ALL WORKS</span>
         <span className={styles.mastMuted}>Index</span>
       </header>
 

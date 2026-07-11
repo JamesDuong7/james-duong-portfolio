@@ -4,6 +4,7 @@ import type { Hobby } from "@/sanity/lib/types";
 import styles from "./AboutMePage.module.css";
 
 type AboutMePageProps = {
+  page: string;
   about: string;
   hobbies: Hobby[];
   languages: string[];
@@ -25,6 +26,7 @@ function SkillLine({ label, values }: { label: string; values: string[] }) {
 }
 
 export default function AboutMePage({
+  page,
   about,
   hobbies,
   languages,
@@ -40,7 +42,7 @@ export default function AboutMePage({
   return (
     <div className={styles.page} id="about">
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>01 · ABOUT ME</span>
+        <span className={styles.mastPink}>{page} · ABOUT ME</span>
         <span className={styles.mastMuted}>Profile</span>
       </header>
 
