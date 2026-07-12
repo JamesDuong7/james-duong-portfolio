@@ -4,10 +4,15 @@ import {
   useCallback,
   useEffect,
   useRef,
+  useState,
   type KeyboardEvent,
   type ReactNode,
 } from "react";
 import styles from "./FolioBook.module.css";
+
+/** Page-turn timing. The spread swaps while the leaf is edge-on (~midpoint). */
+const FLIP_DURATION_MS = 720;
+const FLIP_SWAP_MS = 360;
 
 type FolioBookProps = {
   children: ReactNode;
@@ -52,6 +57,30 @@ function indexFromHash(book: HTMLDivElement, rawId: string) {
 
 export default function FolioBook({ children }: FolioBookProps) {
   const bookRef = useRef<HTMLDivElement>(null);
+  const [flip, setFlip] = useState<{ dir: "forward" | "back"; key: number } | null>(
+    null,
+  );
+  const flipTimers = useRef<number[]>([]);
+
+  const clearFlipTimers = useCallback(() => {
+    flipTimers.current.forEach((t) => window.clearTimeout(t));
+    flipTimers.current = [];
+  }, []);
+
+  /** Play the page-turn leaf, swapping the underlying spread at the midpoint. */
+  const playFlip = useCallback(
+    (dir: "forward" | "back", onSwap: () => void) => {
+      clearFlipTimers();
+      setFlip({ dir, key: Date.now() });
+      flipTimers.current.push(
+        window.setTimeout(onSwap, FLIP_SWAP_MS),
+        window.setTimeout(() => setFlip(null), FLIP_DURATION_MS),
+      );
+    },
+    [clearFlipTimers],
+  );
+
+  useEffect(() => clearFlipTimers, [clearFlipTimers]);
 
   /** Desktop only: keep the off-spread out of tab order. Mobile stacks all. */
   const syncSpreadInteractivity = useCallback((activeIndex: number) => {
@@ -130,17 +159,32 @@ export default function FolioBook({ children }: FolioBookProps) {
       ).detail;
       if (!detail) return;
 
+      const from = currentSpreadIndex(book);
       let target: number | null = null;
       if (typeof detail.id === "string") {
         target = indexFromHash(book, detail.id);
       } else if (detail.dir === "next") {
-        target = Math.min(currentSpreadIndex(book) + 1, spreadEls(book).length - 1);
+        target = Math.min(from + 1, spreadEls(book).length - 1);
       } else if (detail.dir === "prev") {
-        target = Math.max(currentSpreadIndex(book) - 1, 0);
+        target = Math.max(from - 1, 0);
       }
 
-      if (target === null) return;
-      goToSpread(target, { animate: detail.animate ?? true });
+      if (target === null || target === from) return;
+
+      const wantAnimate = detail.animate ?? true;
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      // Animate a physical page turn on desktop; fall back to a plain jump
+      // for reduced-motion, mobile stacks, or silent hash landings.
+      if (wantAnimate && !reduceMotion && !isNarrowViewport()) {
+        playFlip(target > from ? "forward" : "back", () =>
+          goToSpread(target, { animate: false }),
+        );
+      } else {
+        goToSpread(target, { animate: wantAnimate });
+      }
     };
 
     const syncFromHash = (animate: boolean) => {
@@ -183,7 +227,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       book.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, [goToSpread, syncSpreadInteractivity]);
+  }, [goToSpread, syncSpreadInteractivity, playFlip]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
@@ -194,14 +238,15 @@ export default function FolioBook({ children }: FolioBookProps) {
     if (spreads.length < 2) return;
 
     const current = currentSpreadIndex(book);
-    const next =
-      event.key === "ArrowRight"
-        ? Math.min(current + 1, spreads.length - 1)
-        : Math.max(current - 1, 0);
+    const forward = event.key === "ArrowRight";
+    const next = forward
+      ? Math.min(current + 1, spreads.length - 1)
+      : Math.max(current - 1, 0);
 
     if (next === current) return;
     event.preventDefault();
-    goToSpread(next);
+    // Route through the flip event so arrow keys animate like the curls.
+    flipFolioStep(forward ? "next" : "prev");
   };
 
   return (
@@ -214,6 +259,18 @@ export default function FolioBook({ children }: FolioBookProps) {
       onKeyDown={onKeyDown}
     >
       {children}
+      {flip && (
+        <div className={styles.flipStage} aria-hidden>
+          <div
+            key={flip.key}
+            className={`${styles.leaf} ${
+              flip.dir === "forward" ? styles.leafForward : styles.leafBack
+            }`}
+          >
+            <span className={styles.leafShade} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
