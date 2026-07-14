@@ -2,7 +2,8 @@ import type { ReactNode } from "react";
 import styles from "./FolioBook.module.css";
 
 type FolioSpreadProps = {
-  id: string;
+  /** Optional spread-level id; prefer page ids on FolioPage for hash targets. */
+  id?: string;
   label: string;
   left: ReactNode;
   right: ReactNode;
@@ -27,11 +28,15 @@ type FolioPageProps = {
   children: ReactNode;
   tone: "ink" | "paper";
   label?: string;
+  /** Stable page id used for TOC jumps and URL hashes. */
+  pageId?: string;
 };
 
-export function FolioPage({ children, tone, label }: FolioPageProps) {
+export function FolioPage({ children, tone, label, pageId }: FolioPageProps) {
   return (
     <article
+      id={pageId}
+      data-folio-page={pageId || undefined}
       className={`${styles.page} ${tone === "ink" ? styles.pageInk : styles.pagePaper}`}
       aria-label={label}
     >

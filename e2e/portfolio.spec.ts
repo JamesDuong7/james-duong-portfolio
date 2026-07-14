@@ -16,7 +16,7 @@ test.describe("Portfolio E2E", () => {
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeVisible();
   });
 
-  test("featured work spread opens a case study", async ({ page }) => {
+  test("featured work pages open a case study", async ({ page }) => {
     await page.goto("/#featured");
 
     const caseStudyLink = page
@@ -50,7 +50,7 @@ test.describe("Portfolio E2E", () => {
     ).toBeVisible();
   });
 
-  test("all works index rows open case studies", async ({ page }) => {
+  test("all works item pages open case studies", async ({ page }) => {
     await page.goto("/#works");
 
     const indexLink = page
@@ -59,5 +59,25 @@ test.describe("Portfolio E2E", () => {
     await expect(indexLink).toBeVisible();
     await indexLink.click();
     await expect(page).toHaveURL(/\/projects\/.+/);
+  });
+
+  test("flipping advances through continuous item pages", async ({ page }) => {
+    await page.goto("/");
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    await page.getByRole("button", { name: /Open the issue/i }).first().click();
+    await expect(page).toHaveURL(/#contents/);
+
+    // From contents/about, keep flipping until a featured project leaf appears.
+    for (let i = 0; i < 12; i += 1) {
+      const caseStudy = page.getByRole("link", { name: /Read Case Study/i });
+      if (await caseStudy.first().isVisible().catch(() => false)) break;
+      await page.getByRole("button", { name: /Turn the page|Flip →/i }).first().click();
+      await page.waitForTimeout(1100);
+    }
+
+    await expect(
+      page.getByRole("link", { name: /Read Case Study/i }).first(),
+    ).toBeVisible();
   });
 });

@@ -10,9 +10,13 @@ import {
 } from "react";
 import styles from "./FolioBook.module.css";
 
-/** Page-turn timing. The spread swaps while the leaf is edge-on (~midpoint). */
-const FLIP_DURATION_MS = 720;
-const FLIP_SWAP_MS = 360;
+/**
+ * Page-turn timing. A longer ease keeps the leaf readable; the spread swaps
+ * while the leaf is edge-on, then a short skeleton veil covers the settle.
+ */
+const FLIP_DURATION_MS = 980;
+const FLIP_SWAP_MS = 460;
+const FLIP_REVEAL_MS = 280;
 
 type FolioBookProps = {
   children: ReactNode;
@@ -35,8 +39,23 @@ const HASH_ALIASES: Record<string, string> = {
   about: "contents",
 };
 
+/** Section ids preferred when choosing a canonical hash for a spread. */
+const SECTION_IDS = new Set([
+  "cover",
+  "contents",
+  "featured",
+  "works",
+  "contact",
+]);
+
 function spreadEls(book: HTMLDivElement) {
   return [...book.querySelectorAll<HTMLElement>("[data-folio-spread]")];
+}
+
+function pageIdsInSpread(spread: HTMLElement) {
+  return [...spread.querySelectorAll<HTMLElement>("[data-folio-page]")]
+    .map((el) => el.dataset.folioPage || el.id)
+    .filter(Boolean);
 }
 
 function currentSpreadIndex(book: HTMLDivElement) {
@@ -51,8 +70,24 @@ function isNarrowViewport() {
 function indexFromHash(book: HTMLDivElement, rawId: string) {
   if (!rawId) return null;
   const id = HASH_ALIASES[rawId] ?? rawId;
-  const index = spreadEls(book).findIndex((spread) => spread.id === id);
-  return index >= 0 ? index : null;
+
+  const spreads = spreadEls(book);
+  // Prefer an in-spread page id match so TOC items land on their leaf.
+  const byPage = spreads.findIndex((spread) =>
+    pageIdsInSpread(spread).includes(id),
+  );
+  if (byPage >= 0) return byPage;
+
+  const bySpreadId = spreads.findIndex((spread) => spread.id === id);
+  return bySpreadId >= 0 ? bySpreadId : null;
+}
+
+function canonicalHashId(spread: HTMLElement) {
+  const ids = pageIdsInSpread(spread);
+  for (const id of ids) {
+    if (SECTION_IDS.has(id)) return id;
+  }
+  return ids[0] ?? spread.id ?? "";
 }
 
 export default function FolioBook({ children }: FolioBookProps) {
@@ -60,7 +95,9 @@ export default function FolioBook({ children }: FolioBookProps) {
   const [flip, setFlip] = useState<{ dir: "forward" | "back"; key: number } | null>(
     null,
   );
+  const [revealing, setRevealing] = useState(false);
   const flipTimers = useRef<number[]>([]);
+  const flippingRef = useRef(false);
 
   const clearFlipTimers = useCallback(() => {
     flipTimers.current.forEach((t) => window.clearTimeout(t));
@@ -71,10 +108,22 @@ export default function FolioBook({ children }: FolioBookProps) {
   const playFlip = useCallback(
     (dir: "forward" | "back", onSwap: () => void) => {
       clearFlipTimers();
+      flippingRef.current = true;
+      setRevealing(false);
       setFlip({ dir, key: Date.now() });
+
       flipTimers.current.push(
-        window.setTimeout(onSwap, FLIP_SWAP_MS),
-        window.setTimeout(() => setFlip(null), FLIP_DURATION_MS),
+        window.setTimeout(() => {
+          onSwap();
+          setRevealing(true);
+        }, FLIP_SWAP_MS),
+        window.setTimeout(() => {
+          setFlip(null);
+        }, FLIP_DURATION_MS),
+        window.setTimeout(() => {
+          setRevealing(false);
+          flippingRef.current = false;
+        }, FLIP_SWAP_MS + FLIP_REVEAL_MS),
       );
     },
     [clearFlipTimers],
@@ -91,10 +140,16 @@ export default function FolioBook({ children }: FolioBookProps) {
     spreads.forEach((spread, i) => {
       spread.inert = !narrow && i !== activeIndex;
     });
-    // Let fixed chrome (the Contents nav) react to the active spread.
+
+    const active = spreads[activeIndex];
+    const pages = active ? pageIdsInSpread(active) : [];
     window.dispatchEvent(
       new CustomEvent("folio:spreadchange", {
-        detail: { index: activeIndex, id: spreads[activeIndex]?.id ?? "" },
+        detail: {
+          index: activeIndex,
+          id: active ? canonicalHashId(active) : "",
+          pages,
+        },
       }),
     );
   }, []);
@@ -126,14 +181,13 @@ export default function FolioBook({ children }: FolioBookProps) {
 
       syncSpreadInteractivity(index);
 
-      // Keep keyboard focus on the visible spread after a user-driven flip.
       if (animate && document.activeElement && book.contains(document.activeElement)) {
         target.focus({ preventScroll: true });
       }
 
       if (syncHash) {
-        const id = spreads[index]?.id ?? "";
-        const nextHash = index === COVER_INDEX || !id ? "" : `#${id}`;
+        const id = canonicalHashId(target);
+        const nextHash = index === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
         const currentHash = window.location.hash;
         if (currentHash !== nextHash) {
           const url =
@@ -159,6 +213,9 @@ export default function FolioBook({ children }: FolioBookProps) {
       ).detail;
       if (!detail) return;
 
+      // Ignore stacked flip requests while a turn is in flight.
+      if (flippingRef.current && (detail.animate ?? true)) return;
+
       const from = currentSpreadIndex(book);
       let target: number | null = null;
       if (typeof detail.id === "string") {
@@ -176,8 +233,6 @@ export default function FolioBook({ children }: FolioBookProps) {
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
-      // Animate a physical page turn on desktop; fall back to a plain jump
-      // for reduced-motion, mobile stacks, or silent hash landings.
       if (wantAnimate && !reduceMotion && !isNarrowViewport()) {
         playFlip(target > from ? "forward" : "back", () =>
           goToSpread(target, { animate: false }),
@@ -215,7 +270,6 @@ export default function FolioBook({ children }: FolioBookProps) {
     window.addEventListener("hashchange", onHashChange);
     book.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
-    // Silent land on hash so project → /#works doesn't animate through the cover.
     requestAnimationFrame(() =>
       requestAnimationFrame(() => syncFromHash(false)),
     );
@@ -245,14 +299,13 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     if (next === current) return;
     event.preventDefault();
-    // Route through the flip event so arrow keys animate like the curls.
     flipFolioStep(forward ? "next" : "prev");
   };
 
   return (
     <div
       ref={bookRef}
-      className={styles.book}
+      className={`${styles.book} ${revealing ? styles.bookRevealing : ""}`}
       tabIndex={0}
       role="region"
       aria-label="Portfolio magazine"
@@ -261,13 +314,37 @@ export default function FolioBook({ children }: FolioBookProps) {
       {children}
       {flip && (
         <div className={styles.flipStage} aria-hidden>
+          <div className={styles.flipDim} />
           <div
             key={flip.key}
             className={`${styles.leaf} ${
               flip.dir === "forward" ? styles.leafForward : styles.leafBack
             }`}
           >
+            <span className={styles.leafFace}>
+              <span className={styles.leafBone} />
+              <span className={styles.leafBone} />
+              <span className={styles.leafBoneWide} />
+              <span className={styles.leafBone} />
+            </span>
             <span className={styles.leafShade} />
+            <span className={styles.leafEdge} />
+          </div>
+        </div>
+      )}
+      {revealing && (
+        <div className={styles.revealVeil} aria-hidden>
+          <div className={styles.revealSpread}>
+            <div className={styles.revealPage}>
+              <span className={styles.leafBone} />
+              <span className={styles.leafBoneWide} />
+              <span className={styles.leafBone} />
+            </div>
+            <div className={styles.revealPage}>
+              <span className={styles.leafBone} />
+              <span className={styles.leafBoneWide} />
+              <span className={styles.leafBone} />
+            </div>
           </div>
         </div>
       )}
@@ -275,7 +352,7 @@ export default function FolioBook({ children }: FolioBookProps) {
   );
 }
 
-/** Flip to a specific spread by its id (e.g. "contents", "works"). */
+/** Flip to a specific page/spread by its id (e.g. "contents", "featured-slug"). */
 export function flipFolioTo(
   id: string,
   options: { animate?: boolean } = {},

@@ -7,7 +7,7 @@ type ContactFormPageProps = {
 
 export default function ContactFormPage({ email }: ContactFormPageProps) {
   return (
-    <div className={styles.page} id="contact">
+    <div className={styles.page}>
       <header className={styles.masthead}>
         <span className={styles.mastPink}>SAY HELLO</span>
         <span className={styles.mastMuted}>The end</span>

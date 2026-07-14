@@ -74,7 +74,7 @@ export default function ContactIntroPage({
         </div>
       </div>
 
-      <FolioFlip direction="back" label="← Back to All Works" />
+      <FolioFlip direction="back" label="← Previous page" />
     </div>
   );
 }

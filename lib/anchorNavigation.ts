@@ -19,8 +19,14 @@ export function getScrollTarget(id: string): HTMLElement | null {
   const section = document.getElementById(id);
   if (!section) return null;
 
-  if (id === 'contact') {
-    return section.querySelector('form') ?? section;
+  if (id === "contact") {
+    const formPage = document.getElementById("contact-form");
+    return (
+      formPage?.querySelector("form") ??
+      formPage ??
+      section.querySelector("form") ??
+      section
+    );
   }
 
   return section;

@@ -5,20 +5,28 @@ import { flipFolioTo } from "./FolioBook";
 import styles from "./FolioTocNav.module.css";
 
 /** Spreads where the "back to contents" pill would be redundant or unwanted. */
-const HIDDEN_ON = new Set(["cover", "contents"]);
+const HIDDEN_PAGE_IDS = new Set(["cover", "toc", "contents"]);
 
 /**
  * Fixed bottom-center control that jumps back to the Table of Contents,
  * mirroring the way you'd thumb back to a magazine's contents page.
  */
 export default function FolioTocNav() {
-  const [activeId, setActiveId] = useState("cover");
+  const [pages, setPages] = useState<string[]>(["cover"]);
   const [narrow, setNarrow] = useState(false);
 
   useEffect(() => {
     const onSpreadChange = (event: Event) => {
-      const detail = (event as CustomEvent<{ id: string }>).detail;
-      if (detail?.id != null) setActiveId(detail.id);
+      const detail = (event as CustomEvent<{ id: string; pages?: string[] }>)
+        .detail;
+      if (!detail) return;
+      const nextPages =
+        detail.pages && detail.pages.length > 0
+          ? detail.pages
+          : detail.id
+            ? [detail.id]
+            : [];
+      setPages(nextPages);
     };
 
     const mql = window.matchMedia("(max-width: 900px)");
@@ -35,7 +43,7 @@ export default function FolioTocNav() {
 
   // On the stacked mobile layout the pages are a single scroll, so a
   // horizontal "flip to contents" affordance doesn't apply.
-  if (narrow || HIDDEN_ON.has(activeId)) return null;
+  if (narrow || pages.some((id) => HIDDEN_PAGE_IDS.has(id))) return null;
 
   return (
     <button

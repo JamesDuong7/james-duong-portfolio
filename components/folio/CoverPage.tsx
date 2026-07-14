@@ -41,7 +41,7 @@ export default function CoverPage({
         </div>
       </footer>
 
-      <FolioFlip direction="forward" label="Open the issue → Contents" />
+      <FolioFlip direction="forward" label="Open the issue →" />
     </div>
   );
 }

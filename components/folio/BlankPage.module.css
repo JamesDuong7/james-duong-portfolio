@@ -1,0 +1,28 @@
+.page {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  height: 100%;
+  padding: 2.5rem 3rem;
+  background:
+    radial-gradient(
+      ellipse 80% 50% at 20% 80%,
+      color-mix(in srgb, var(--folio-pink) 6%, transparent),
+      transparent 60%
+    ),
+    var(--folio-paper);
+}
+
+.mark {
+  font-family: var(--folio-font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: var(--folio-on-paper-muted);
+  opacity: 0.45;
+}
+
+@media (max-width: 900px) {
+  .page {
+    display: none;
+  }
+}

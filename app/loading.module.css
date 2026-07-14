@@ -1,0 +1,93 @@
+.book {
+  height: 100dvh;
+  background: var(--folio-ink);
+}
+
+.spread {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.pageInk,
+.pageInkInner {
+  height: 100%;
+  min-height: 0;
+}
+
+.wood {
+  height: 100%;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(92, 58, 32, 0.35) 0 2px,
+      transparent 2px 7px
+    ),
+    linear-gradient(145deg, #6b4423 0%, #3d2412 55%, #2a180c 100%);
+  opacity: 0.9;
+}
+
+.pageInkInner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 12% 14% 18%;
+  background: var(--folio-ink);
+}
+
+.mast {
+  width: 8rem;
+  height: 0.65rem;
+}
+
+.kicker {
+  width: 7rem;
+  height: 0.55rem;
+  margin-top: 18vh;
+}
+
+.title {
+  width: min(22rem, 88%);
+  height: 3.2rem;
+}
+
+.subtitle {
+  width: min(18rem, 75%);
+  height: 1.1rem;
+}
+
+.footer {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.line {
+  width: 9rem;
+  height: 0.55rem;
+}
+
+.lineShort {
+  width: 6rem;
+  height: 0.55rem;
+}
+
+@media (max-width: 900px) {
+  .book {
+    height: auto;
+    min-height: 100dvh;
+  }
+
+  .spread {
+    grid-template-columns: 1fr;
+  }
+
+  .wood {
+    display: none;
+  }
+
+  .pageInkInner {
+    min-height: 100dvh;
+  }
+}

@@ -7,9 +7,9 @@ import styles from "./TableOfContentsPage.module.css";
 
 export type TocEntry = {
   label: string;
-  /** External/route link (e.g. a case study). Takes priority over `target`. */
+  /** External/route link (e.g. a case study opened from outside the book). */
   href?: string;
-  /** Spread id to flip to when there is no `href`. */
+  /** Page id to flip to when there is no `href`. */
   target?: string;
   /** Running page number shown on the right. */
   page?: string;
@@ -67,10 +67,25 @@ export default function TableOfContentsPage({
                 </>
               );
 
+              // Prefer flipping to the in-book page; case studies stay on the leaf.
+              if (item.target) {
+                return (
+                  <button
+                    key={`${section.id}-${item.label}`}
+                    type="button"
+                    className={styles.itemRow}
+                    onClick={() => flipFolioTo(item.target!)}
+                    aria-label={`${item.label}, page ${itemPage}`}
+                  >
+                    {content}
+                  </button>
+                );
+              }
+
               if (item.href) {
                 return (
                   <Link
-                    key={item.label}
+                    key={`${section.id}-${item.label}`}
                     href={item.href}
                     className={styles.itemRow}
                     aria-label={`${item.label}, page ${itemPage}`}
@@ -82,10 +97,10 @@ export default function TableOfContentsPage({
 
               return (
                 <button
-                  key={item.label}
+                  key={`${section.id}-${item.label}`}
                   type="button"
                   className={styles.itemRow}
-                  onClick={() => flipFolioTo(item.target ?? section.id)}
+                  onClick={() => flipFolioTo(section.id)}
                   aria-label={`${item.label}, page ${itemPage}`}
                 >
                   {content}
