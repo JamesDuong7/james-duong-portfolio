@@ -26,6 +26,8 @@ type GoToSpreadOptions = {
   syncHash?: boolean;
   /** Smooth scroll between spreads. False for silent hash landings. */
   animate?: boolean;
+  /** Prefer this page id in the URL when it exists on the target spread. */
+  hashId?: string;
 };
 
 /** The cover always sits first and keeps the URL hash clean. */
@@ -82,8 +84,10 @@ function indexFromHash(book: HTMLDivElement, rawId: string) {
   return bySpreadId >= 0 ? bySpreadId : null;
 }
 
-function canonicalHashId(spread: HTMLElement) {
+function canonicalHashId(spread: HTMLElement, preferred?: string) {
   const ids = pageIdsInSpread(spread);
+  // Keep deep links stable (e.g. /#works, /#featured-slug) when present.
+  if (preferred && ids.includes(preferred)) return preferred;
   for (const id of ids) {
     if (SECTION_IDS.has(id)) return id;
   }
@@ -156,7 +160,7 @@ export default function FolioBook({ children }: FolioBookProps) {
 
   const goToSpread = useCallback(
     (index: number, options: GoToSpreadOptions = {}) => {
-      const { syncHash = true, animate = true } = options;
+      const { syncHash = true, animate = true, hashId } = options;
       const book = bookRef.current;
       if (!book) return;
       const spreads = spreadEls(book);
@@ -186,7 +190,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       }
 
       if (syncHash) {
-        const id = canonicalHashId(target);
+        const id = canonicalHashId(target, hashId);
         const nextHash = index === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
         const currentHash = window.location.hash;
         if (currentHash !== nextHash) {
@@ -218,7 +222,9 @@ export default function FolioBook({ children }: FolioBookProps) {
 
       const from = currentSpreadIndex(book);
       let target: number | null = null;
+      let hashId: string | undefined;
       if (typeof detail.id === "string") {
+        hashId = HASH_ALIASES[detail.id] ?? detail.id;
         target = indexFromHash(book, detail.id);
       } else if (detail.dir === "next") {
         target = Math.min(from + 1, spreadEls(book).length - 1);
@@ -234,11 +240,25 @@ export default function FolioBook({ children }: FolioBookProps) {
       ).matches;
 
       if (wantAnimate && !reduceMotion && !isNarrowViewport()) {
+        // Update the hash up front so deep links resolve even while the leaf turns.
+        const spreads = spreadEls(book);
+        const dest = spreads[target];
+        if (dest) {
+          const id = canonicalHashId(dest, hashId);
+          const nextHash =
+            target === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
+          if (window.location.hash !== nextHash) {
+            const url =
+              nextHash ||
+              `${window.location.pathname}${window.location.search}`;
+            window.history.replaceState(null, "", url);
+          }
+        }
         playFlip(target > from ? "forward" : "back", () =>
-          goToSpread(target, { animate: false }),
+          goToSpread(target, { animate: false, syncHash: false, hashId }),
         );
       } else {
-        goToSpread(target, { animate: wantAnimate });
+        goToSpread(target, { animate: wantAnimate, hashId });
       }
     };
 

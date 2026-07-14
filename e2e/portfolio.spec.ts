@@ -12,8 +12,8 @@ test.describe("Portfolio E2E", () => {
     await expect(page.getByRole("heading", { name: /James Duong/i })).toBeVisible();
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page).toHaveURL(/#contents/);
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeVisible();
+    await expect(page).toHaveURL(/#contents/);
   });
 
   test("featured work pages open a case study", async ({ page }) => {
