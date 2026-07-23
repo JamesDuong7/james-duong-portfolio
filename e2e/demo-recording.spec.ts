@@ -23,22 +23,23 @@ test.describe("Folio demo recording", () => {
     await expect(page).toHaveURL(/#contents/);
     await page.waitForTimeout(1200);
 
-    await page.getByRole("button", { name: /Go to Featured Work/i }).click();
-    await expect(page).toHaveURL(/#featured/);
+    await page.getByRole("button", { name: /Go to Works/i }).click();
+    await expect(page).toHaveURL(/#works/);
     await page.waitForTimeout(1000);
 
-    const caseStudy = page.getByRole("link", { name: /Read Case Study/i }).first();
+    const caseStudy = page
+      .getByRole("button", { name: /Flip to case study/i })
+      .first();
     await expect(caseStudy).toBeVisible();
     await caseStudy.click();
-    await expect(page).toHaveURL(/\/projects\/.+/);
+    await expect(page).toHaveURL(/#project-/);
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
     await page.waitForTimeout(1500);
 
-    await page.getByRole("link", { name: /Flip back to work index/i }).click();
+    await page.getByRole("button", { name: /Previous page/i }).first().click();
     await expect(page).toHaveURL(/\/?#works/);
     await page.waitForTimeout(1000);
 
-    // Keep a stable copy path note in the report
     test.info().annotations.push({
       type: "demo",
       description: path.join("test-results", "demo video is attached to this test"),

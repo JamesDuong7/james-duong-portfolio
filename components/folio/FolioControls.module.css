@@ -71,6 +71,12 @@
   color: var(--folio-on-paper);
 }
 
+.tagOnInk {
+  background: color-mix(in srgb, var(--folio-pink) 12%, transparent);
+  border-color: var(--folio-border-ink);
+  color: var(--folio-on-ink);
+}
+
 .dot {
   width: 0.3125rem;
   height: 0.3125rem;

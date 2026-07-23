@@ -1,0 +1,43 @@
+.mark {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  z-index: 30;
+  transform: translateX(-50%);
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--folio-pink);
+  padding: 0.35rem 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--folio-pink) 55%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--folio-ink) 88%, transparent);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  animation: folioSpineIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.mark:hover,
+.mark:focus-visible {
+  background: var(--folio-pink);
+  color: var(--folio-on-ink);
+  border-color: var(--folio-pink);
+}
+
+@keyframes folioSpineIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mark {
+    animation: none;
+  }
+}

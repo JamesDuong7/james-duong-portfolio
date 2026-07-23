@@ -51,6 +51,7 @@ const COVER_INDEX = 0;
 const HASH_ALIASES: Record<string, string> = {
   work: "works",
   projects: "works",
+  featured: "works",
   profile: "contents",
   about: "contents",
 };
@@ -59,7 +60,6 @@ const HASH_ALIASES: Record<string, string> = {
 const SECTION_IDS = new Set([
   "cover",
   "contents",
-  "featured",
   "works",
   "contact",
 ]);

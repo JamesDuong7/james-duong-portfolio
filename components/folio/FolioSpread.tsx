@@ -7,19 +7,31 @@ type FolioSpreadProps = {
   label: string;
   left: ReactNode;
   right: ReactNode;
+  /** Optional chrome centered on the spine (e.g. JD. mark). */
+  overlay?: ReactNode;
+  /** Hide the center gutter shadow (e.g. cover + table is not an open book). */
+  hideGutter?: boolean;
 };
 
-export default function FolioSpread({ id, label, left, right }: FolioSpreadProps) {
+export default function FolioSpread({
+  id,
+  label,
+  left,
+  right,
+  overlay,
+  hideGutter = false,
+}: FolioSpreadProps) {
   return (
     <section
       id={id}
-      className={styles.spread}
+      className={`${styles.spread} ${hideGutter ? styles.spreadNoGutter : ""}`}
       data-folio-spread
       aria-label={label}
       tabIndex={-1}
     >
       {left}
       {right}
+      {overlay}
     </section>
   );
 }

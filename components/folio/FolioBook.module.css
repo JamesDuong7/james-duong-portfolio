@@ -258,6 +258,10 @@
   z-index: 6;
 }
 
+.spreadNoGutter::after {
+  display: none;
+}
+
 .page {
   height: 100%;
   min-height: 0;

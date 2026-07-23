@@ -12,20 +12,18 @@ import TableOfContentsPage, {
 import AboutMePage from "./AboutMePage";
 import HobbyPage from "./HobbyPage";
 import SectionOpenerPage from "./SectionOpenerPage";
-import FeaturedProjectPage from "./FeaturedProjectPage";
-import WorkItemPage from "./WorkItemPage";
+import WorksCatalogPage from "./WorksCatalogPage";
+import CaseStudyInkPage from "./CaseStudyInkPage";
+import CaseStudyPaperPage from "./CaseStudyPaperPage";
+import FolioSpineMark from "./FolioSpineMark";
 import BlankPage from "./BlankPage";
 import ContactIntroPage from "./ContactIntroPage";
 import ContactFormPage from "./ContactFormPage";
 import {
-  fetchFeaturedProjects,
+  fetchAllProjectsDetail,
   fetchPersonalInfo,
-  fetchProjectsIndex,
 } from "@/sanity/lib/fetch";
 import { portableTextToPlain } from "@/lib/portableText";
-import type { Hobby } from "@/sanity/lib/types";
-
-
 
 type LeafPage = {
   id: string;
@@ -38,6 +36,7 @@ type SpreadSpec = {
   label: string;
   left: LeafPage;
   right: LeafPage;
+  overlay?: ReactNode;
 };
 
 function slugify(value: string) {
@@ -79,9 +78,7 @@ function pairLeaves(
     const rawLeft = items[i];
     const rawRight = items[i + 1] ?? blankLeaf(`${rawLeft.id}-pad`);
     const left = render(rawLeft, "left");
-    const right = items[i + 1]
-      ? render(rawRight, "right")
-      : rawRight;
+    const right = items[i + 1] ? render(rawRight, "right") : rawRight;
     spreads.push({
       label: `${left.label} and ${right.label}`,
       left,
@@ -92,10 +89,9 @@ function pairLeaves(
 }
 
 export default async function FolioHome() {
-  const [info, featuredProjects, projectsIndex] = await Promise.all([
+  const [info, projects] = await Promise.all([
     fetchPersonalInfo(),
-    fetchFeaturedProjects(),
-    fetchProjectsIndex(),
+    fetchAllProjectsDetail(),
   ]);
 
   const name = info?.name ?? "James Duong";
@@ -111,17 +107,33 @@ export default async function FolioHome() {
   const frameworks = info?.skills?.frameworks ?? [];
   const tools = info?.skills?.tools ?? [];
 
-  const sanityHobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
-  const hobbies = sanityHobbies;
+  const hobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
 
-  const featured = featuredProjects ?? [];
-  const allWorks = (projectsIndex ?? []).map((item) => ({
-    slug: item.slug ? stegaClean(item.slug) : "",
-    title: item.title ?? "Untitled",
-    description: item.description ?? "",
-  }));
+  const orderedProjects = (projects ?? [])
+    .map((project) => {
+      const slug =
+        stegaClean(project.id ?? "") ||
+        slugify(project.title ?? "project");
+      return { ...project, slug };
+    })
+    .filter((project) => Boolean(project.slug));
 
-  // Continuous page numbers for TOC + mastheads (cover is outside the count).
+  const featuredItems = orderedProjects
+    .filter((p) => p.featured)
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title ?? "Untitled",
+      description: p.description ?? "",
+    }));
+
+  const restItems = orderedProjects
+    .filter((p) => !p.featured)
+    .map((p) => ({
+      slug: p.slug,
+      title: p.title ?? "Untitled",
+      description: p.description ?? "",
+    }));
+
   const nextPage = createPageAllocator();
 
   const aboutPage = nextPage();
@@ -135,25 +147,15 @@ export default async function FolioHome() {
     };
   });
 
-  const featuredSectionPage = nextPage();
-  const featuredMeta = featured.map((project) => {
-    const slug =
-      stegaClean(project.id ?? "") || slugify(project.title ?? "project");
-    return {
-      id: `featured-${slug}`,
-      project,
-      page: nextPage(),
-    };
-  });
-
   const worksSectionPage = nextPage();
-  const workMeta = allWorks.map((project) => {
-    const slug = project.slug || slugify(project.title);
+  const projectMeta = orderedProjects.map((project) => {
+    const pageLeft = nextPage();
+    const pageRight = nextPage();
     return {
-      id: `work-${slug}`,
       ...project,
-      slug,
-      page: nextPage(),
+      id: `project-${project.slug}`,
+      page: pageLeft,
+      pageRight,
     };
   });
 
@@ -174,24 +176,12 @@ export default async function FolioHome() {
       ),
     },
     {
-      id: "featured",
-      page: featuredSectionPage,
-      title: "Featured Work",
-      items: featuredMeta.map(
-        (item): TocEntry => ({
-          label: stegaClean(item.project.title ?? "Untitled"),
-          target: item.id,
-          page: item.page,
-        }),
-      ),
-    },
-    {
       id: "works",
       page: worksSectionPage,
-      title: "All Works",
-      items: workMeta.map(
+      title: "Works",
+      items: projectMeta.map(
         (item): TocEntry => ({
-          label: item.title,
+          label: stegaClean(item.title ?? "Untitled"),
           target: item.id,
           page: item.page,
         }),
@@ -200,10 +190,8 @@ export default async function FolioHome() {
     { id: "contact", page: contactPage, title: "Contact", items: [] },
   ];
 
-  const featuredBlurb =
-    "A closer look at the projects I'm proudest of — the problems they solve, the stacks behind them, and what I learned building them.";
   const worksBlurb =
-    "Every project in the issue, front to back. Flip through, or open a case study from any leaf.";
+    "Featured first, then everything else. Select a row to flip to that case study — no separate page.";
 
   const hobbyLeaf = (
     meta: (typeof hobbyMeta)[number],
@@ -226,77 +214,8 @@ export default async function FolioHome() {
     ),
   });
 
-  const featuredLeaf = (
-    meta: (typeof featuredMeta)[number],
-    index: number,
-    side: "left" | "right",
-  ): LeafPage => ({
-    id: meta.id,
-    label: stegaClean(meta.project.title ?? "Featured project"),
-    tone: "paper",
-    node: (
-      <FeaturedProjectPage
-        page={meta.page}
-        project={meta.project}
-        index={index + 1}
-        total={featuredMeta.length}
-        flipBack={side === "left"}
-        flipForward={side === "right"}
-      />
-    ),
-  });
-
-  const workLeaf = (
-    meta: (typeof workMeta)[number],
-    index: number,
-    side: "left" | "right",
-  ): LeafPage => ({
-    id: meta.id,
-    label: meta.title,
-    tone: "paper",
-    node: (
-      <WorkItemPage
-        page={meta.page}
-        slug={meta.slug}
-        title={meta.title}
-        description={meta.description}
-        index={index + 1}
-        total={workMeta.length}
-        flipBack={side === "left"}
-        flipForward={side === "right"}
-      />
-    ),
-  });
-
-  const sectionOpener = (
-    id: string,
-    number: string,
-    title: string,
-    blurb: string,
-    meta: string,
-    tone: "ink" | "paper",
-    side: "left" | "right",
-  ): LeafPage => ({
-    id,
-    label: title,
-    tone,
-    node: (
-      <SectionOpenerPage
-        number={number}
-        kicker="SECTION"
-        title={title}
-        blurb={blurb}
-        meta={meta}
-        tone={tone}
-        backLabel={side === "left" ? "← Previous page" : undefined}
-        forwardLabel={side === "right" ? "Turn the page →" : undefined}
-      />
-    ),
-  });
-
   const spreads: SpreadSpec[] = [];
 
-  // Pages 2–3: contents table facing About Me
   spreads.push({
     label: "Contents and About Me",
     left: {
@@ -322,14 +241,13 @@ export default async function FolioHome() {
           flipForwardLabel={
             hobbyMeta.length > 0
               ? "Turn the page → Hobbies"
-              : "Turn the page → Featured Work"
+              : "Turn the page → Works"
           }
         />
       ),
     },
   });
 
-  // Hobby item pages, paired continuously
   const hobbyLeaves = hobbyMeta.map((meta, index) =>
     hobbyLeaf(meta, index, "left"),
   );
@@ -340,67 +258,69 @@ export default async function FolioHome() {
     }),
   );
 
-  // Featured section opener faces the first featured project (or a blank)
-  const firstFeatured = featuredMeta[0];
+  // Works index: section title | catalog (featured + non-featured)
   spreads.push({
-    label: firstFeatured
-      ? `Featured Work and ${stegaClean(firstFeatured.project.title ?? "project")}`
-      : "Featured Work",
-    left: sectionOpener(
-      "featured",
-      featuredSectionPage,
-      "Featured Work",
-      featuredBlurb,
-      `${featured.length} selected`,
-      "ink",
-      "left",
-    ),
-    right: firstFeatured
-      ? featuredLeaf(firstFeatured, 0, "right")
-      : blankLeaf("featured"),
+    label: "Works index",
+    left: {
+      id: "works",
+      label: "Works",
+      tone: "paper",
+      node: (
+        <SectionOpenerPage
+          number={worksSectionPage}
+          kicker="WORKS"
+          title="Works"
+          blurb={worksBlurb}
+          meta="Index"
+          tone="paper"
+          backLabel="← Previous page"
+          forwardLabel={undefined}
+        />
+      ),
+    },
+    right: {
+      id: "works-catalog",
+      label: "Works catalog",
+      tone: "paper",
+      node: (
+        <WorksCatalogPage
+          page={worksSectionPage}
+          featured={featuredItems}
+          rest={restItems}
+        />
+      ),
+    },
   });
 
-  if (featuredMeta.length > 1) {
-    const rest = featuredMeta.slice(1).map((meta, index) =>
-      featuredLeaf(meta, index + 1, "left"),
-    );
-    spreads.push(
-      ...pairLeaves(rest, (leaf, side) => {
-        const index = featuredMeta.findIndex((p) => p.id === leaf.id);
-        return featuredLeaf(featuredMeta[index], index, side);
-      }),
-    );
-  }
+  // Each project owns one ink | paper case study spread
+  projectMeta.forEach((project, index) => {
+    const nextTitle = projectMeta[index + 1]
+      ? stegaClean(projectMeta[index + 1].title ?? "Next")
+      : null;
 
-  // Works section opener faces the first work item (or a blank)
-  const firstWork = workMeta[0];
-  spreads.push({
-    label: firstWork ? `All Works and ${firstWork.title}` : "All Works",
-    left: sectionOpener(
-      "works",
-      worksSectionPage,
-      "All Works",
-      worksBlurb,
-      `${allWorks.length} projects`,
-      "paper",
-      "left",
-    ),
-    right: firstWork ? workLeaf(firstWork, 0, "right") : blankLeaf("works"),
+    spreads.push({
+      label: `${stegaClean(project.title ?? "Project")} case study`,
+      left: {
+        id: project.id,
+        label: stegaClean(project.title ?? "Case study"),
+        tone: "ink",
+        node: <CaseStudyInkPage page={project.page} project={project} />,
+      },
+      right: {
+        id: `${project.id}-article`,
+        label: `${stegaClean(project.title ?? "Project")} article`,
+        tone: "paper",
+        node: (
+          <CaseStudyPaperPage
+            page={project.pageRight}
+            project={project}
+            nextTitle={nextTitle}
+          />
+        ),
+      },
+    });
   });
 
-  if (workMeta.length > 1) {
-    const rest = workMeta.slice(1).map((meta, index) =>
-      workLeaf(meta, index + 1, "left"),
-    );
-    spreads.push(
-      ...pairLeaves(rest, (leaf, side) => {
-        const index = workMeta.findIndex((p) => p.id === leaf.id);
-        return workLeaf(workMeta[index], index, side);
-      }),
-    );
-  }
-
-  // Contact intro always faces the form
   spreads.push({
     label: "Contact",
     left: {
@@ -429,9 +349,9 @@ export default async function FolioHome() {
   return (
     <>
       <FolioBook>
-        {/* Page 1 — cover on the right; flip opens pages 2–3 */}
         <FolioSpread
           label="Cover"
+          hideGutter
           left={<WoodTablePage />}
           right={
             <FolioPage tone="ink" label="Cover" pageId="cover">
@@ -444,6 +364,7 @@ export default async function FolioHome() {
           <FolioSpread
             key={`${spread.left.id}-${spread.right.id}`}
             label={spread.label}
+            overlay={spread.overlay}
             left={
               <FolioPage
                 tone={spread.left.tone}
@@ -475,6 +396,7 @@ export default async function FolioHome() {
       </FolioBook>
 
       <FolioTocNav />
+      <FolioSpineMark />
     </>
   );
 }

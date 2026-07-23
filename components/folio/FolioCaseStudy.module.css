@@ -24,6 +24,7 @@
   border-radius: 2px;
   background: color-mix(in srgb, var(--folio-ink) 88%, transparent);
   backdrop-filter: blur(6px);
+  cursor: pointer;
 }
 
 .homeMark:hover,
@@ -41,6 +42,18 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+}
+
+/* In-book leaf: FolioPage already supplies ink/paper fill — avoid covering the gutter. */
+.leaf {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: transparent;
 }
 
 .pageInk {
@@ -94,6 +107,31 @@
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--folio-pink);
+}
+
+.mastheadBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.mastPink {
+  color: var(--folio-pink);
+}
+
+.mastMuted {
+  color: var(--folio-on-paper-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.15rem;
 }
 
 .title {
