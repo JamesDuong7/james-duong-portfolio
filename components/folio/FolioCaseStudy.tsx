@@ -1,195 +1,32 @@
-import Link from "next/link";
-import { PortableText, type PortableTextComponents } from "@portabletext/react";
-import { usableScreenshots, type ProjectDetail } from "@/sanity/lib/types";
-import FolioFigure from "./FolioFigure";
-import { FolioLinkButton, FolioPrimaryButton } from "./FolioControls";
+import CaseStudyInkPage from "./CaseStudyInkPage";
+import CaseStudyPaperPage from "./CaseStudyPaperPage";
+import FolioSpineMark from "./FolioSpineMark";
+import type { ProjectDetail } from "@/sanity/lib/types";
 import styles from "./FolioCaseStudy.module.css";
-
-const ptComponents: PortableTextComponents = {
-  block: {
-    normal: ({ children }) => <p>{children}</p>,
-  },
-  list: {
-    bullet: ({ children }) => <ul className={styles.featureList}>{children}</ul>,
-  },
-  listItem: {
-    bullet: ({ children }) => <li>{children}</li>,
-  },
-};
 
 type FolioCaseStudyProps = {
   project: ProjectDetail;
-  index: number;
-  total: number;
-  next?: { slug: string; title: string } | null;
+  page?: string;
+  pageRight?: string;
+  nextTitle?: string | null;
 };
 
-function RichSection({
-  title,
-  value,
-}: {
-  title: string;
-  value: ProjectDetail["overview"];
-}) {
-  if (!value?.length) return null;
-
-  return (
-    <section className={styles.section}>
-      <h2 className={styles.sectionTitle}>{title}</h2>
-      <div className={styles.sectionBody}>
-        <PortableText value={value} components={ptComponents} />
-      </div>
-    </section>
-  );
-}
-
+/** Standalone two-page case study spread (legacy / loading fallback). */
 export default function FolioCaseStudy({
   project,
-  index,
-  total,
-  next,
+  page = "01",
+  pageRight = "02",
+  nextTitle = null,
 }: FolioCaseStudyProps) {
-  const stack = (project.tech ?? []).join(" · ");
-  const figures = usableScreenshots(project.screenshots);
-
   return (
     <div className={styles.spread} aria-label={`${project.title} case study`}>
-      <Link href="/" className={styles.homeMark} aria-label="Return to portfolio home">
-        JD.
-      </Link>
-
-      <article className={`${styles.page} ${styles.pageInk}`} aria-label="Case study summary">
-        <div className={`${styles.scroll} ${styles.scrollInk}`}>
-          <div className={styles.inner}>
-            <p className={styles.masthead}>
-              CASE STUDY · {String(index).padStart(2, "0")} / {String(total).padStart(2, "0")}
-            </p>
-
-            <h1 className={styles.title}>{project.title}</h1>
-            {project.description && (
-              <p className={styles.description}>{project.description}</p>
-            )}
-
-            {figures.length > 0 && (
-              <div className={styles.figures}>
-                {figures.map((shot, figIndex) => (
-                  <FolioFigure
-                    key={shot.url}
-                    screenshot={shot}
-                    caption={`FIG. ${String(figIndex + 1).padStart(2, "0")} — ${project.title}`}
-                    priority={figIndex === 0}
-                    tone="ink"
-                  />
-                ))}
-              </div>
-            )}
-
-            <div className={styles.meta}>
-              {project.role && (
-                <div className={styles.metaBlock}>
-                  <span className={styles.metaLabel}>ROLE</span>
-                  <p className={styles.metaValue}>{project.role}</p>
-                </div>
-              )}
-
-              {stack && (
-                <div className={styles.metaBlock}>
-                  <span className={styles.metaLabel}>STACK</span>
-                  <p className={styles.metaValue}>{stack}</p>
-                </div>
-              )}
-
-              {(project.github || project.live) && (
-                <div className={styles.metaBlock}>
-                  <span className={styles.metaLabel}>LINKS</span>
-                  <div className={styles.metaLinks}>
-                    {project.github && (
-                      <FolioLinkButton
-                        href={project.github}
-                        onInk
-                        ariaLabel={`${project.title} GitHub`}
-                      >
-                        GitHub
-                      </FolioLinkButton>
-                    )}
-                    {project.live && (
-                      <FolioLinkButton
-                        href={project.live}
-                        onInk
-                        ariaLabel={`${project.title} Live Demo`}
-                      >
-                        Live Demo
-                      </FolioLinkButton>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <Link
-          href="/#work"
-          className={`${styles.flip} ${styles.flipBack}`}
-          aria-label="Flip back to work index"
-        >
-          <span className={`${styles.curl} ${styles.curlBack}`} aria-hidden />
-          <span className={styles.flipLabel}>← Flip back · Work</span>
-        </Link>
-      </article>
-
-      <article className={`${styles.page} ${styles.pagePaper}`} aria-label="Case study article">
-        <div className={styles.scroll}>
-          <div className={`${styles.inner} ${styles.innerPaper}`}>
-            <RichSection title="Overview" value={project.overview} />
-            <RichSection title="The Problem" value={project.problem} />
-
-            {project.features && project.features.length > 0 && (
-              <section className={styles.section}>
-                <h2 className={styles.sectionTitle}>Key Features</h2>
-                <ul className={styles.featureList}>
-                  {project.features.map((feature) => (
-                    <li key={feature}>{feature}</li>
-                  ))}
-                </ul>
-              </section>
-            )}
-
-            <RichSection title="Lessons Learned" value={project.learning} />
-            <RichSection title="Implementation" value={project.implementationDetails} />
-            <RichSection title="Challenges" value={project.challenges} />
-            <RichSection title="Future" value={project.future} />
-
-            <div className={styles.actions}>
-              {project.github && (
-                <FolioPrimaryButton
-                  href={project.github}
-                  external
-                  ariaLabel={`View ${project.title} source on GitHub`}
-                >
-                  View Source on GitHub
-                </FolioPrimaryButton>
-              )}
-              {project.live && (
-                <FolioLinkButton href={project.live} arrow="↗" ariaLabel="Live demo">
-                  Live Demo
-                </FolioLinkButton>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {next?.slug && (
-          <Link
-            href={`/projects/${next.slug}`}
-            className={`${styles.flip} ${styles.flipNext}`}
-            aria-label={`Flip to next case study: ${next.title}`}
-          >
-            <span className={styles.flipLabel}>Flip page → {next.title}</span>
-            <span className={styles.curl} aria-hidden />
-          </Link>
-        )}
-      </article>
+      <FolioSpineMark />
+      <CaseStudyInkPage page={page} project={project} />
+      <CaseStudyPaperPage
+        page={pageRight}
+        project={project}
+        nextTitle={nextTitle}
+      />
     </div>
   );
 }

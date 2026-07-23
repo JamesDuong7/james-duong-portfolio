@@ -1,0 +1,56 @@
+.nav {
+  position: fixed;
+  bottom: 1.1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--folio-on-ink);
+  background: color-mix(in srgb, var(--folio-ink) 88%, transparent);
+  border: 1px solid var(--folio-border-ink);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(6px);
+  transition: transform var(--transition), background-color var(--transition);
+  animation: folioTocIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.nav:hover,
+.nav:focus-visible {
+  transform: translateX(-50%) translateY(-2px);
+  background: var(--folio-ink);
+}
+
+.icon {
+  color: var(--folio-pink);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.label {
+  line-height: 1;
+}
+
+@keyframes folioTocIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    animation: none;
+  }
+}

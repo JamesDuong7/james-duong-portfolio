@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { flipFolio } from "@/components/folio/FolioBook";
+import { flipFolioTo } from "@/components/folio/FolioBook";
 import { scrollToSection } from "@/lib/anchorNavigation";
 
 /** Sync URL hashes with Folio spreads on desktop; scroll sections on mobile stack. */
@@ -23,15 +23,8 @@ export default function HashScrollHandler() {
       }
 
       // Silent — FolioBook also syncs on mount. Animating here made
-      // project → /#work look like a forward flip through Profile.
-      if (id === "work" || id === "projects") {
-        flipFolio("work", { animate: false });
-        return;
-      }
-
-      if (id === "profile" || id === "about" || id === "contact") {
-        flipFolio("profile", { animate: false });
-      }
+      // project → /#works look like a forward flip through the cover.
+      flipFolioTo(id, { animate: false });
     });
   }, [pathname]);
 

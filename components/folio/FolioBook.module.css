@@ -16,6 +16,206 @@
   display: none;
 }
 
+/* ── Page-turn stage ───────────────────────────────────────────────
+   Destination spread sits underneath (via scroll). The stage holds a
+   stationary source half and a two-faced leaf that rotates on the spine. */
+.flipStage {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  /* Capture clicks for the whole turn so destination controls stay inert. */
+  pointer-events: auto;
+  perspective: 2800px;
+  perspective-origin: 50% 42%;
+}
+
+.flipDim {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 10, 9, 0.14);
+  opacity: 0;
+}
+
+.flipDim[data-active] {
+  animation: folioFlipDim var(--folio-flip-ms, 760ms) ease-in-out both;
+}
+
+.stageStatic {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  overflow: hidden;
+  visibility: hidden;
+  background: var(--folio-paper);
+}
+
+.stageStatic[data-visible] {
+  visibility: visible;
+}
+
+.stageStaticLeft {
+  left: 0;
+}
+
+.stageStaticRight {
+  right: 0;
+}
+
+.stageStatic > * {
+  width: 100%;
+  height: 100%;
+}
+
+.turningLeaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  transform-style: preserve-3d;
+  transform: rotateY(0deg);
+  z-index: 2;
+}
+
+.turningActive {
+  will-change: transform;
+}
+
+.turningForward {
+  left: 50%;
+  transform-origin: left center;
+}
+
+.turningBack {
+  right: 50%;
+  transform-origin: right center;
+}
+
+/* Leaf rotateY is driven by the Web Animations API in FolioBook.tsx. */
+
+.leafFront,
+.leafBack {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--folio-paper);
+  transform-style: preserve-3d;
+}
+
+.leafFront > *,
+.leafBack > * {
+  width: 100%;
+  height: 100%;
+}
+
+.leafBack {
+  transform: rotateY(180deg);
+}
+
+/* Soft fold lighting — opacity only, no filter / large box-shadow. */
+.leafShade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.08;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.34),
+    rgba(0, 0, 0, 0.1) 36%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+.turningForward .leafShade {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.34),
+    rgba(0, 0, 0, 0.1) 36%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+.turningBack .leafShade {
+  background: linear-gradient(
+    270deg,
+    rgba(0, 0, 0, 0.34),
+    rgba(0, 0, 0, 0.1) 36%,
+    rgba(0, 0, 0, 0) 72%
+  );
+}
+
+.turningActive .leafShade {
+  animation: folioLeafShade var(--folio-flip-ms, 760ms) ease-in-out forwards;
+}
+
+.leafSpine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18px;
+  pointer-events: none;
+  z-index: 4;
+  opacity: 0.55;
+}
+
+.turningForward .leafSpine {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.22),
+    rgba(255, 255, 255, 0.12) 42%,
+    transparent
+  );
+}
+
+.turningBack .leafSpine {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    rgba(0, 0, 0, 0.22),
+    rgba(255, 255, 255, 0.12) 42%,
+    transparent
+  );
+}
+
+@keyframes folioLeafShade {
+  0% {
+    opacity: 0.08;
+  }
+  45% {
+    opacity: 0.55;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes folioFlipDim {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  40%,
+  55% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 900px) {
+  .flipStage {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flipStage {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .book {
     scroll-behavior: smooth;
@@ -35,6 +235,31 @@
 /* Programmatic focus target after page flips — no visible ring on the spread. */
 .spread:focus {
   outline: none;
+}
+
+/* Bound gutter shadow down the centre, so facing pages read as one magazine. */
+.spread::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 46px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.1) 42%,
+    rgba(0, 0, 0, 0.16) 50%,
+    rgba(0, 0, 0, 0.1) 58%,
+    transparent
+  );
+  pointer-events: none;
+  z-index: 6;
+}
+
+.spreadNoGutter::after {
+  display: none;
 }
 
 .page {
@@ -74,9 +299,17 @@
     scroll-snap-align: none;
   }
 
+  .spread::after {
+    display: none;
+  }
+
   .page {
     height: auto;
     min-height: 100dvh;
     overflow-y: visible;
+  }
+
+  .pageHideNarrow {
+    display: none;
   }
 }

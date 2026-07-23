@@ -1,0 +1,151 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2.5rem 3.25rem 4.5rem 3rem;
+  position: relative;
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--folio-font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  margin-bottom: 1rem;
+}
+
+.mastPink {
+  color: var(--folio-pink);
+}
+
+.mastMuted {
+  color: var(--folio-on-paper-muted);
+}
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  padding-right: 0.25rem;
+}
+
+.title {
+  font-family: var(--folio-font-display);
+  font-size: clamp(1.9rem, 2.8vw, 2.4rem);
+  line-height: 1.05;
+  color: var(--folio-on-paper);
+}
+
+.copy {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--folio-on-paper-muted);
+}
+
+.subhead {
+  font-family: var(--folio-font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+  margin-bottom: 0.65rem;
+}
+
+.hobbies {
+  border-top: 1px solid var(--folio-border);
+  padding-top: 1rem;
+}
+
+.hobbyGrid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem 1rem;
+}
+
+.hobby {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--folio-border);
+  border-radius: 3px;
+  background: var(--folio-paper-soft);
+}
+
+.hobbyName {
+  font-family: var(--folio-font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--folio-on-paper);
+}
+
+.hobbyNote {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--folio-on-paper-muted);
+}
+
+.skills {
+  border-top: 1px solid var(--folio-border);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.skillLine {
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  gap: 0.65rem;
+  align-items: baseline;
+}
+
+.skillLabel {
+  font-family: var(--folio-font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+}
+
+.skillList {
+  font-size: 0.8125rem;
+  color: var(--folio-on-paper);
+  line-height: 1.45;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-top: 0.35rem;
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 2rem 1.5rem 2.5rem;
+    min-height: 100dvh;
+  }
+
+  .scroll {
+    overflow: visible;
+  }
+
+  .hobbyGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .skillLine {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}

@@ -88,9 +88,15 @@ export function FolioPrimaryButton({
   );
 }
 
-export function FolioTechTag({ label }: { label: string }) {
+export function FolioTechTag({
+  label,
+  onInk = false,
+}: {
+  label: string;
+  onInk?: boolean;
+}) {
   return (
-    <span className={styles.tag}>
+    <span className={`${styles.tag} ${onInk ? styles.tagOnInk : ""}`}>
       <span className={styles.dot} aria-hidden />
       {label}
     </span>

@@ -1,0 +1,158 @@
+.cover {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 2.75rem 3rem 4.5rem 3.25rem;
+  background: radial-gradient(
+    120% 90% at 80% 0%,
+    color-mix(in srgb, var(--folio-pink) 22%, var(--folio-ink)) 0%,
+    var(--folio-ink) 55%
+  );
+  color: var(--folio-on-ink);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* Bound spine down the left edge, where the magazine "opens". */
+.spine {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 14px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.45),
+    rgba(0, 0, 0, 0.12) 55%,
+    transparent
+  );
+  z-index: 2;
+}
+
+.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--folio-font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.brand {
+  color: var(--folio-on-ink);
+  font-weight: 500;
+}
+
+.issue {
+  color: var(--folio-pink);
+}
+
+.masthead::after {
+  content: "";
+}
+
+.hero {
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.kicker {
+  font-family: var(--folio-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+}
+
+.name {
+  font-family: var(--folio-font-display);
+  font-size: clamp(3rem, 6.5vw, 6rem);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--folio-on-ink);
+}
+
+.headline {
+  font-family: var(--folio-font-body);
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  font-weight: 500;
+  color: var(--folio-on-ink-muted);
+  max-width: 26rem;
+}
+
+.footer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-top: auto;
+}
+
+.coverlines {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.78rem;
+  color: var(--folio-on-ink-muted);
+}
+
+.coverlines li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.coverlines li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--folio-pink);
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.6rem;
+}
+
+.location {
+  font-family: var(--folio-font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--folio-pink);
+}
+
+/* Faux barcode — a small magazine-cover flourish. */
+.barcode {
+  width: 5.5rem;
+  height: 2.25rem;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--folio-on-ink) 0 2px,
+    transparent 2px 4px,
+    var(--folio-on-ink) 4px 5px,
+    transparent 5px 9px
+  );
+  opacity: 0.8;
+}
+
+@media (max-width: 900px) {
+  .cover {
+    padding: 3rem 1.75rem 3.5rem;
+    min-height: 100dvh;
+  }
+
+  .spine {
+    display: none;
+  }
+
+  .name {
+    font-size: clamp(3rem, 16vw, 5rem);
+  }
+}

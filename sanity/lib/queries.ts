@@ -38,13 +38,45 @@ export const FEATURED_PROJECTS_QUERY = defineQuery(
 export const PROJECTS_INDEX_QUERY = defineQuery(
   `*[_type == "project" && defined(id.current)] | order(order asc) {
     "slug": id.current,
-    title
+    title,
+    description,
+    featured
+  }`
+);
+
+/**
+ * Full project details for in-book case study spreads, ordered for display.
+ */
+export const ALL_PROJECTS_DETAIL_QUERY = defineQuery(
+  `*[_type == "project" && defined(id.current)] | order(order asc) {
+    "id": id.current,
+    title,
+    description,
+    tech,
+    github,
+    live,
+    featured,
+    screenshots[]{
+      alt,
+      "url": asset->url,
+      "width": asset->metadata.dimensions.width,
+      "height": asset->metadata.dimensions.height,
+      "lqip": asset->metadata.lqip
+    },
+    overview,
+    problem,
+    role,
+    features,
+    implementationDetails,
+    challenges,
+    learning,
+    future
   }`
 );
 
 /**
  * A single project by its slug.
- * Used on /projects/[slug] case study pages.
+ * Used for /projects/[slug] redirects and metadata.
  */
 export const PROJECT_BY_SLUG_QUERY = defineQuery(
   `*[_type == "project" && id.current == $slug][0] {
@@ -90,6 +122,10 @@ export const PERSONAL_INFO_QUERY = defineQuery(
     github,
     linkedin,
     resumeUrl,
+    hobbies[]{
+      title,
+      description
+    },
     skills {
       languages,
       frameworks,
