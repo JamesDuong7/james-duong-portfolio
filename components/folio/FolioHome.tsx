@@ -25,15 +25,7 @@ import {
 import { portableTextToPlain } from "@/lib/portableText";
 import type { Hobby } from "@/sanity/lib/types";
 
-/** Sample hobbies so the About Me section reads well before any are set in Sanity. */
-const FALLBACK_HOBBIES: Hobby[] = [
-  { title: "Bouldering", description: "Chasing problems at the local climbing gym." },
-  { title: "Film photography", description: "Shooting 35mm around the city." },
-  { title: "Cooking", description: "Recreating dishes from places I've travelled." },
-  { title: "Basketball", description: "Pickup games on the weekend." },
-  { title: "Reading", description: "Sci-fi and systems-design deep dives." },
-  { title: "Coffee", description: "Dialing in the perfect pour-over." },
-];
+
 
 type LeafPage = {
   id: string;
@@ -120,7 +112,7 @@ export default async function FolioHome() {
   const tools = info?.skills?.tools ?? [];
 
   const sanityHobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
-  const hobbies = sanityHobbies.length > 0 ? sanityHobbies : FALLBACK_HOBBIES;
+  const hobbies = sanityHobbies;
 
   const featured = featuredProjects ?? [];
   const allWorks = (projectsIndex ?? []).map((item) => ({
@@ -327,7 +319,11 @@ export default async function FolioHome() {
           github={github}
           linkedin={linkedin}
           resumeUrl={resumeUrl}
-          flipForward
+          flipForwardLabel={
+            hobbyMeta.length > 0
+              ? "Turn the page → Hobbies"
+              : "Turn the page → Featured Work"
+          }
         />
       ),
     },

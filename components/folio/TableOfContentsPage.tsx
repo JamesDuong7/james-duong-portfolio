@@ -54,7 +54,7 @@ export default function TableOfContentsPage({
             >
               <span className={styles.sectionTitle}>{section.title}</span>
               <span className={styles.leader} aria-hidden />
-              <span className={styles.page}>{section.page}</span>
+              <span className={styles.sectionPage}>{section.page}</span>
             </button>
 
             {section.items.map((item) => {
@@ -67,7 +67,6 @@ export default function TableOfContentsPage({
                 </>
               );
 
-              // Prefer flipping to the in-book page; case studies stay on the leaf.
               if (item.target) {
                 return (
                   <button

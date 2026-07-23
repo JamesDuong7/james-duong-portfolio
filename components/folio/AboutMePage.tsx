@@ -11,7 +11,7 @@ type AboutMePageProps = {
   github?: string | null;
   linkedin?: string | null;
   resumeUrl?: string | null;
-  flipForward?: boolean;
+  flipForwardLabel?: string;
 };
 
 function SkillLine({ label, values }: { label: string; values: string[] }) {
@@ -33,7 +33,7 @@ export default function AboutMePage({
   github,
   linkedin,
   resumeUrl,
-  flipForward = true,
+  flipForwardLabel,
 }: AboutMePageProps) {
   const hasSkills =
     languages.length > 0 || frameworks.length > 0 || tools.length > 0;
@@ -77,8 +77,8 @@ export default function AboutMePage({
         </div>
       </div>
 
-      {flipForward && (
-        <FolioFlip direction="forward" label="Turn the page → Hobbies" />
+      {flipForwardLabel && (
+        <FolioFlip direction="forward" label={flipForwardLabel} />
       )}
     </div>
   );
