@@ -19,6 +19,7 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
   backdrop-filter: blur(6px);
   transition: transform var(--transition), background-color var(--transition);
+  animation: folioTocIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .nav:hover,
@@ -35,4 +36,21 @@
 
 .label {
   line-height: 1;
+}
+
+@keyframes folioTocIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav {
+    animation: none;
+  }
 }
