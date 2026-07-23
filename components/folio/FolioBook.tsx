@@ -11,8 +11,10 @@ import {
 } from "react";
 import styles from "./FolioBook.module.css";
 
-/** Two-sided page turn — completion comes from animationend, not timers. */
+/** Two-sided page turn — completion comes from WAAPI, not timers. */
 const FLIP_DURATION_MS = 760;
+/** Soft crossfade after the leaf lands so teardown does not click. */
+const FLIP_SETTLE_MS = 140;
 
 type FlipPhase =
   | "idle"
@@ -191,6 +193,7 @@ export default function FolioBook({ children }: FolioBookProps) {
   const flipRunIdRef = useRef(0);
   const finishFlipRef = useRef<() => void>(() => {});
 
+  const flipStageRef = useRef<HTMLDivElement>(null);
   const staticLeftRef = useRef<HTMLDivElement>(null);
   const staticRightRef = useRef<HTMLDivElement>(null);
   const leafRef = useRef<HTMLDivElement>(null);
@@ -245,28 +248,46 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     const session = flipSessionRef.current;
     const leaf = leafRef.current;
+    const stage = flipStageRef.current;
     leaf?.classList.remove(styles.turningActive);
     flipDimRef.current?.removeAttribute("data-active");
-    clearFlipHosts();
 
-    const book = bookRef.current;
-    if (session && book) {
-      const spreads = spreadEls(book);
-      const dest = spreads[session.to];
-      if (
-        dest &&
-        document.activeElement &&
-        book.contains(document.activeElement)
-      ) {
-        dest.focus({ preventScroll: true });
+    const commit = () => {
+      clearFlipHosts();
+
+      const book = bookRef.current;
+      if (session && book) {
+        const spreads = spreadEls(book);
+        const dest = spreads[session.to];
+        if (
+          dest &&
+          document.activeElement &&
+          book.contains(document.activeElement)
+        ) {
+          dest.focus({ preventScroll: true });
+        }
+        syncSpreadInteractivity(session.to);
       }
-      syncSpreadInteractivity(session.to);
-    }
 
-    flipSessionRef.current = null;
-    flippingRef.current = false;
-    phaseRef.current = "idle";
-    setFlipDir(null);
+      flipSessionRef.current = null;
+      flippingRef.current = false;
+      phaseRef.current = "idle";
+      setFlipDir(null);
+    };
+
+    if (stage) {
+      const settle = stage.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        {
+          duration: FLIP_SETTLE_MS,
+          easing: "ease-out",
+          fill: "forwards",
+        },
+      );
+      void settle.finished.then(commit).catch(commit);
+    } else {
+      commit();
+    }
   }, [clearFlipHosts, clearSafetyTimer, syncSpreadInteractivity]);
 
   useEffect(() => {
@@ -341,8 +362,8 @@ export default function FolioBook({ children }: FolioBookProps) {
     const runId = ++flipRunIdRef.current;
     flipDimRef.current?.setAttribute("data-active", "");
 
-    // Shade / bend stay on CSS; the leaf rotate uses WAAPI so completion is
-    // not confused with child animationend events or Strict Mode restarts.
+    // Leaf rotate uses WAAPI so completion is not confused with child
+    // animationend events or Strict Mode restarts.
     leaf.getAnimations().forEach((animation) => animation.cancel());
     leaf.classList.add(styles.turningActive);
 
@@ -350,13 +371,13 @@ export default function FolioBook({ children }: FolioBookProps) {
       session.dir === "forward"
         ? [
             { transform: "rotateY(0deg) scaleX(1)" },
-            { transform: "rotateY(-88deg) scaleX(0.985)", offset: 0.42 },
-            { transform: "rotateY(-178deg) scaleX(1)" },
+            { transform: "rotateY(-90deg) scaleX(0.985)", offset: 0.45 },
+            { transform: "rotateY(-180deg) scaleX(1)" },
           ]
         : [
             { transform: "rotateY(0deg) scaleX(1)" },
-            { transform: "rotateY(88deg) scaleX(0.985)", offset: 0.42 },
-            { transform: "rotateY(178deg) scaleX(1)" },
+            { transform: "rotateY(90deg) scaleX(0.985)", offset: 0.45 },
+            { transform: "rotateY(180deg) scaleX(1)" },
           ];
 
     const turn = leaf.animate(turnKeyframes, {
@@ -378,7 +399,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     safetyTimerRef.current = window.setTimeout(() => {
       if (runId !== flipRunIdRef.current) return;
       finishFlipRef.current();
-    }, FLIP_DURATION_MS + 120);
+    }, FLIP_DURATION_MS + FLIP_SETTLE_MS + 120);
 
     return () => {
       flipRunIdRef.current += 1;
@@ -572,6 +593,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       {children}
       {flipDir && (
         <div
+          ref={flipStageRef}
           className={styles.flipStage}
           aria-hidden
           style={{ ["--folio-flip-ms" as string]: `${FLIP_DURATION_MS}ms` }}
@@ -597,7 +619,6 @@ export default function FolioBook({ children }: FolioBookProps) {
             <div ref={leafBackRef} className={styles.leafBack} />
             <span className={styles.leafShade} />
             <span className={styles.leafSpine} />
-            <span className={styles.leafBend} />
           </div>
         </div>
       )}
