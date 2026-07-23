@@ -42,14 +42,22 @@ type FolioPageProps = {
   label?: string;
   /** Stable page id used for TOC jumps and URL hashes. */
   pageId?: string;
+  /** Hide this leaf on the mobile vertical stack (e.g. blank filler pages). */
+  hideOnNarrow?: boolean;
 };
 
-export function FolioPage({ children, tone, label, pageId }: FolioPageProps) {
+export function FolioPage({
+  children,
+  tone,
+  label,
+  pageId,
+  hideOnNarrow = false,
+}: FolioPageProps) {
   return (
     <article
       id={pageId}
       data-folio-page={pageId || undefined}
-      className={`${styles.page} ${tone === "ink" ? styles.pageInk : styles.pagePaper}`}
+      className={`${styles.page} ${tone === "ink" ? styles.pageInk : styles.pagePaper}${hideOnNarrow ? ` ${styles.pageHideNarrow}` : ""}`}
       aria-label={label}
     >
       {children}

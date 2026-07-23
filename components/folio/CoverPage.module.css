@@ -4,12 +4,11 @@
   display: flex;
   flex-direction: column;
   padding: 2.75rem 3rem 4.5rem 3.25rem;
-  background:
-    radial-gradient(
-      120% 90% at 80% 0%,
-      color-mix(in srgb, var(--folio-pink) 22%, var(--folio-ink)) 0%,
-      var(--folio-ink) 55%
-    );
+  background: radial-gradient(
+    120% 90% at 80% 0%,
+    color-mix(in srgb, var(--folio-pink) 22%, var(--folio-ink)) 0%,
+    var(--folio-ink) 55%
+  );
   color: var(--folio-on-ink);
   overflow: hidden;
   isolation: isolate;

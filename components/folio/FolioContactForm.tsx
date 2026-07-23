@@ -84,33 +84,31 @@ export default function FolioContactForm() {
         aria-hidden="true"
       />
 
-      <div className={styles.row}>
-        <div className={styles.field}>
-          <label htmlFor="folio-name" className={styles.label}>
-            Name
-          </label>
-          <input
-            type="text"
-            id="folio-name"
-            name="name"
-            className={styles.input}
-            required
-            placeholder="Your Name"
-          />
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="folio-email" className={styles.label}>
-            Email
-          </label>
-          <input
-            type="email"
-            id="folio-email"
-            name="email"
-            className={styles.input}
-            required
-            placeholder="you@example.com"
-          />
-        </div>
+      <div className={styles.field}>
+        <label htmlFor="folio-name" className={styles.label}>
+          Name
+        </label>
+        <input
+          type="text"
+          id="folio-name"
+          name="name"
+          className={styles.input}
+          required
+          placeholder="Your Name"
+        />
+      </div>
+      <div className={styles.field}>
+        <label htmlFor="folio-email" className={styles.label}>
+          Email
+        </label>
+        <input
+          type="email"
+          id="folio-email"
+          name="email"
+          className={styles.input}
+          required
+          placeholder="you@example.com"
+        />
       </div>
 
       <div className={styles.field}>

@@ -308,4 +308,8 @@
     min-height: 100dvh;
     overflow-y: visible;
   }
+
+  .pageHideNarrow {
+    display: none;
+  }
 }

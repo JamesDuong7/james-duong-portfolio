@@ -374,6 +374,7 @@ export default async function FolioHome() {
                     ? undefined
                     : spread.left.id
                 }
+                hideOnNarrow={spread.left.id.startsWith("blank-")}
               >
                 {spread.left.node}
               </FolioPage>
@@ -387,6 +388,7 @@ export default async function FolioHome() {
                     ? undefined
                     : spread.right.id
                 }
+                hideOnNarrow={spread.right.id.startsWith("blank-")}
               >
                 {spread.right.node}
               </FolioPage>

@@ -129,7 +129,7 @@
 @media (max-width: 900px) {
   .page {
     padding: 2rem 1.5rem 2.5rem;
-    min-height: 100dvh;
+    min-height: 100%;
   }
 
   .scroll {

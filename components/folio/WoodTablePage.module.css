@@ -3,13 +3,7 @@
   height: 100%;
   overflow: hidden;
   /* Warm brown wood base, lit slightly from the top like a desk surface. */
-  background:
-    linear-gradient(
-      180deg,
-      #8a5a33 0%,
-      #7c4e2c 45%,
-      #6b4326 100%
-    );
+  background: linear-gradient(180deg, #8a5a33 0%, #7c4e2c 45%, #6b4326 100%);
 }
 
 /* Horizontal planks + fine grain streaks for a wooden-table surface. */
@@ -27,19 +21,19 @@
     ),
     /* subtle warm highlights */
     repeating-linear-gradient(
-      -1deg,
-      rgba(255, 214, 170, 0.05) 0px,
-      rgba(255, 214, 170, 0) 18px
-    ),
+        -1deg,
+        rgba(255, 214, 170, 0.05) 0px,
+        rgba(255, 214, 170, 0) 18px
+      ),
     /* horizontal plank seams */
     repeating-linear-gradient(
-      0deg,
-      rgba(0, 0, 0, 0.28) 0px,
-      rgba(0, 0, 0, 0.28) 2px,
-      rgba(0, 0, 0, 0) 3px,
-      rgba(0, 0, 0, 0) 148px,
-      rgba(0, 0, 0, 0.28) 150px
-    );
+        0deg,
+        rgba(0, 0, 0, 0.28) 0px,
+        rgba(0, 0, 0, 0.28) 2px,
+        rgba(0, 0, 0, 0) 3px,
+        rgba(0, 0, 0, 0) 148px,
+        rgba(0, 0, 0, 0.28) 150px
+      );
   mix-blend-mode: multiply;
 }
 

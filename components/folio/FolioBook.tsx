@@ -80,12 +80,29 @@ function spreadFaces(spread: HTMLElement) {
   return { left, right };
 }
 
-function currentSpreadIndex(book: HTMLDivElement) {
-  return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
-}
-
 function isNarrowViewport() {
   return window.matchMedia("(max-width: 900px)").matches;
+}
+
+function currentSpreadIndex(book: HTMLDivElement) {
+  if (isNarrowViewport()) {
+    const spreads = spreadEls(book);
+    if (spreads.length === 0) return 0;
+
+    // Pick the spread whose top edge is closest to the viewport top.
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < spreads.length; i += 1) {
+      const dist = Math.abs(spreads[i].getBoundingClientRect().top);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+    return best;
+  }
+
+  return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
 }
 
 /** Resolve a URL hash id (or alias) to a spread index, or null when unknown. */
@@ -171,7 +188,20 @@ function scrollBookTo(
   book: HTMLDivElement,
   target: HTMLElement,
   index?: number,
+  options: { animate?: boolean } = {},
 ) {
+  if (isNarrowViewport()) {
+    const reduceMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    target.scrollIntoView({
+      behavior:
+        options.animate && !reduceMotion ? "smooth" : "auto",
+      block: "start",
+    });
+    return;
+  }
+
   const previousBehavior = book.style.scrollBehavior;
   book.style.scrollBehavior = "auto";
   const byOffset = target.offsetLeft;
@@ -432,9 +462,22 @@ export default function FolioBook({ children }: FolioBookProps) {
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
+        const wantSmooth = animate && !reduceMotion;
 
-        if (!animate || reduceMotion) {
-          scrollBookTo(book, target);
+        if (isNarrowViewport()) {
+          // Prefer the leaf matching the hash so stacked left/right pages
+          // land on the intended section (e.g. About, not TOC above it).
+          const pageId = hashId ?? canonicalHashId(target);
+          const pageEl = pageId
+            ? target.querySelector<HTMLElement>(
+                `[data-folio-page="${CSS.escape(pageId)}"]`,
+              )
+            : null;
+          scrollBookTo(book, pageEl ?? target, index, {
+            animate: wantSmooth,
+          });
+        } else if (!wantSmooth) {
+          scrollBookTo(book, target, index);
         } else {
           book.scrollLeft = target.offsetLeft;
         }
