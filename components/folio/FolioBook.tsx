@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type KeyboardEvent,
@@ -10,13 +11,24 @@ import {
 } from "react";
 import styles from "./FolioBook.module.css";
 
-/**
- * Page-turn timing. A longer ease keeps the leaf readable; the spread swaps
- * while the leaf is edge-on, then a short skeleton veil covers the settle.
- */
-const FLIP_DURATION_MS = 980;
-const FLIP_SWAP_MS = 460;
-const FLIP_REVEAL_MS = 280;
+/** Two-sided page turn — completion comes from animationend, not timers. */
+const FLIP_DURATION_MS = 760;
+
+type FlipPhase =
+  | "idle"
+  | "preparing"
+  | "turning-forward"
+  | "turning-back"
+  | "settling";
+
+type FlipDirection = "forward" | "back";
+
+type FlipSession = {
+  from: number;
+  to: number;
+  dir: FlipDirection;
+  hashId?: string;
+};
 
 type FolioBookProps = {
   children: ReactNode;
@@ -60,6 +72,12 @@ function pageIdsInSpread(spread: HTMLElement) {
     .filter(Boolean);
 }
 
+/** Left/right slots are FolioSpread's direct children (page or wood table). */
+function spreadFaces(spread: HTMLElement) {
+  const [left, right] = [...spread.children] as HTMLElement[];
+  return { left, right };
+}
+
 function currentSpreadIndex(book: HTMLDivElement) {
   return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
 }
@@ -94,46 +112,91 @@ function canonicalHashId(spread: HTMLElement, preferred?: string) {
   return ids[0] ?? spread.id ?? "";
 }
 
+function syncHashForSpread(
+  spread: HTMLElement,
+  index: number,
+  hashId?: string,
+) {
+  const id = canonicalHashId(spread, hashId);
+  const nextHash =
+    index === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
+  if (window.location.hash !== nextHash) {
+    const url =
+      nextHash || `${window.location.pathname}${window.location.search}`;
+    window.history.replaceState(null, "", url);
+  }
+}
+
+/** Visual-only clone for the turning leaf — no duplicate ids or controls. */
+function clonePageFace(source: HTMLElement) {
+  const clone = source.cloneNode(true) as HTMLElement;
+  clone.removeAttribute("id");
+  clone.removeAttribute("tabindex");
+  clone.setAttribute("aria-hidden", "true");
+  clone.querySelectorAll<HTMLElement>("[id]").forEach((el) => {
+    el.removeAttribute("id");
+  });
+  clone
+    .querySelectorAll<HTMLElement>("a, button, input, textarea, select")
+    .forEach((el) => {
+      el.setAttribute("tabindex", "-1");
+      if (
+        el instanceof HTMLButtonElement ||
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement
+      ) {
+        el.disabled = true;
+      }
+      if (el instanceof HTMLAnchorElement) {
+        el.removeAttribute("href");
+      }
+    });
+  clone.style.width = "100%";
+  clone.style.height = "100%";
+  clone.style.overflow = "hidden";
+  clone.scrollTop = source.scrollTop;
+  clone.scrollLeft = source.scrollLeft;
+  return clone;
+}
+
+function clearFaceHost(host: HTMLElement | null) {
+  if (!host) return;
+  while (host.firstChild) host.removeChild(host.firstChild);
+}
+
+function scrollBookTo(
+  book: HTMLDivElement,
+  target: HTMLElement,
+  index?: number,
+) {
+  const previousBehavior = book.style.scrollBehavior;
+  book.style.scrollBehavior = "auto";
+  const byOffset = target.offsetLeft;
+  const byIndex =
+    typeof index === "number" ? index * Math.max(book.clientWidth, 1) : 0;
+  book.scrollLeft = byOffset || byIndex;
+  book.style.scrollBehavior = previousBehavior;
+}
+
 export default function FolioBook({ children }: FolioBookProps) {
   const bookRef = useRef<HTMLDivElement>(null);
-  const [flip, setFlip] = useState<{ dir: "forward" | "back"; key: number } | null>(
-    null,
-  );
-  const [revealing, setRevealing] = useState(false);
-  const flipTimers = useRef<number[]>([]);
+  /** Mounts the flip stage; phase machine lives in refs to avoid wiping clones. */
+  const [flipDir, setFlipDir] = useState<FlipDirection | null>(null);
+  const flipSessionRef = useRef<FlipSession | null>(null);
+  const phaseRef = useRef<FlipPhase>("idle");
+  const activeIndexRef = useRef(0);
   const flippingRef = useRef(false);
+  const safetyTimerRef = useRef<number | null>(null);
+  const flipRunIdRef = useRef(0);
+  const finishFlipRef = useRef<() => void>(() => {});
 
-  const clearFlipTimers = useCallback(() => {
-    flipTimers.current.forEach((t) => window.clearTimeout(t));
-    flipTimers.current = [];
-  }, []);
-
-  /** Play the page-turn leaf, swapping the underlying spread at the midpoint. */
-  const playFlip = useCallback(
-    (dir: "forward" | "back", onSwap: () => void) => {
-      clearFlipTimers();
-      flippingRef.current = true;
-      setRevealing(false);
-      setFlip({ dir, key: Date.now() });
-
-      flipTimers.current.push(
-        window.setTimeout(() => {
-          onSwap();
-          setRevealing(true);
-        }, FLIP_SWAP_MS),
-        window.setTimeout(() => {
-          setFlip(null);
-        }, FLIP_DURATION_MS),
-        window.setTimeout(() => {
-          setRevealing(false);
-          flippingRef.current = false;
-        }, FLIP_SWAP_MS + FLIP_REVEAL_MS),
-      );
-    },
-    [clearFlipTimers],
-  );
-
-  useEffect(() => clearFlipTimers, [clearFlipTimers]);
+  const staticLeftRef = useRef<HTMLDivElement>(null);
+  const staticRightRef = useRef<HTMLDivElement>(null);
+  const leafRef = useRef<HTMLDivElement>(null);
+  const leafFrontRef = useRef<HTMLDivElement>(null);
+  const leafBackRef = useRef<HTMLDivElement>(null);
+  const flipDimRef = useRef<HTMLDivElement>(null);
 
   /** Desktop only: keep the off-spread out of tab order. Mobile stacks all. */
   const syncSpreadInteractivity = useCallback((activeIndex: number) => {
@@ -144,6 +207,8 @@ export default function FolioBook({ children }: FolioBookProps) {
     spreads.forEach((spread, i) => {
       spread.inert = !narrow && i !== activeIndex;
     });
+
+    activeIndexRef.current = activeIndex;
 
     const active = spreads[activeIndex];
     const pages = active ? pageIdsInSpread(active) : [];
@@ -158,6 +223,178 @@ export default function FolioBook({ children }: FolioBookProps) {
     );
   }, []);
 
+  const clearFlipHosts = useCallback(() => {
+    clearFaceHost(staticLeftRef.current);
+    clearFaceHost(staticRightRef.current);
+    clearFaceHost(leafFrontRef.current);
+    clearFaceHost(leafBackRef.current);
+  }, []);
+
+  const clearSafetyTimer = useCallback(() => {
+    if (safetyTimerRef.current !== null) {
+      window.clearTimeout(safetyTimerRef.current);
+      safetyTimerRef.current = null;
+    }
+  }, []);
+
+  const finishFlip = useCallback(() => {
+    if (phaseRef.current === "idle" || phaseRef.current === "settling") return;
+
+    clearSafetyTimer();
+    phaseRef.current = "settling";
+
+    const session = flipSessionRef.current;
+    const leaf = leafRef.current;
+    leaf?.classList.remove(styles.turningActive);
+    flipDimRef.current?.removeAttribute("data-active");
+    clearFlipHosts();
+
+    const book = bookRef.current;
+    if (session && book) {
+      const spreads = spreadEls(book);
+      const dest = spreads[session.to];
+      if (
+        dest &&
+        document.activeElement &&
+        book.contains(document.activeElement)
+      ) {
+        dest.focus({ preventScroll: true });
+      }
+      syncSpreadInteractivity(session.to);
+    }
+
+    flipSessionRef.current = null;
+    flippingRef.current = false;
+    phaseRef.current = "idle";
+    setFlipDir(null);
+  }, [clearFlipHosts, clearSafetyTimer, syncSpreadInteractivity]);
+
+  useEffect(() => {
+    finishFlipRef.current = finishFlip;
+  }, [finishFlip]);
+
+  /**
+   * Clone source/destination faces into the stage, park the destination
+   * underneath, then start the CSS turn without a React re-render.
+   */
+  useLayoutEffect(() => {
+    if (!flipDir) return;
+
+    const book = bookRef.current;
+    const session = flipSessionRef.current;
+    const leaf = leafRef.current;
+    if (!book || !session || !leaf || !flippingRef.current) return;
+
+    phaseRef.current = "preparing";
+
+    const spreads = spreadEls(book);
+    const source = spreads[session.from];
+    const dest = spreads[session.to];
+    if (!source || !dest) {
+      flippingRef.current = false;
+      phaseRef.current = "idle";
+      setFlipDir(null);
+      return;
+    }
+
+    const sourceFaces = spreadFaces(source);
+    const destFaces = spreadFaces(dest);
+    if (
+      !sourceFaces.left ||
+      !sourceFaces.right ||
+      !destFaces.left ||
+      !destFaces.right
+    ) {
+      scrollBookTo(book, dest, session.to);
+      syncSpreadInteractivity(session.to);
+      flipSessionRef.current = null;
+      flippingRef.current = false;
+      phaseRef.current = "idle";
+      setFlipDir(null);
+      return;
+    }
+
+    clearFlipHosts();
+
+    if (session.dir === "forward") {
+      staticLeftRef.current?.setAttribute("data-visible", "");
+      staticRightRef.current?.removeAttribute("data-visible");
+      staticLeftRef.current?.appendChild(clonePageFace(sourceFaces.left));
+      leafFrontRef.current?.appendChild(clonePageFace(sourceFaces.right));
+      leafBackRef.current?.appendChild(clonePageFace(destFaces.left));
+    } else {
+      staticRightRef.current?.setAttribute("data-visible", "");
+      staticLeftRef.current?.removeAttribute("data-visible");
+      staticRightRef.current?.appendChild(clonePageFace(sourceFaces.right));
+      leafFrontRef.current?.appendChild(clonePageFace(sourceFaces.left));
+      leafBackRef.current?.appendChild(clonePageFace(destFaces.right));
+    }
+
+    spreads.forEach((spread) => {
+      spread.inert = true;
+    });
+    scrollBookTo(book, dest, session.to);
+
+    phaseRef.current =
+      session.dir === "forward" ? "turning-forward" : "turning-back";
+
+    const runId = ++flipRunIdRef.current;
+    flipDimRef.current?.setAttribute("data-active", "");
+
+    // Shade / bend stay on CSS; the leaf rotate uses WAAPI so completion is
+    // not confused with child animationend events or Strict Mode restarts.
+    leaf.getAnimations().forEach((animation) => animation.cancel());
+    leaf.classList.add(styles.turningActive);
+
+    const turnKeyframes =
+      session.dir === "forward"
+        ? [
+            { transform: "rotateY(0deg) scaleX(1)" },
+            { transform: "rotateY(-88deg) scaleX(0.985)", offset: 0.42 },
+            { transform: "rotateY(-178deg) scaleX(1)" },
+          ]
+        : [
+            { transform: "rotateY(0deg) scaleX(1)" },
+            { transform: "rotateY(88deg) scaleX(0.985)", offset: 0.42 },
+            { transform: "rotateY(178deg) scaleX(1)" },
+          ];
+
+    const turn = leaf.animate(turnKeyframes, {
+      duration: FLIP_DURATION_MS,
+      easing: "cubic-bezier(0.45, 0.05, 0.2, 1)",
+      fill: "forwards",
+    });
+
+    void turn.finished
+      .then(() => {
+        if (runId !== flipRunIdRef.current) return;
+        finishFlipRef.current();
+      })
+      .catch(() => {
+        /* cancelled during cleanup / remount */
+      });
+
+    clearSafetyTimer();
+    safetyTimerRef.current = window.setTimeout(() => {
+      if (runId !== flipRunIdRef.current) return;
+      finishFlipRef.current();
+    }, FLIP_DURATION_MS + 120);
+
+    return () => {
+      flipRunIdRef.current += 1;
+      turn.cancel();
+      leaf.classList.remove(styles.turningActive);
+      clearSafetyTimer();
+    };
+  }, [flipDir, clearFlipHosts, clearSafetyTimer, syncSpreadInteractivity]);
+
+  const playFlip = useCallback((session: FlipSession) => {
+    flippingRef.current = true;
+    phaseRef.current = "preparing";
+    flipSessionRef.current = session;
+    setFlipDir(session.dir);
+  }, []);
+
   const goToSpread = useCallback(
     (index: number, options: GoToSpreadOptions = {}) => {
       const { syncHash = true, animate = true, hashId } = options;
@@ -167,17 +404,16 @@ export default function FolioBook({ children }: FolioBookProps) {
       const target = spreads[index];
       if (!target) return;
 
-      const from = currentSpreadIndex(book);
+      const from = flippingRef.current
+        ? activeIndexRef.current
+        : currentSpreadIndex(book);
       if (from !== index) {
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
 
         if (!animate || reduceMotion) {
-          const previousBehavior = book.style.scrollBehavior;
-          book.style.scrollBehavior = "auto";
-          book.scrollLeft = target.offsetLeft;
-          book.style.scrollBehavior = previousBehavior;
+          scrollBookTo(book, target);
         } else {
           book.scrollLeft = target.offsetLeft;
         }
@@ -185,19 +421,16 @@ export default function FolioBook({ children }: FolioBookProps) {
 
       syncSpreadInteractivity(index);
 
-      if (animate && document.activeElement && book.contains(document.activeElement)) {
+      if (
+        animate &&
+        document.activeElement &&
+        book.contains(document.activeElement)
+      ) {
         target.focus({ preventScroll: true });
       }
 
       if (syncHash) {
-        const id = canonicalHashId(target, hashId);
-        const nextHash = index === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
-        const currentHash = window.location.hash;
-        if (currentHash !== nextHash) {
-          const url =
-            nextHash || `${window.location.pathname}${window.location.search}`;
-          window.history.replaceState(null, "", url);
-        }
+        syncHashForSpread(target, index, hashId);
       }
     },
     [syncSpreadInteractivity],
@@ -217,10 +450,15 @@ export default function FolioBook({ children }: FolioBookProps) {
       ).detail;
       if (!detail) return;
 
+      // Ignore ghost/hidden book instances (e.g. duplicate trees during nav).
+      if (book.clientWidth < 2) return;
+
       // Ignore stacked flip requests while a turn is in flight.
       if (flippingRef.current && (detail.animate ?? true)) return;
 
-      const from = currentSpreadIndex(book);
+      const from = flippingRef.current
+        ? activeIndexRef.current
+        : currentSpreadIndex(book);
       let target: number | null = null;
       let hashId: string | undefined;
       if (typeof detail.id === "string") {
@@ -240,23 +478,15 @@ export default function FolioBook({ children }: FolioBookProps) {
       ).matches;
 
       if (wantAnimate && !reduceMotion && !isNarrowViewport()) {
-        // Update the hash up front so deep links resolve even while the leaf turns.
         const spreads = spreadEls(book);
         const dest = spreads[target];
-        if (dest) {
-          const id = canonicalHashId(dest, hashId);
-          const nextHash =
-            target === COVER_INDEX || !id || id === "cover" ? "" : `#${id}`;
-          if (window.location.hash !== nextHash) {
-            const url =
-              nextHash ||
-              `${window.location.pathname}${window.location.search}`;
-            window.history.replaceState(null, "", url);
-          }
-        }
-        playFlip(target > from ? "forward" : "back", () =>
-          goToSpread(target, { animate: false, syncHash: false, hashId }),
-        );
+        if (dest) syncHashForSpread(dest, target, hashId);
+        playFlip({
+          from,
+          to: target,
+          dir: target > from ? "forward" : "back",
+          hashId,
+        });
       } else {
         goToSpread(target, { animate: wantAnimate, hashId });
       }
@@ -272,17 +502,23 @@ export default function FolioBook({ children }: FolioBookProps) {
       goToSpread(index, { syncHash: false, animate });
     };
 
-    const onHashChange = () => syncFromHash(true);
+    const onHashChange = () => {
+      if (flippingRef.current) return;
+      syncFromHash(true);
+    };
 
     let scrollSyncRaf = 0;
     const onScroll = () => {
+      if (flippingRef.current) return;
       cancelAnimationFrame(scrollSyncRaf);
       scrollSyncRaf = requestAnimationFrame(() => {
+        if (flippingRef.current) return;
         syncSpreadInteractivity(currentSpreadIndex(book));
       });
     };
 
     const onResize = () => {
+      if (flippingRef.current) return;
       syncSpreadInteractivity(currentSpreadIndex(book));
     };
 
@@ -296,22 +532,24 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     return () => {
       cancelAnimationFrame(scrollSyncRaf);
+      clearSafetyTimer();
       window.removeEventListener("folio:flip", onFlip);
       window.removeEventListener("hashchange", onHashChange);
       book.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
     };
-  }, [goToSpread, syncSpreadInteractivity, playFlip]);
+  }, [goToSpread, syncSpreadInteractivity, playFlip, clearSafetyTimer]);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") return;
     if (isNarrowViewport()) return;
+    if (flippingRef.current) return;
     const book = bookRef.current;
     if (!book) return;
     const spreads = spreadEls(book);
     if (spreads.length < 2) return;
 
-    const current = currentSpreadIndex(book);
+    const current = activeIndexRef.current;
     const forward = event.key === "ArrowRight";
     const next = forward
       ? Math.min(current + 1, spreads.length - 1)
@@ -325,46 +563,41 @@ export default function FolioBook({ children }: FolioBookProps) {
   return (
     <div
       ref={bookRef}
-      className={`${styles.book} ${revealing ? styles.bookRevealing : ""}`}
+      className={styles.book}
       tabIndex={0}
       role="region"
       aria-label="Portfolio magazine"
       onKeyDown={onKeyDown}
     >
       {children}
-      {flip && (
-        <div className={styles.flipStage} aria-hidden>
-          <div className={styles.flipDim} />
+      {flipDir && (
+        <div
+          className={styles.flipStage}
+          aria-hidden
+          style={{ ["--folio-flip-ms" as string]: `${FLIP_DURATION_MS}ms` }}
+        >
+          <div ref={flipDimRef} className={styles.flipDim} />
           <div
-            key={flip.key}
-            className={`${styles.leaf} ${
-              flip.dir === "forward" ? styles.leafForward : styles.leafBack
+            ref={staticLeftRef}
+            className={`${styles.stageStatic} ${styles.stageStaticLeft}`}
+          />
+          <div
+            ref={staticRightRef}
+            className={`${styles.stageStatic} ${styles.stageStaticRight}`}
+          />
+          <div
+            ref={leafRef}
+            className={`${styles.turningLeaf} ${
+              flipDir === "forward"
+                ? styles.turningForward
+                : styles.turningBack
             }`}
           >
-            <span className={styles.leafFace}>
-              <span className={styles.leafBone} />
-              <span className={styles.leafBone} />
-              <span className={styles.leafBoneWide} />
-              <span className={styles.leafBone} />
-            </span>
+            <div ref={leafFrontRef} className={styles.leafFront} />
+            <div ref={leafBackRef} className={styles.leafBack} />
             <span className={styles.leafShade} />
-            <span className={styles.leafEdge} />
-          </div>
-        </div>
-      )}
-      {revealing && (
-        <div className={styles.revealVeil} aria-hidden>
-          <div className={styles.revealSpread}>
-            <div className={styles.revealPage}>
-              <span className={styles.leafBone} />
-              <span className={styles.leafBoneWide} />
-              <span className={styles.leafBone} />
-            </div>
-            <div className={styles.revealPage}>
-              <span className={styles.leafBone} />
-              <span className={styles.leafBoneWide} />
-              <span className={styles.leafBone} />
-            </div>
+            <span className={styles.leafSpine} />
+            <span className={styles.leafBend} />
           </div>
         </div>
       )}
