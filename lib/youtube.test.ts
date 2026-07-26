@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   parseYouTubeVideoId,
   youtubeEmbedUrl,
+  youtubePosterFallbackUrl,
   youtubePosterUrl,
 } from "./youtube";
 
@@ -53,8 +54,11 @@ describe("youtube URL helpers", () => {
     );
   });
 
-  it("builds a poster URL", () => {
+  it("builds a maxres poster URL with hq fallback", () => {
     expect(youtubePosterUrl("dQw4w9WgXcQ")).toBe(
+      "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
+    );
+    expect(youtubePosterFallbackUrl("dQw4w9WgXcQ")).toBe(
       "https://i.ytimg.com/vi/dQw4w9WgXcQ/hqdefault.jpg",
     );
   });

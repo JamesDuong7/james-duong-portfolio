@@ -38,7 +38,12 @@ export function youtubeEmbedUrl(videoId: string): string {
   return `https://www.youtube-nocookie.com/embed/${videoId}?${params}`;
 }
 
-/** Static poster from YouTube's image CDN (hq is reliably available for all videos). */
+/** Prefer true 16:9 maxres when YouTube has it; fall back via youtubePosterFallbackUrl. */
 export function youtubePosterUrl(videoId: string): string {
+  return `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+}
+
+/** 4:3 hq thumb — always present; used when maxres 404s. */
+export function youtubePosterFallbackUrl(videoId: string): string {
   return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
 }

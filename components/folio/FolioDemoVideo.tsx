@@ -5,6 +5,7 @@ import Image from "next/image";
 import {
   parseYouTubeVideoId,
   youtubeEmbedUrl,
+  youtubePosterFallbackUrl,
   youtubePosterUrl,
 } from "@/lib/youtube";
 import styles from "./FolioDemoVideo.module.css";
@@ -22,11 +23,13 @@ export default function FolioDemoVideo({
 }: FolioDemoVideoProps) {
   const videoId = parseYouTubeVideoId(url);
   const [playing, setPlaying] = useState(false);
+  const [posterSrc, setPosterSrc] = useState(() =>
+    videoId ? youtubePosterUrl(videoId) : "",
+  );
   const labelId = useId();
 
   if (!videoId) return null;
 
-  const poster = youtubePosterUrl(videoId);
   const playLabel = `Play demo video: ${title}`;
 
   return (
@@ -49,12 +52,23 @@ export default function FolioDemoVideo({
           aria-label={playLabel}
         >
           <Image
-            src={poster}
+            src={posterSrc}
             alt=""
-            width={480}
-            height={360}
+            width={1280}
+            height={720}
             className={styles.poster}
-            sizes="(max-width: 900px) 100vw, 50vw"
+            sizes="(max-width: 900px) 100vw, min(50vw, 36rem)"
+            onLoad={(event) => {
+              // Missing maxres often 200s a ~120px placeholder instead of 404.
+              if (event.currentTarget.naturalWidth <= 120) {
+                const fallback = youtubePosterFallbackUrl(videoId);
+                if (posterSrc !== fallback) setPosterSrc(fallback);
+              }
+            }}
+            onError={() => {
+              const fallback = youtubePosterFallbackUrl(videoId);
+              if (posterSrc !== fallback) setPosterSrc(fallback);
+            }}
           />
           <span className={styles.play} aria-hidden="true">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
