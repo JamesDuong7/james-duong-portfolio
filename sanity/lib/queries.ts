@@ -55,6 +55,7 @@ export const ALL_PROJECTS_DETAIL_QUERY = defineQuery(
     tech,
     github,
     live,
+    demoVideoUrl,
     featured,
     screenshots[]{
       alt,
@@ -86,6 +87,7 @@ export const PROJECT_BY_SLUG_QUERY = defineQuery(
     tech,
     github,
     live,
+    demoVideoUrl,
     featured,
     screenshots[]{
       alt,

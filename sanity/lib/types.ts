@@ -57,6 +57,8 @@ export type ProjectDetail = {
   tech: string[] | null;
   github: string | null;
   live: string | null;
+  /** Unlisted YouTube screen-recording URL, if set in Studio */
+  demoVideoUrl: string | null;
   featured: boolean | null;
   screenshots: FolioScreenshot[] | null;
   overview: PortableTextBlock[] | null;

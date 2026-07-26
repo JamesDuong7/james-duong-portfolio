@@ -1,4 +1,5 @@
 import { defineType, defineField } from "sanity";
+import { parseYouTubeVideoId } from "../../lib/youtube";
 
 export const project = defineType({
   name: "project",
@@ -45,6 +46,20 @@ export const project = defineType({
       name: "live",
       title: "Live Demo URL",
       type: "url",
+    }),
+    defineField({
+      name: "demoVideoUrl",
+      title: "Demo Video (YouTube)",
+      type: "url",
+      description:
+        "Unlisted YouTube link of a screen recording (watch, youtu.be, or embed URL). Shown on the case study page.",
+      validation: (rule) =>
+        rule.uri({ scheme: ["https"] }).custom((value) => {
+          if (!value) return true;
+          return parseYouTubeVideoId(value)
+            ? true
+            : "Paste a valid YouTube URL (e.g. https://www.youtube.com/watch?v=… or https://youtu.be/…)";
+        }),
     }),
     defineField({
       name: "featured",

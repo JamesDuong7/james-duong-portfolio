@@ -1,4 +1,6 @@
+import { parseYouTubeVideoId } from "@/lib/youtube";
 import { usableScreenshots, type ProjectDetail } from "@/sanity/lib/types";
+import FolioDemoVideo from "./FolioDemoVideo";
 import FolioFigure from "./FolioFigure";
 import FolioFlip from "./FolioFlip";
 import { FolioLinkButton, FolioTechTag } from "./FolioControls";
@@ -14,6 +16,7 @@ export default function CaseStudyInkPage({
   project,
 }: CaseStudyInkPageProps) {
   const figures = usableScreenshots(project.screenshots);
+  const hasDemo = Boolean(parseYouTubeVideoId(project.demoVideoUrl));
   const tech = project.tech ?? [];
 
   return (
@@ -29,14 +32,21 @@ export default function CaseStudyInkPage({
             <p className={styles.description}>{project.description}</p>
           )}
 
-          {figures.length > 0 && (
+          {(hasDemo || figures.length > 0) && (
             <div className={styles.figures}>
+              {hasDemo && (
+                <FolioDemoVideo
+                  url={project.demoVideoUrl}
+                  title={project.title}
+                  caption={`DEMO — ${project.title}`}
+                />
+              )}
               {figures.map((shot, figIndex) => (
                 <FolioFigure
                   key={shot.url}
                   screenshot={shot}
                   caption={`FIG. ${String(figIndex + 1).padStart(2, "0")} — ${project.title}`}
-                  priority={figIndex === 0}
+                  priority={figIndex === 0 && !hasDemo}
                   tone="ink"
                 />
               ))}
