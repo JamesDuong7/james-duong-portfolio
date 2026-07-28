@@ -41,7 +41,7 @@
     "jsdom": "^29.0.1",
     "sanity": "^5.30.0",
     "styled-components": "^6.4.2",
-    "typescript": "^5",
+    "typescript": "^7",
     "vitest": "^4.1.2"
   }
 }
