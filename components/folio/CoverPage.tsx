@@ -1,4 +1,5 @@
 import Image from "next/image";
+import AnimatedContent from "../react-bits/AnimatedContent";
 import FolioFlip from "./FolioFlip";
 import styles from "./CoverPage.module.css";
 
@@ -56,7 +57,15 @@ export default function CoverPage({
           {lastName && <span>{lastName}</span>}
         </h1>
 
-        <div className={styles.collage} aria-label="Portrait and selected work collage">
+        <AnimatedContent
+          className={styles.collage}
+          aria-label="Portrait and selected work collage"
+          distance={28}
+          duration={0.72}
+          initialOpacity={0.35}
+          scale={0.985}
+          threshold={0.02}
+        >
           <figure className={styles.portraitCard}>
             <div className={styles.portraitPlaceholder} aria-hidden>
               <span>JD</span>
@@ -94,7 +103,7 @@ export default function CoverPage({
               </figcaption>
             </figure>
           ))}
-        </div>
+        </AnimatedContent>
 
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>Portfolio · Field Notes</p>
