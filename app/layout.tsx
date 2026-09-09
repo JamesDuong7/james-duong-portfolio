@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Archivo_Black, IBM_Plex_Mono } from "next/font/google";
+import {
+  Archivo,
+  Archivo_Black,
+  Bodoni_Moda,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -23,6 +28,11 @@ const archivoBlack = Archivo_Black({
 const ibmPlexMono = IBM_Plex_Mono({
   variable: "--font-ibm-plex-mono",
   weight: ["400", "500"],
+  subsets: ["latin"],
+});
+
+const bodoniModa = Bodoni_Moda({
+  variable: "--font-bodoni-moda",
   subsets: ["latin"],
 });
 
@@ -86,7 +96,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${archivoBlack.variable} ${ibmPlexMono.variable}`}
+      className={`${archivo.variable} ${archivoBlack.variable} ${ibmPlexMono.variable} ${bodoniModa.variable}`}
       data-scroll-behavior="smooth"
     >
       <body>

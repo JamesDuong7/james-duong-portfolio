@@ -22,6 +22,51 @@
   --folio-font-body: var(--font-archivo), "Avenir Next", sans-serif;
   --folio-font-mono: var(--font-ibm-plex-mono), ui-monospace, monospace;
 
+  /* Editorial system foundation. Kept additive until individual spreads are
+     approved and migrated. */
+  --editorial-font-serif: var(--font-bodoni-moda), "Bodoni 72", Didot, serif;
+  --editorial-font-grotesk: var(--folio-font-body);
+  --editorial-font-display: var(--folio-font-display);
+  --editorial-font-mono: var(--folio-font-mono);
+
+  --editorial-ink: var(--folio-ink);
+  --editorial-paper: #f4f0e8;
+  --editorial-paper-deep: #e7e0d4;
+  --editorial-accent: var(--folio-pink);
+  --editorial-signal: #ef5a35;
+  --editorial-copy: #25283a;
+  --editorial-copy-muted: #676876;
+  --editorial-rule: color-mix(in srgb, var(--editorial-copy) 24%, transparent);
+
+  --editorial-type-display: clamp(4.5rem, 10vw, 10rem);
+  --editorial-type-headline: clamp(2.75rem, 5.5vw, 6.5rem);
+  --editorial-type-deck: clamp(1.05rem, 1.4vw, 1.35rem);
+  --editorial-type-body: clamp(0.9rem, 1vw, 1.05rem);
+  --editorial-type-caption: 0.7rem;
+  --editorial-type-meta: 0.66rem;
+
+  --editorial-leading-tight: 0.88;
+  --editorial-leading-headline: 0.96;
+  --editorial-leading-body: 1.55;
+  --editorial-tracking-meta: 0.14em;
+
+  --editorial-space-1: 0.5rem;
+  --editorial-space-2: 0.75rem;
+  --editorial-space-3: 1rem;
+  --editorial-space-4: 1.5rem;
+  --editorial-space-5: 2rem;
+  --editorial-space-6: 3rem;
+  --editorial-space-7: clamp(3rem, 6vw, 6rem);
+
+  --editorial-page-inline: clamp(1.35rem, 3.8vw, 4.5rem);
+  --editorial-page-block: clamp(1.5rem, 3vw, 3.5rem);
+  --editorial-grid-gap: clamp(1.25rem, 2.6vw, 3.5rem);
+
+  --editorial-ratio-portrait: 4 / 5;
+  --editorial-ratio-landscape: 16 / 10;
+  --editorial-ratio-cinema: 16 / 9;
+  --editorial-ratio-square: 1;
+
   /* Legacy aliases (project pages / older modules) */
   --background: var(--folio-paper);
   --foreground: var(--folio-on-paper);
