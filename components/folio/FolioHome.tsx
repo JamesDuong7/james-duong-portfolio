@@ -120,34 +120,31 @@ export default async function FolioHome() {
     })
     .filter((project) => Boolean(project.slug));
 
+  const toCatalogItem = (project: (typeof orderedProjects)[number]) => {
+    const shot = primaryScreenshot(project.screenshots);
+    const videoId = parseYouTubeVideoId(project.demoVideoUrl);
+    return {
+      slug: project.slug,
+      title: stegaClean(project.title ?? "Untitled"),
+      description: project.description ?? "",
+      imageUrl: shot?.url ?? (videoId ? youtubePosterUrl(videoId) : null),
+      imageAlt: shot?.alt,
+      tech: project.tech?.filter(Boolean).slice(0, 3) ?? [],
+    };
+  };
+
   const featuredItems = orderedProjects
     .filter((p) => p.featured)
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title ?? "Untitled",
-      description: p.description ?? "",
-    }));
+    .map(toCatalogItem);
 
   const restItems = orderedProjects
     .filter((p) => !p.featured)
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title ?? "Untitled",
-      description: p.description ?? "",
-    }));
+    .map(toCatalogItem);
 
   const coverProjects = [...orderedProjects]
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
     .slice(0, 2)
-    .map((project) => {
-      const shot = primaryScreenshot(project.screenshots);
-      const videoId = parseYouTubeVideoId(project.demoVideoUrl);
-      return {
-        title: stegaClean(project.title ?? "Untitled"),
-        imageUrl: shot?.url ?? (videoId ? youtubePosterUrl(videoId) : null),
-        imageAlt: shot?.alt,
-      };
-    });
+    .map(toCatalogItem);
 
   const nextPage = createPageAllocator();
 

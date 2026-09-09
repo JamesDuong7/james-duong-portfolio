@@ -78,7 +78,8 @@ export default function CoverPage({
                     fill
                     sizes="(max-width: 900px) 58vw, 28vw"
                     className={styles.projectImage}
-                    priority
+                    loading="eager"
+                    fetchPriority="high"
                   />
                 ) : (
                   <div className={styles.projectPlaceholder} aria-hidden>
