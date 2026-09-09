@@ -12,6 +12,7 @@ type AboutMePageProps = {
   linkedin?: string | null;
   resumeUrl?: string | null;
   flipForwardLabel?: string;
+  flipForwardTarget?: string;
 };
 
 function SkillLine({ label, values }: { label: string; values: string[] }) {
@@ -34,6 +35,7 @@ export default function AboutMePage({
   linkedin,
   resumeUrl,
   flipForwardLabel,
+  flipForwardTarget,
 }: AboutMePageProps) {
   const hasSkills =
     languages.length > 0 || frameworks.length > 0 || tools.length > 0;
@@ -78,7 +80,11 @@ export default function AboutMePage({
       </div>
 
       {flipForwardLabel && (
-        <FolioFlip direction="forward" label={flipForwardLabel} />
+        <FolioFlip
+          direction="forward"
+          label={flipForwardLabel}
+          target={flipForwardTarget}
+        />
       )}
     </div>
   );

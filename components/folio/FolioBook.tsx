@@ -188,17 +188,21 @@ function scrollBookTo(
   book: HTMLDivElement,
   target: HTMLElement,
   index?: number,
-  options: { animate?: boolean } = {},
 ) {
   if (isNarrowViewport()) {
-    const reduceMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
     target.scrollIntoView({
-      behavior:
-        options.animate && !reduceMotion ? "smooth" : "auto",
+      // A mobile issue is a tall stack of leaves. Smooth scrolling to a
+      // distant chapter makes every unrelated page flash past and lets
+      // scroll observers temporarily select the wrong spread. Chapter
+      // navigation is therefore an immediate page jump; motion stays local
+      // to the desktop leaf turn.
+      behavior: "auto",
       block: "start",
     });
+    root.style.scrollBehavior = previousBehavior;
     return;
   }
 
@@ -302,7 +306,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       flipSessionRef.current = null;
       flippingRef.current = false;
       phaseRef.current = "idle";
-      setFlipDir(null);
+      queueMicrotask(() => setFlipDir(null));
     };
 
     if (stage) {
@@ -344,7 +348,7 @@ export default function FolioBook({ children }: FolioBookProps) {
     if (!source || !dest) {
       flippingRef.current = false;
       phaseRef.current = "idle";
-      setFlipDir(null);
+      queueMicrotask(() => setFlipDir(null));
       return;
     }
 
@@ -361,7 +365,7 @@ export default function FolioBook({ children }: FolioBookProps) {
       flipSessionRef.current = null;
       flippingRef.current = false;
       phaseRef.current = "idle";
-      setFlipDir(null);
+      queueMicrotask(() => setFlipDir(null));
       return;
     }
 
@@ -473,9 +477,7 @@ export default function FolioBook({ children }: FolioBookProps) {
                 `[data-folio-page="${CSS.escape(pageId)}"]`,
               )
             : null;
-          scrollBookTo(book, pageEl ?? target, index, {
-            animate: wantSmooth,
-          });
+          scrollBookTo(book, pageEl ?? target, index);
         } else if (!wantSmooth) {
           scrollBookTo(book, target, index);
         } else {
@@ -534,9 +536,20 @@ export default function FolioBook({ children }: FolioBookProps) {
         target = Math.max(from - 1, 0);
       }
 
-      if (target === null || target === from) return;
-
       const wantAnimate = detail.animate ?? true;
+      if (target === null) return;
+
+      // A named destination is authoritative. On the tall mobile stack,
+      // geometry can report the next spread as "current" while the reader is
+      // still near the bottom of the preceding leaf. Re-align the requested
+      // page and hash even when both resolve to the same spread index.
+      if (target === from) {
+        if (typeof detail.id === "string") {
+          goToSpread(target, { animate: wantAnimate, hashId });
+        }
+        return;
+      }
+
       const reduceMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;

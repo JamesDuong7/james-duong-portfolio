@@ -243,6 +243,7 @@ export default async function FolioHome() {
               ? "Turn the page → Hobbies"
               : "Turn the page → Works"
           }
+          flipForwardTarget={hobbyMeta[0]?.id ?? "works"}
         />
       ),
     },
@@ -274,6 +275,7 @@ export default async function FolioHome() {
           meta="Index"
           tone="paper"
           backLabel="← Previous page"
+          backTarget={hobbyMeta.at(-1)?.id ?? "contents"}
           forwardLabel={undefined}
         />
       ),
@@ -287,6 +289,7 @@ export default async function FolioHome() {
           page={worksSectionPage}
           featured={featuredItems}
           rest={restItems}
+          firstProjectTarget={projectMeta[0]?.id}
         />
       ),
     },
@@ -294,6 +297,8 @@ export default async function FolioHome() {
 
   // Each project owns one ink | paper case study spread
   projectMeta.forEach((project, index) => {
+    const previousTarget =
+      index === 0 ? "works" : projectMeta[index - 1].id;
     const nextTitle = projectMeta[index + 1]
       ? stegaClean(projectMeta[index + 1].title ?? "Next")
       : null;
@@ -304,7 +309,13 @@ export default async function FolioHome() {
         id: project.id,
         label: stegaClean(project.title ?? "Case study"),
         tone: "ink",
-        node: <CaseStudyInkPage page={project.page} project={project} />,
+        node: (
+          <CaseStudyInkPage
+            page={project.page}
+            project={project}
+            previousTarget={previousTarget}
+          />
+        ),
       },
       right: {
         id: `${project.id}-article`,
@@ -355,7 +366,12 @@ export default async function FolioHome() {
           left={<WoodTablePage />}
           right={
             <FolioPage tone="ink" label="Cover" pageId="cover">
-              <CoverPage name={name} headline={headline} location={location} />
+              <CoverPage
+                name={name}
+                headline={headline}
+                location={location}
+                hasHobbies={hobbyMeta.length > 0}
+              />
             </FolioPage>
           }
         />

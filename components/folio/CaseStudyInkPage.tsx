@@ -9,11 +9,13 @@ import styles from "./FolioCaseStudy.module.css";
 type CaseStudyInkPageProps = {
   page: string;
   project: ProjectDetail;
+  previousTarget?: string;
 };
 
 export default function CaseStudyInkPage({
   page,
   project,
+  previousTarget = "works",
 }: CaseStudyInkPageProps) {
   const figures = usableScreenshots(project.screenshots);
   const hasDemo = Boolean(parseYouTubeVideoId(project.demoVideoUrl));
@@ -101,7 +103,11 @@ export default function CaseStudyInkPage({
         </div>
       </div>
 
-      <FolioFlip direction="back" label="← Previous page" />
+      <FolioFlip
+        direction="back"
+        label="← Previous page"
+        target={previousTarget}
+      />
     </div>
   );
 }

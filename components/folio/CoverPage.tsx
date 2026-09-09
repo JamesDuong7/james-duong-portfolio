@@ -6,6 +6,7 @@ type CoverPageProps = {
   headline: string;
   location?: string | null;
   issue?: string;
+  hasHobbies?: boolean;
 };
 
 export default function CoverPage({
@@ -13,6 +14,7 @@ export default function CoverPage({
   headline,
   location,
   issue = "VOL. 01",
+  hasHobbies = false,
 }: CoverPageProps) {
   return (
     <div className={styles.cover}>
@@ -31,7 +33,7 @@ export default function CoverPage({
 
       <footer className={styles.footer}>
         <ul className={styles.coverlines}>
-          <li>About &amp; hobbies</li>
+          <li>{hasHobbies ? "About & hobbies" : "About & skills"}</li>
           <li>Featured work</li>
           <li>Full project index</li>
         </ul>

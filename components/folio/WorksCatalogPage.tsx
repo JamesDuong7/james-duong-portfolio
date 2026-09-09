@@ -14,6 +14,7 @@ type WorksCatalogPageProps = {
   page: string;
   featured: WorksCatalogItem[];
   rest: WorksCatalogItem[];
+  firstProjectTarget?: string;
 };
 
 function IndexRow({
@@ -52,9 +53,10 @@ export default function WorksCatalogPage({
   page,
   featured,
   rest,
+  firstProjectTarget,
 }: WorksCatalogPageProps) {
   return (
-    <div className={styles.page} id="works-catalog">
+    <div className={styles.page}>
       <header className={styles.masthead}>
         <span className={styles.mastPink}>{page} · WORKS</span>
         <span className={styles.mastMuted}>Catalog</span>
@@ -94,7 +96,11 @@ export default function WorksCatalogPage({
         )}
       </div>
 
-      <FolioFlip direction="forward" label="Flip → Case studies" />
+      <FolioFlip
+        direction="forward"
+        label="Flip → Case studies"
+        target={firstProjectTarget}
+      />
     </div>
   );
 }

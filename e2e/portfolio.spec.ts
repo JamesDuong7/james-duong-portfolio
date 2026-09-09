@@ -30,6 +30,14 @@ test.describe("Portfolio E2E", () => {
     await expect(
       page.getByRole("button", { name: /Previous page/i }).first(),
     ).toBeVisible();
+
+    const projectHash = new URL(page.url()).hash;
+    await page
+      .locator(projectHash)
+      .getByRole("button", { name: /Previous page/i })
+      .click();
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works-catalog")).toBeInViewport();
   });
 
   test("invalid project slug renders Folio not-found page", async ({ page }) => {
@@ -61,6 +69,58 @@ test.describe("Portfolio E2E", () => {
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
     await expect(page).toHaveURL(/#contents/);
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeInViewport();
+
+    await page.getByRole("button", { name: /Turn the page.*Works/i }).click();
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works")).toBeInViewport();
+
+    // The URL must remain stable after the old smooth-scroll duration; it
+    // previously overshot into the first project while the page was moving.
+    await page.waitForTimeout(1200);
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works")).toBeInViewport();
+  });
+
+  test("mobile direct hashes land on the requested leaf", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+
+    await page.goto("/#project-harbor-risk");
+    await expect(page).toHaveURL(/#project-harbor-risk$/);
+    await expect(page.locator("#project-harbor-risk")).toBeInViewport();
+
+    await page.goto("/#contact");
+    await expect(page).toHaveURL(/#contact$/);
+    await expect(page.locator("#contact")).toBeInViewport();
+  });
+
+  test("desktop keyboard navigation and reduced motion stay functional", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    const magazine = page.getByRole("region", { name: /Portfolio magazine/i });
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#contents$/);
+    await page.waitForTimeout(1100);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+  });
+
+  test("cover promises only content that is available", async ({ page }) => {
+    await page.goto("/");
+    const hasHobbyPage = (await page.locator('[id^="hobby-"]').count()) > 0;
+
+    await expect(
+      page.getByText(hasHobbyPage ? "About & hobbies" : "About & skills", {
+        exact: true,
+      }),
+    ).toBeVisible();
   });
 
   test("flipping advances from works index into case studies", async ({ page }) => {
