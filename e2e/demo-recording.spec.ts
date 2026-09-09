@@ -20,7 +20,7 @@ test.describe("Folio demo recording", () => {
     await page.waitForTimeout(1200);
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(page).toHaveURL(/#toc/);
     await page.waitForTimeout(1200);
 
     await page.getByRole("button", { name: /Go to Works/i }).click();

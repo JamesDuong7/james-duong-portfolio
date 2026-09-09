@@ -1,137 +1,358 @@
 .cover {
   position: relative;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 2.75rem 3rem 4.5rem 3.25rem;
-  background: radial-gradient(
-    120% 90% at 80% 0%,
-    color-mix(in srgb, var(--folio-pink) 22%, var(--folio-ink)) 0%,
-    var(--folio-ink) 55%
-  );
-  color: var(--folio-on-ink);
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  padding: clamp(1.4rem, 3vw, 3rem) clamp(1.5rem, 4.2vw, 4rem) clamp(4.25rem, 7vh, 5.5rem);
   overflow: hidden;
   isolation: isolate;
+  color: var(--folio-on-ink);
+  background:
+    radial-gradient(circle at 80% 20%, rgba(242, 51, 140, 0.25), transparent 23rem),
+    linear-gradient(160deg, #252a42 0%, var(--editorial-ink) 58%, #191d2f 100%);
 }
 
-/* Bound spine down the left edge, where the magazine "opens". */
 .spine {
   position: absolute;
   inset: 0 auto 0 0;
+  z-index: 8;
   width: 14px;
-  background: linear-gradient(
-    90deg,
-    rgba(0, 0, 0, 0.45),
-    rgba(0, 0, 0, 0.12) 55%,
-    transparent
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.5), rgba(255, 255, 255, 0.06) 58%, transparent);
+}
+
+.printTexture {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  opacity: 0.22;
+  pointer-events: none;
+  background-image: repeating-radial-gradient(
+    circle at 0 0,
+    rgba(255, 255, 255, 0.11) 0 0.35px,
+    transparent 0.55px 3px
   );
-  z-index: 2;
+  background-size: 4px 4px;
+  mix-blend-mode: soft-light;
+}
+
+.masthead,
+.coverRule,
+.hero,
+.footer {
+  position: relative;
+  z-index: 3;
 }
 
 .masthead {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  font-family: var(--folio-font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.14em;
+  gap: 1rem;
+  align-items: start;
+}
+
+.brandLockup,
+.issueLockup {
+  display: flex;
+  flex-direction: column;
 }
 
 .brand {
-  color: var(--folio-on-ink);
-  font-weight: 500;
+  font-family: var(--editorial-font-display);
+  font-size: clamp(2.4rem, 5.2vw, 5.5rem);
+  letter-spacing: -0.07em;
+  line-height: 0.78;
+  white-space: nowrap;
 }
 
-.issue {
-  color: var(--folio-pink);
+.edition,
+.issueLockup,
+.coverRule,
+.kicker,
+.coverlineLead,
+.location,
+.price {
+  font-family: var(--editorial-font-mono);
+  font-size: var(--editorial-type-meta);
+  letter-spacing: var(--editorial-tracking-meta);
+  text-transform: uppercase;
 }
 
-.masthead::after {
-  content: "";
+.edition {
+  margin-top: 0.7rem;
+  color: var(--folio-on-ink-muted);
+}
+
+.issueLockup {
+  align-items: end;
+  gap: 0.3rem;
+  color: var(--editorial-accent);
+}
+
+.issueLockup span:last-child {
+  color: var(--folio-on-ink-muted);
+}
+
+.coverRule {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  gap: clamp(0.8rem, 2vw, 2rem);
+  margin-top: 1rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(245, 245, 247, 0.28);
+  color: var(--folio-on-ink-muted);
+}
+
+.coverRule span:last-child {
+  justify-self: end;
 }
 
 .hero {
-  margin-top: auto;
-  margin-bottom: auto;
+  min-height: 0;
+  display: grid;
+  align-items: center;
+}
+
+.nameLockup {
+  position: absolute;
+  inset: 8% -5% auto 0;
+  z-index: 0;
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  color: transparent;
+  font-family: var(--editorial-font-serif);
+  font-size: clamp(5.8rem, 12.2vw, 12rem);
+  font-weight: 600;
+  letter-spacing: -0.09em;
+  line-height: 0.65;
+  text-transform: uppercase;
+  -webkit-text-stroke: 1px rgba(245, 245, 247, 0.42);
+  transform: rotate(-3deg);
+}
+
+.collage {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: min(52vh, 32rem);
+  min-height: 18rem;
+  margin-top: 1rem;
+}
+
+.portraitCard,
+.projectCard {
+  position: absolute;
+  margin: 0;
+  box-shadow: 0 1.25rem 2.5rem rgba(9, 10, 18, 0.28);
+}
+
+.portraitCard {
+  inset: 3% 20% 4% 21%;
+  z-index: 1;
+  padding: 0.65rem;
+  background: var(--editorial-paper);
+  color: var(--editorial-copy);
+  transform: rotate(2.2deg);
+}
+
+.portraitPlaceholder {
+  position: relative;
+  height: calc(100% - 1.7rem);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 53% 31%, #bdb8b3 0 13%, transparent 13.5%),
+    radial-gradient(ellipse at 53% 82%, #a49fa0 0 34%, transparent 34.5%),
+    linear-gradient(135deg, #d9d4cd, #8d8d95);
+  filter: grayscale(1) contrast(1.12);
+}
+
+.portraitPlaceholder::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 0 51%, rgba(242, 51, 140, 0.5) 51% 57%, transparent 57%);
+  mix-blend-mode: multiply;
+}
+
+.portraitPlaceholder span {
+  position: absolute;
+  right: -0.05em;
+  bottom: -0.14em;
+  color: rgba(245, 245, 247, 0.8);
+  font-family: var(--editorial-font-display);
+  font-size: clamp(5rem, 12vw, 10rem);
+  line-height: 0.8;
+}
+
+.portraitPlaceholder i {
+  width: 72%;
+  height: 1px;
+  background: rgba(245, 245, 247, 0.55);
+  transform: rotate(-42deg);
+}
+
+.portraitCard figcaption,
+.projectCard figcaption {
+  font-family: var(--editorial-font-mono);
+  font-size: 0.52rem;
+  font-style: normal;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.portraitCard figcaption {
+  padding-top: 0.65rem;
+}
+
+.projectCard {
+  z-index: 3;
+  width: min(49%, 20rem);
+  padding: 0.45rem;
+  color: var(--editorial-copy);
+  background: var(--editorial-paper);
+}
+
+.projectCardPrimary {
+  right: 0;
+  bottom: 6%;
+  transform: rotate(-4deg);
+}
+
+.projectCardSecondary {
+  left: 0;
+  top: 18%;
+  width: min(35%, 13rem);
+  transform: rotate(-7deg);
+}
+
+.projectMedia {
+  position: relative;
+  aspect-ratio: var(--editorial-ratio-landscape);
+  overflow: hidden;
+  background: var(--editorial-paper-deep);
+}
+
+.projectImage {
+  object-fit: cover;
+  filter: saturate(0.72) contrast(1.1);
+}
+
+.projectPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  gap: 0.25rem;
+  padding: 0.6rem;
+  background:
+    linear-gradient(135deg, transparent 48%, var(--editorial-accent) 48% 52%, transparent 52%),
+    repeating-linear-gradient(90deg, #d9d4cb 0 8px, var(--editorial-paper) 8px 9px);
+  font-family: var(--editorial-font-mono);
+  text-align: center;
+}
+
+.projectPlaceholder span {
+  color: var(--editorial-accent);
+  font-size: 1.5rem;
+}
+
+.projectPlaceholder i {
+  font-size: 0.55rem;
+  font-style: normal;
+  text-transform: uppercase;
+}
+
+.projectCard figcaption {
+  display: flex;
+  gap: 0.55rem;
+  padding-top: 0.5rem;
+}
+
+.projectCard figcaption span {
+  color: var(--editorial-accent);
+}
+
+.heroCopy {
+  position: absolute;
+  z-index: 4;
+  right: 0;
+  bottom: 7%;
+  width: min(58%, 24rem);
+  padding: 1rem;
+  color: var(--editorial-copy);
+  background: var(--editorial-paper);
+  box-shadow: 0.8rem 0.8rem 0 var(--editorial-accent);
 }
 
 .kicker {
-  font-family: var(--folio-font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--folio-pink);
-}
-
-.name {
-  font-family: var(--folio-font-display);
-  font-size: clamp(3rem, 6.5vw, 6rem);
-  line-height: 0.9;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-  color: var(--folio-on-ink);
+  margin-bottom: 0.55rem;
+  color: var(--editorial-accent);
 }
 
 .headline {
-  font-family: var(--folio-font-body);
-  font-size: clamp(1rem, 1.5vw, 1.35rem);
-  font-weight: 500;
-  color: var(--folio-on-ink-muted);
-  max-width: 26rem;
+  font-family: var(--editorial-font-serif);
+  font-size: clamp(1.05rem, 1.8vw, 1.7rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
 }
 
 .footer {
   display: flex;
-  align-items: flex-end;
+  align-items: end;
   justify-content: space-between;
   gap: 1.5rem;
-  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(245, 245, 247, 0.28);
 }
 
 .coverlines {
-  list-style: none;
+  max-width: 60%;
+}
+
+.coverlineLead {
+  color: var(--editorial-accent);
+}
+
+.coverlines ol {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  font-family: var(--folio-font-mono);
-  font-size: 0.78rem;
-  color: var(--folio-on-ink-muted);
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0.55rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: coverline;
 }
 
 .coverlines li {
-  position: relative;
-  padding-left: 1rem;
+  counter-increment: coverline;
+  color: var(--folio-on-ink-muted);
+  font-size: clamp(0.62rem, 0.82vw, 0.8rem);
 }
 
 .coverlines li::before {
-  content: "—";
-  position: absolute;
-  left: 0;
-  color: var(--folio-pink);
+  content: "0" counter(coverline) " ";
+  color: var(--editorial-accent);
+  font-family: var(--editorial-font-mono);
 }
 
 .meta {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 0.6rem;
+  align-items: end;
+  gap: 0.4rem;
+  color: var(--folio-on-ink-muted);
 }
 
 .location {
-  font-family: var(--folio-font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  color: var(--folio-pink);
+  color: var(--editorial-accent);
 }
 
-/* Faux barcode — a small magazine-cover flourish. */
 .barcode {
   width: 5.5rem;
-  height: 2.25rem;
+  height: 1.65rem;
   background-image: repeating-linear-gradient(
     90deg,
     var(--folio-on-ink) 0 2px,
@@ -139,20 +360,86 @@
     var(--folio-on-ink) 4px 5px,
     transparent 5px 9px
   );
-  opacity: 0.8;
+  opacity: 0.72;
 }
 
 @media (max-width: 900px) {
   .cover {
-    padding: 3rem 1.75rem 3.5rem;
     min-height: 100dvh;
+    padding: 1.4rem 1.25rem 3rem;
   }
 
   .spine {
     display: none;
   }
 
-  .name {
-    font-size: clamp(3rem, 16vw, 5rem);
+  .brand {
+    font-size: clamp(2.7rem, 14vw, 4.5rem);
+  }
+
+  .edition,
+  .coverRule span:nth-child(2) {
+    display: none;
+  }
+
+  .coverRule {
+    grid-template-columns: auto 1fr;
+  }
+
+  .collage {
+    height: min(54vh, 29rem);
+    min-height: 20rem;
+  }
+
+  .nameLockup {
+    inset: 8% -6% auto -2%;
+    font-size: clamp(5.4rem, 30vw, 8rem);
+  }
+
+  .portraitCard {
+    inset: 5% 10% 6% 14%;
+  }
+
+  .projectCardPrimary {
+    width: 56%;
+  }
+
+  .projectCardSecondary {
+    top: 29%;
+    width: 34%;
+  }
+
+  .heroCopy {
+    bottom: 3%;
+    width: 62%;
+    padding: 0.75rem;
+  }
+
+  .footer {
+    gap: 0.75rem;
+  }
+
+  .coverlines {
+    max-width: 70%;
+  }
+
+  .coverlines li:nth-child(n + 3),
+  .price {
+    display: none;
+  }
+}
+
+@media (max-width: 430px) and (max-height: 760px) {
+  .cover {
+    padding-top: 1rem;
+  }
+
+  .collage {
+    height: 46vh;
+    min-height: 16rem;
+  }
+
+  .footer {
+    padding-top: 0.65rem;
   }
 }

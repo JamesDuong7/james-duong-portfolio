@@ -462,13 +462,16 @@ export default function FolioBook({ children }: FolioBookProps) {
       const from = flippingRef.current
         ? activeIndexRef.current
         : currentSpreadIndex(book);
-      if (from !== index) {
+      const narrow = isNarrowViewport();
+      const shouldPosition = from !== index || (narrow && Boolean(hashId));
+
+      if (shouldPosition) {
         const reduceMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)",
         ).matches;
         const wantSmooth = animate && !reduceMotion;
 
-        if (isNarrowViewport()) {
+        if (narrow) {
           // Prefer the leaf matching the hash so stacked left/right pages
           // land on the intended section (e.g. About, not TOC above it).
           const pageId = hashId ?? canonicalHashId(target);

@@ -23,7 +23,9 @@ import {
   fetchAllProjectsDetail,
   fetchPersonalInfo,
 } from "@/sanity/lib/fetch";
+import { primaryScreenshot } from "@/sanity/lib/types";
 import { portableTextToPlain } from "@/lib/portableText";
+import { parseYouTubeVideoId, youtubePosterUrl } from "@/lib/youtube";
 
 type LeafPage = {
   id: string;
@@ -134,6 +136,19 @@ export default async function FolioHome() {
       description: p.description ?? "",
     }));
 
+  const coverProjects = [...orderedProjects]
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
+    .slice(0, 2)
+    .map((project) => {
+      const shot = primaryScreenshot(project.screenshots);
+      const videoId = parseYouTubeVideoId(project.demoVideoUrl);
+      return {
+        title: stegaClean(project.title ?? "Untitled"),
+        imageUrl: shot?.url ?? (videoId ? youtubePosterUrl(videoId) : null),
+        imageAlt: shot?.alt,
+      };
+    });
+
   const nextPage = createPageAllocator();
 
   const aboutPage = nextPage();
@@ -184,6 +199,7 @@ export default async function FolioHome() {
           label: stegaClean(item.title ?? "Untitled"),
           target: item.id,
           page: item.page,
+          featured: Boolean(item.featured),
         }),
       ),
     },
@@ -371,6 +387,7 @@ export default async function FolioHome() {
                 headline={headline}
                 location={location}
                 hasHobbies={hobbyMeta.length > 0}
+                projects={coverProjects}
               />
             </FolioPage>
           }

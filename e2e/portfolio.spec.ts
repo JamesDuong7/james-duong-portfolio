@@ -11,8 +11,10 @@ test.describe("Portfolio E2E", () => {
     await expect(page.getByRole("heading", { name: /James Duong/i })).toBeVisible();
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page.getByRole("heading", { name: /^About$/ })).toBeVisible();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(
+      page.getByRole("heading", { name: /Inside the issue/i }),
+    ).toBeVisible();
+    await expect(page).toHaveURL(/#toc/);
   });
 
   test("works index flips to an in-book case study", async ({ page }) => {
@@ -67,6 +69,10 @@ test.describe("Portfolio E2E", () => {
     ).toBeVisible();
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
+    await expect(page).toHaveURL(/#toc/);
+    await expect(page.locator("#toc")).toBeInViewport();
+
+    await page.getByRole("button", { name: /Go to About Me/i }).click();
     await expect(page).toHaveURL(/#contents/);
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeInViewport();
 
@@ -117,9 +123,12 @@ test.describe("Portfolio E2E", () => {
     const hasHobbyPage = (await page.locator('[id^="hobby-"]').count()) > 0;
 
     await expect(
-      page.getByText(hasHobbyPage ? "About & hobbies" : "About & skills", {
-        exact: true,
-      }),
+      page.getByText(
+        hasHobbyPage
+          ? "About, skills & off-hours"
+          : "About & technical practice",
+        { exact: true },
+      ),
     ).toBeVisible();
   });
 
@@ -128,7 +137,7 @@ test.describe("Portfolio E2E", () => {
     await page.setViewportSize({ width: 1280, height: 800 });
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(page).toHaveURL(/#toc/);
 
     for (let i = 0; i < 16; i += 1) {
       const catalog = page.getByRole("button", {
