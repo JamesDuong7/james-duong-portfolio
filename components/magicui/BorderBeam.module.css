@@ -1,0 +1,26 @@
+.container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 5;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.rect {
+  animation: folioBorderBeamLoop var(--folio-beam-duration, 12s) linear infinite;
+}
+
+@keyframes folioBorderBeamLoop {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: var(--folio-beam-offset, -1000px);
+  }
+}

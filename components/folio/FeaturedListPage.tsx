@@ -1,6 +1,8 @@
 import { stegaClean } from "@sanity/client/stega";
 import type { FeaturedProject } from "@/sanity/lib/types";
 import { primaryScreenshot } from "@/sanity/lib/types";
+import BlurFade from "@/components/magicui/BlurFade";
+import Tilt from "@/components/motion-primitives/Tilt";
 import FolioFigure from "./FolioFigure";
 import FolioFlip from "./FolioFlip";
 import { FolioPrimaryButton, FolioTechTag } from "./FolioControls";
@@ -34,7 +36,13 @@ export default function FeaturedListPage({
               const href = slug ? `/projects/${slug}` : undefined;
               const shot = primaryScreenshot(project.screenshots);
               return (
-                <li key={slug || project.title} className={styles.entry}>
+                <BlurFade
+                  key={slug || project.title}
+                  as="li"
+                  className={styles.entry}
+                  delay={0.06 * index}
+                  duration={0.5}
+                >
                   <span className={styles.number}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -44,10 +52,12 @@ export default function FeaturedListPage({
                       <p className={styles.description}>{project.description}</p>
                     )}
                     {shot?.url && (
-                      <FolioFigure
-                        screenshot={shot}
-                        caption={`FIG. ${String(index + 1).padStart(2, "0")} — ${project.title}`}
-                      />
+                      <Tilt maxRotation={5} perspective={1000} scale={1.01}>
+                        <FolioFigure
+                          screenshot={shot}
+                          caption={`FIG. ${String(index + 1).padStart(2, "0")} — ${project.title}`}
+                        />
+                      </Tilt>
                     )}
                     {(project.tech?.length ?? 0) > 0 && (
                       <div className={styles.tags}>
@@ -67,7 +77,7 @@ export default function FeaturedListPage({
                       </div>
                     )}
                   </div>
-                </li>
+                </BlurFade>
               );
             })}
           </ul>

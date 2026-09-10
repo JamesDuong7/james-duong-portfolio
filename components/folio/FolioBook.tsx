@@ -429,6 +429,11 @@ export default function FolioBook({ children }: FolioBookProps) {
             },
             {
               transform:
+                "rotateY(-178.6deg) rotateZ(0.4deg) skewY(0.3deg) scaleX(0.995) translateZ(4px)",
+              offset: 0.94,
+            },
+            {
+              transform:
                 "rotateY(-180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
               offset: 1,
             },
@@ -463,6 +468,11 @@ export default function FolioBook({ children }: FolioBookProps) {
               transform:
                 "rotateY(156deg) rotateZ(-1.8deg) skewY(-1.0deg) scaleX(0.988) translateZ(14px)",
               offset: 0.85,
+            },
+            {
+              transform:
+                "rotateY(178.6deg) rotateZ(-0.4deg) skewY(-0.3deg) scaleX(0.995) translateZ(4px)",
+              offset: 0.94,
             },
             {
               transform:
@@ -629,14 +639,17 @@ export default function FolioBook({ children }: FolioBookProps) {
       }
     };
 
+    let initialSyncDone = false;
     const syncFromHash = (animate: boolean) => {
       const id = window.location.hash.slice(1);
       const index = indexFromHash(book, id);
       if (index === null) {
         syncSpreadInteractivity(currentSpreadIndex(book));
+        initialSyncDone = true;
         return;
       }
-      goToSpread(index, { syncHash: false, animate });
+      goToSpread(index, { syncHash: false, animate, hashId: id });
+      initialSyncDone = true;
     };
 
     const onHashChange = () => {
@@ -646,10 +659,10 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     let scrollSyncRaf = 0;
     const onScroll = () => {
-      if (flippingRef.current) return;
+      if (flippingRef.current || !initialSyncDone) return;
       cancelAnimationFrame(scrollSyncRaf);
       scrollSyncRaf = requestAnimationFrame(() => {
-        if (flippingRef.current) return;
+        if (flippingRef.current || !initialSyncDone) return;
         const idx = currentSpreadIndex(book);
         syncSpreadInteractivity(idx);
         if (isNarrowViewport()) {

@@ -1,3 +1,4 @@
+import BlurFade from "@/components/magicui/BlurFade";
 import FolioFlip from "./FolioFlip";
 import { FolioLinkButton } from "./FolioControls";
 import styles from "./ContactPage.module.css";
@@ -26,7 +27,8 @@ export default function ContactIntroPage({
         <span className={styles.mastMuted}>Last page</span>
       </header>
 
-      <div className={styles.introBody}>
+      <BlurFade delay={0.1} duration={0.6}>
+        <div className={styles.introBody}>
         <h2 className={styles.title}>Let&apos;s talk</h2>
         <p className={styles.lead}>
           Have a role, a project, or just want to say hi? Send a note using the
@@ -73,6 +75,7 @@ export default function ContactIntroPage({
           )}
         </div>
       </div>
+      </BlurFade>
 
       <FolioFlip direction="back" label="← Previous page" />
     </div>

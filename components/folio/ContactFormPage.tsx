@@ -1,3 +1,4 @@
+import BorderBeam from "@/components/magicui/BorderBeam";
 import FolioContactForm from "./FolioContactForm";
 import styles from "./ContactPage.module.css";
 
@@ -8,6 +9,7 @@ type ContactFormPageProps = {
 export default function ContactFormPage({ email }: ContactFormPageProps) {
   return (
     <div className={`${styles.page} ${styles.responseCard}`}>
+      <BorderBeam duration={14} strokeWidth={1.5} borderRadius={4} />
       <div className={styles.perforatedLine} aria-hidden>
         <span>✂</span>
         <span>TEAR ALONG PERFORATION · RESPONSE DISPATCH CARD</span>
