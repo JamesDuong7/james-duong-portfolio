@@ -115,6 +115,14 @@ export default async function FolioHome() {
 
   const hobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
 
+  const CANONICAL_PROJECT_PRIORITY: Record<string, number> = {
+    "harbor-risk": 1,
+    "aztec-assess": 2,
+    nextgame: 3,
+    "job-posting-notifier": 4,
+    portfolio: 5,
+  };
+
   const orderedProjects = (projects ?? [])
     .map((project) => {
       const slug =
@@ -122,7 +130,12 @@ export default async function FolioHome() {
         slugify(project.title ?? "project");
       return { ...project, slug };
     })
-    .filter((project) => Boolean(project.slug));
+    .filter((project) => Boolean(project.slug))
+    .sort((a, b) => {
+      const rankA = CANONICAL_PROJECT_PRIORITY[a.slug] ?? 99;
+      const rankB = CANONICAL_PROJECT_PRIORITY[b.slug] ?? 99;
+      return rankA - rankB;
+    });
 
   const toCatalogItem = (project: (typeof orderedProjects)[number]) => {
     const shot = primaryScreenshot(project.screenshots);

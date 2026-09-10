@@ -280,23 +280,41 @@
   color: var(--folio-on-paper);
 }
 
-/* Mobile: stack pages vertically inside each spread */
+/* Mobile: swipe between chapters, scroll within each chapter */
 @media (max-width: 900px) {
   .book {
-    height: auto;
+    height: 100dvh;
     min-height: 100dvh;
-    display: block;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scroll-snap-type: none;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 100vw;
+    grid-template-rows: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
   }
 
   .spread {
-    min-width: 0;
-    height: auto;
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
     display: flex;
     flex-direction: column;
-    scroll-snap-align: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .spread::-webkit-scrollbar {
+    display: none;
   }
 
   .spread::after {
@@ -304,8 +322,10 @@
   }
 
   .page {
-    height: auto;
+    width: 100%;
     min-height: 100dvh;
+    height: auto;
+    flex-shrink: 0;
     overflow-y: visible;
   }
 

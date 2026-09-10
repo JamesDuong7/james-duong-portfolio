@@ -103,11 +103,108 @@
 
 /* ── Form (right, paper) ───────────────────────────────────────── */
 
+.responseCard {
+  background: var(--editorial-paper);
+  border-left: 2px dashed var(--editorial-rule);
+  position: relative;
+  overflow: hidden;
+}
+
+.perforatedLine {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--folio-font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--editorial-copy-muted);
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 1px dotted var(--editorial-rule);
+}
+
+.perforatedLine span:first-child {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.cardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cardKicker {
+  font-family: var(--folio-font-mono);
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+}
+
+.postalIndicia {
+  border: 1.5px solid var(--editorial-copy);
+  padding: 0.35rem 0.55rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: var(--folio-font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--editorial-copy);
+  background: color-mix(in srgb, var(--editorial-paper-deep) 60%, transparent);
+  flex-shrink: 0;
+}
+
+.indiciaTitle {
+  font-size: 0.52rem;
+  font-weight: 700;
+}
+
+.indiciaSub {
+  font-size: 0.44rem;
+  opacity: 0.85;
+}
+
+.indiciaPermit {
+  font-size: 0.44rem;
+  font-weight: 600;
+  margin-top: 0.15rem;
+  padding-top: 0.15rem;
+  border-top: 1px solid var(--editorial-rule);
+  width: 100%;
+}
+
 .formTitle {
-  font-family: var(--folio-font-display);
-  font-size: clamp(1.75rem, 2.5vw, 2rem);
+  font-family: var(--editorial-font-serif);
+  font-size: clamp(2rem, 3.2vw, 2.75rem);
+  font-style: italic;
   color: var(--folio-on-paper);
-  line-height: 1.1;
+  line-height: 1.05;
+}
+
+.cardFooter {
+  margin-top: 0.75rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--editorial-rule);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--folio-font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--folio-on-paper-muted);
 }
 
 .formIntro {
@@ -236,6 +333,15 @@
   .page {
     padding: 2rem 1.5rem 2.5rem;
     min-height: 100%;
+  }
+
+  .responseCard {
+    border-left: none;
+    border-top: 2px dashed var(--editorial-rule);
+  }
+
+  .postalIndicia {
+    display: none;
   }
 
   .formIntro {

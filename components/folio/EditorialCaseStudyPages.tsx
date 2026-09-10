@@ -46,40 +46,8 @@ type EditorialProfile = {
 };
 
 const editorialProfiles: Record<string, EditorialProfile> = {
-  "aztec-assess": {
-    caseNumber: "01",
-    category: "Product / Education",
-    openerEyebrow: "Adaptive learning, role-aware delivery",
-    assignment: "Make one platform feel native to every role.",
-    readTime: "04 min",
-    signals: [
-      { label: "Working today", value: "Auth, courses, question banks and quiz attempts" },
-      { label: "Identity paths", value: "Email, Google and Microsoft" },
-      { label: "Quality evidence", value: "Frontend and backend automated tests" },
-    ],
-    roleSummary: "Frontend engineer",
-    surface: "Web application",
-    status: "Active development",
-    systemEyebrow: "Under the interface",
-    systemTitle: "A campus quiz, end to end.",
-    architecture: [
-      { label: "React interface", detail: "Role-aware routes · OAuth · quiz UI" },
-      { label: "Django REST API", detail: "Permissions · courses · attempt services" },
-      { label: "PostgreSQL", detail: "Users · banks · quizzes · answers" },
-    ],
-    systemNotes: ["JWT refresh boundary", "Transactional attempt update"],
-    flowTitle: "One answer, four deliberate steps.",
-    flowSteps: ["Answer submitted", "Attempt recorded", "Difficulty adjusts", "Next unused question"],
-    implementationTitle: "The seams are part of the product.",
-    fieldTitle: "What shipped, what changed.",
-    visual: "assessment",
-    visualMeta: "Question 07 / 12",
-    visualTitle: "Adaptive assessment",
-    visualStates: ["Easy", "Medium", "Hard"],
-    visualMark: "AA",
-  },
   "harbor-risk": {
-    caseNumber: "02",
+    caseNumber: "01",
     category: "Product / Finance",
     openerEyebrow: "Quantitative risk, explained plainly",
     assignment: "Turn portfolio risk into a story people can use.",
@@ -109,6 +77,38 @@ const editorialProfiles: Record<string, EditorialProfile> = {
     visualTitle: "Risk range",
     visualStates: ["VaR", "Drawdown", "ES"],
     visualMark: "HR",
+  },
+  "aztec-assess": {
+    caseNumber: "02",
+    category: "Product / Education",
+    openerEyebrow: "Adaptive learning, role-aware delivery",
+    assignment: "Make one platform feel native to every role.",
+    readTime: "04 min",
+    signals: [
+      { label: "Working today", value: "Auth, courses, question banks and quiz attempts" },
+      { label: "Identity paths", value: "Email, Google and Microsoft" },
+      { label: "Quality evidence", value: "Frontend and backend automated tests" },
+    ],
+    roleSummary: "Frontend engineer",
+    surface: "Web application",
+    status: "Active development",
+    systemEyebrow: "Under the interface",
+    systemTitle: "A campus quiz, end to end.",
+    architecture: [
+      { label: "React interface", detail: "Role-aware routes · OAuth · quiz UI" },
+      { label: "Django REST API", detail: "Permissions · courses · attempt services" },
+      { label: "PostgreSQL", detail: "Users · banks · quizzes · answers" },
+    ],
+    systemNotes: ["JWT refresh boundary", "Transactional attempt update"],
+    flowTitle: "One answer, four deliberate steps.",
+    flowSteps: ["Answer submitted", "Attempt recorded", "Difficulty adjusts", "Next unused question"],
+    implementationTitle: "The seams are part of the product.",
+    fieldTitle: "What shipped, what changed.",
+    visual: "assessment",
+    visualMeta: "Question 07 / 12",
+    visualTitle: "Adaptive assessment",
+    visualStates: ["Easy", "Medium", "Hard"],
+    visualMark: "AA",
   },
   nextgame: {
     caseNumber: "03",
@@ -309,6 +309,7 @@ function ProjectPlate({
           url={project.demoVideoUrl}
           title={project.title}
           caption={`Demo film — ${project.title}`}
+          priority={profile.caseNumber === "01"}
         />
       </div>
     );

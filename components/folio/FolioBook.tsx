@@ -85,23 +85,6 @@ function isNarrowViewport() {
 }
 
 function currentSpreadIndex(book: HTMLDivElement) {
-  if (isNarrowViewport()) {
-    const spreads = spreadEls(book);
-    if (spreads.length === 0) return 0;
-
-    // Pick the spread whose top edge is closest to the viewport top.
-    let best = 0;
-    let bestDist = Infinity;
-    for (let i = 0; i < spreads.length; i += 1) {
-      const dist = Math.abs(spreads[i].getBoundingClientRect().top);
-      if (dist < bestDist) {
-        bestDist = dist;
-        best = i;
-      }
-    }
-    return best;
-  }
-
   return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
 }
 
@@ -125,6 +108,9 @@ function canonicalHashId(spread: HTMLElement, preferred?: string) {
   const ids = pageIdsInSpread(spread);
   // Keep deep links stable (e.g. /#works, /#featured-slug) when present.
   if (preferred && ids.includes(preferred)) return preferred;
+  const currentHash =
+    typeof window !== "undefined" ? window.location.hash.slice(1) : "";
+  if (currentHash && ids.includes(currentHash)) return currentHash;
   for (const id of ids) {
     if (SECTION_IDS.has(id)) return id;
   }
@@ -190,19 +176,26 @@ function scrollBookTo(
   index?: number,
 ) {
   if (isNarrowViewport()) {
-    const root = document.documentElement;
-    const previousBehavior = root.style.scrollBehavior;
-    root.style.scrollBehavior = "auto";
-    target.scrollIntoView({
-      // A mobile issue is a tall stack of leaves. Smooth scrolling to a
-      // distant chapter makes every unrelated page flash past and lets
-      // scroll observers temporarily select the wrong spread. Chapter
-      // navigation is therefore an immediate page jump; motion stays local
-      // to the desktop leaf turn.
-      behavior: "auto",
-      block: "start",
-    });
-    root.style.scrollBehavior = previousBehavior;
+    const spreads = spreadEls(book);
+    const targetSpread = (target.dataset.folioSpread !== undefined
+      ? target
+      : target.closest("[data-folio-spread]")) as HTMLElement ?? target;
+
+    const spreadIdx =
+      typeof index === "number"
+        ? index
+        : Math.max(spreads.indexOf(targetSpread), 0);
+
+    const previousBehavior = book.style.scrollBehavior;
+    book.style.scrollBehavior = "auto";
+    book.scrollLeft = spreadIdx * book.clientWidth;
+    book.style.scrollBehavior = previousBehavior;
+
+    if (target !== targetSpread && targetSpread.contains(target)) {
+      targetSpread.scrollTop = target.offsetTop;
+    } else {
+      targetSpread.scrollTop = 0;
+    }
     return;
   }
 
@@ -593,7 +586,15 @@ export default function FolioBook({ children }: FolioBookProps) {
       cancelAnimationFrame(scrollSyncRaf);
       scrollSyncRaf = requestAnimationFrame(() => {
         if (flippingRef.current) return;
-        syncSpreadInteractivity(currentSpreadIndex(book));
+        const idx = currentSpreadIndex(book);
+        syncSpreadInteractivity(idx);
+        if (isNarrowViewport()) {
+          const spreads = spreadEls(book);
+          const activeSpread = spreads[idx];
+          if (activeSpread) {
+            syncHashForSpread(activeSpread, idx);
+          }
+        }
       });
     };
 
