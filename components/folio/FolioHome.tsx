@@ -13,8 +13,6 @@ import AboutMePage from "./AboutMePage";
 import HobbyPage from "./HobbyPage";
 import SectionOpenerPage from "./SectionOpenerPage";
 import WorksCatalogPage from "./WorksCatalogPage";
-import CaseStudyInkPage from "./CaseStudyInkPage";
-import CaseStudyPaperPage from "./CaseStudyPaperPage";
 import {
   EditorialCaseStudyBriefPage,
   EditorialCaseStudyFieldNotesPage,
@@ -57,8 +55,6 @@ function slugify(value: string) {
 function pad(n: number) {
   return String(n).padStart(2, "0");
 }
-
-const EDITORIAL_REFERENCE_SLUG = "aztec-assess";
 
 /** Allocate continuous magazine page numbers during composition. */
 function createPageAllocator() {
@@ -171,15 +167,13 @@ export default async function FolioHome() {
   const projectMeta = orderedProjects.map((project) => {
     const pageLeft = nextPage();
     const pageRight = nextPage();
-    const isEditorialReference = project.slug === EDITORIAL_REFERENCE_SLUG;
     return {
       ...project,
       id: `project-${project.slug}`,
       page: pageLeft,
       pageRight,
-      isEditorialReference,
-      systemPage: isEditorialReference ? nextPage() : null,
-      fieldNotesPage: isEditorialReference ? nextPage() : null,
+      systemPage: nextPage(),
+      fieldNotesPage: nextPage(),
     };
   });
 
@@ -320,107 +314,72 @@ export default async function FolioHome() {
     },
   });
 
-  // Each project owns one ink | paper case study spread
+  // Every project uses the approved two-spread editorial case-study system.
   projectMeta.forEach((project, index) => {
     const previousTarget =
-      index === 0 ? "works" : projectMeta[index - 1].id;
+      index === 0 ? "works" : `${projectMeta[index - 1].id}-system`;
     const nextTitle = projectMeta[index + 1]
       ? stegaClean(projectMeta[index + 1].title ?? "Next")
       : null;
     const nextTarget = projectMeta[index + 1]?.id ?? "contact";
 
-    if (
-      project.isEditorialReference &&
-      project.systemPage &&
-      project.fieldNotesPage
-    ) {
-      spreads.push(
-        {
-          label: `${stegaClean(project.title ?? "Project")} opener and brief`,
-          left: {
-            id: project.id,
-            label: stegaClean(project.title ?? "Case study"),
-            tone: "ink",
-            node: (
-              <EditorialCaseStudyOpenerPage
-                page={project.page}
-                project={project}
-                previousTarget={previousTarget}
-              />
-            ),
-          },
-          right: {
-            id: `${project.id}-brief`,
-            label: `${stegaClean(project.title ?? "Project")} brief`,
-            tone: "paper",
-            node: (
-              <EditorialCaseStudyBriefPage
-                page={project.pageRight}
-                project={project}
-                nextTarget={`${project.id}-system`}
-              />
-            ),
-          },
+    spreads.push(
+      {
+        label: `${stegaClean(project.title ?? "Project")} opener and brief`,
+        left: {
+          id: project.id,
+          label: stegaClean(project.title ?? "Case study"),
+          tone: "ink",
+          node: (
+            <EditorialCaseStudyOpenerPage
+              page={project.page}
+              project={project}
+              previousTarget={previousTarget}
+            />
+          ),
         },
-        {
-          label: `${stegaClean(project.title ?? "Project")} system and field notes`,
-          left: {
-            id: `${project.id}-system`,
-            label: `${stegaClean(project.title ?? "Project")} system map`,
-            tone: "paper",
-            node: (
-              <EditorialCaseStudySystemPage
-                page={project.systemPage}
-                project={project}
-                previousTarget={project.id}
-              />
-            ),
-          },
-          right: {
-            id: `${project.id}-article`,
-            label: `${stegaClean(project.title ?? "Project")} field notes`,
-            tone: "paper",
-            node: (
-              <EditorialCaseStudyFieldNotesPage
-                page={project.fieldNotesPage}
-                project={project}
-                nextTarget={nextTarget}
-                nextTitle={nextTitle}
-              />
-            ),
-          },
+        right: {
+          id: `${project.id}-brief`,
+          label: `${stegaClean(project.title ?? "Project")} brief`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudyBriefPage
+              page={project.pageRight}
+              project={project}
+              nextTarget={`${project.id}-system`}
+            />
+          ),
         },
-      );
-      return;
-    }
-
-    spreads.push({
-      label: `${stegaClean(project.title ?? "Project")} case study`,
-      left: {
-        id: project.id,
-        label: stegaClean(project.title ?? "Case study"),
-        tone: "ink",
-        node: (
-          <CaseStudyInkPage
-            page={project.page}
-            project={project}
-            previousTarget={previousTarget}
-          />
-        ),
       },
-      right: {
-        id: `${project.id}-article`,
-        label: `${stegaClean(project.title ?? "Project")} article`,
-        tone: "paper",
-        node: (
-          <CaseStudyPaperPage
-            page={project.pageRight}
-            project={project}
-            nextTitle={nextTitle}
-          />
-        ),
+      {
+        label: `${stegaClean(project.title ?? "Project")} system and field notes`,
+        left: {
+          id: `${project.id}-system`,
+          label: `${stegaClean(project.title ?? "Project")} system map`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudySystemPage
+              page={project.systemPage}
+              project={project}
+              previousTarget={project.id}
+            />
+          ),
+        },
+        right: {
+          id: `${project.id}-article`,
+          label: `${stegaClean(project.title ?? "Project")} field notes`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudyFieldNotesPage
+              page={project.fieldNotesPage}
+              project={project}
+              nextTarget={nextTarget}
+              nextTitle={nextTitle}
+            />
+          ),
+        },
       },
-    });
+    );
   });
 
   spreads.push({

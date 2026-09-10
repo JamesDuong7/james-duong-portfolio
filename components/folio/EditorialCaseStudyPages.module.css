@@ -150,6 +150,30 @@
     repeating-linear-gradient(90deg, #22283e 0 1px, #1a1f32 1px 11px);
 }
 
+.interfacePlaceholder[data-visual="risk"] {
+  background:
+    linear-gradient(162deg, transparent 0 60%, rgba(133, 184, 170, 0.24) 60%),
+    repeating-linear-gradient(90deg, #22283e 0 1px, #1a1f32 1px 11px);
+}
+
+.interfacePlaceholder[data-visual="forecast"] {
+  background:
+    linear-gradient(118deg, transparent 0 46%, rgba(242, 51, 140, 0.2) 46% 47%, transparent 47%),
+    repeating-linear-gradient(0deg, #1a1f32 0 1px, #22283e 1px 18px);
+}
+
+.interfacePlaceholder[data-visual="notifier"] {
+  background:
+    linear-gradient(145deg, transparent 0 72%, rgba(242, 51, 140, 0.24) 72%),
+    #111524;
+}
+
+.interfacePlaceholder[data-visual="portfolio"] {
+  background:
+    linear-gradient(145deg, transparent 0 58%, rgba(242, 51, 140, 0.17) 58%),
+    repeating-linear-gradient(90deg, #22283e 0 1px, #1a1f32 1px 28px);
+}
+
 .browserChrome {
   height: 1.9rem;
   display: flex;
@@ -190,6 +214,11 @@
   padding: 0.85rem;
   background: #d9e9e4;
 }
+
+.interfacePlaceholder[data-visual="risk"] .mockInterface aside { background: #c9ddd7; }
+.interfacePlaceholder[data-visual="forecast"] .mockInterface aside { background: #e2d8e2; }
+.interfacePlaceholder[data-visual="notifier"] .mockInterface aside { background: #d8dae1; }
+.interfacePlaceholder[data-visual="portfolio"] .mockInterface aside { background: #ead7e1; }
 
 .mockInterface aside span {
   width: 2rem;
@@ -266,6 +295,18 @@
   font-size: 0.5rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.demoPlate {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 0;
+}
+
+.demoPlate > figure {
+  width: 100%;
+  max-width: none;
 }
 
 .annotation {
@@ -683,7 +724,21 @@
   }
 
   .titleLockup h1 {
+    margin-top: 0.55rem;
     font-size: clamp(5rem, 24vw, 8rem);
+  }
+
+  .titleLockup .eyebrow {
+    max-width: 36ch;
+    line-height: 1.5;
+  }
+
+  .titleLockup[data-single-word="true"] h1 {
+    font-size: clamp(4rem, 19vw, 6.5rem);
+  }
+
+  .titleLockup[data-long-word="true"] h1 {
+    font-size: clamp(3.75rem, 18vw, 6.1rem);
   }
 
   .caseNumber { font-size: clamp(5rem, 25vw, 8rem); }

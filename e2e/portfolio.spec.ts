@@ -175,10 +175,13 @@ test.describe("Portfolio E2E", () => {
       page.getByRole("heading", { level: 1, name: /Aztec Assess/i }),
     ).toBeVisible();
     await expect(
-      page.getByText(/Product capture pending/i),
+      page
+        .locator("#project-aztec-assess")
+        .getByText(/Product capture pending/i),
     ).toBeVisible();
 
     await page
+      .locator("#project-aztec-assess-brief")
       .getByRole("button", { name: /Continue.*System/i })
       .click();
     await expect(page).toHaveURL(/#project-aztec-assess-system$/);
@@ -190,8 +193,47 @@ test.describe("Portfolio E2E", () => {
     ).toBeVisible();
 
     await page
+      .locator("#project-aztec-assess-system")
       .getByRole("button", { name: /Case opener/i })
       .click();
     await expect(page).toHaveURL(/#project-aztec-assess$/);
+  });
+
+  test("every project uses the approved editorial case-study system", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    const projects = [
+      { slug: "aztec-assess", title: "Aztec Assess" },
+      { slug: "harbor-risk", title: "Harbor Risk" },
+      { slug: "nextgame", title: "NextGame" },
+      { slug: "job-posting-notifier", title: "Job Posting Notifier" },
+      {
+        slug: "personal-developer-portfolio",
+        title: "Personal Developer Portfolio",
+      },
+    ];
+
+    for (const project of projects) {
+      const openerId = `project-${project.slug}`;
+
+      await page.goto(`/#${openerId}`);
+      await expect(
+        page.locator(`#${openerId}`).getByRole("heading", {
+          level: 1,
+          name: project.title,
+        }),
+      ).toBeVisible();
+      await expect(page.locator(`#${openerId}-brief`)).toBeAttached();
+
+      await page.goto(`/#${openerId}-system`);
+      await expect(
+        page.getByRole("list", {
+          name: `${project.title} system architecture`,
+        }),
+      ).toBeVisible();
+      await expect(page.locator(`#${openerId}-article`)).toBeAttached();
+    }
   });
 });
