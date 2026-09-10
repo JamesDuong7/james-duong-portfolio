@@ -164,4 +164,34 @@ test.describe("Portfolio E2E", () => {
     await expect(page).toHaveURL(/#project-/);
     await expect(page.getByText(/CASE STUDY/i).first()).toBeVisible();
   });
+
+  test("featured case study preserves its editorial reading path", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/#project-aztec-assess");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Aztec Assess/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByText(/Product capture pending/i),
+    ).toBeVisible();
+
+    await page
+      .getByRole("button", { name: /Continue.*System/i })
+      .click();
+    await expect(page).toHaveURL(/#project-aztec-assess-system$/);
+    await expect(
+      page.getByRole("heading", { name: /A campus quiz, end to end/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("list", { name: /Aztec Assess system architecture/i }),
+    ).toBeVisible();
+
+    await page
+      .getByRole("button", { name: /Case opener/i })
+      .click();
+    await expect(page).toHaveURL(/#project-aztec-assess$/);
+  });
 });
