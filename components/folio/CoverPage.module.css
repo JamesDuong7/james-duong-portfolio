@@ -154,6 +154,18 @@
   transform: rotate(2.2deg);
 }
 
+.portraitMedia {
+  position: relative;
+  height: calc(100% - 1.7rem);
+  overflow: hidden;
+  background: var(--editorial-paper-deep);
+}
+
+.portraitImage {
+  object-fit: cover;
+  filter: grayscale(0.15) contrast(1.06);
+}
+
 .portraitPlaceholder {
   position: relative;
   height: calc(100% - 1.7rem);

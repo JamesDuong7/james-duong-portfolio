@@ -1,3 +1,4 @@
+import Image from "next/image";
 import FolioFlip from "./FolioFlip";
 import styles from "./HobbyPage.module.css";
 
@@ -5,6 +6,7 @@ type HobbyPageProps = {
   page: string;
   title: string;
   description?: string | null;
+  imageUrl?: string | null;
   index: number;
   total: number;
   flipForward?: boolean;
@@ -15,6 +17,7 @@ export default function HobbyPage({
   page,
   title,
   description,
+  imageUrl,
   index,
   total,
   flipForward = true,
@@ -33,6 +36,17 @@ export default function HobbyPage({
         <span className={styles.kicker}>Off the clock</span>
         <h2 className={styles.title}>{title}</h2>
         <hr className={styles.rule} />
+        {imageUrl && (
+          <div className={styles.photoFrame}>
+            <Image
+              src={imageUrl}
+              alt={title}
+              fill
+              sizes="(max-width: 900px) 100vw, 45vw"
+              className={styles.photo}
+            />
+          </div>
+        )}
         {description && <p className={styles.copy}>{description}</p>}
       </div>
 

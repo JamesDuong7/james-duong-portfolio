@@ -16,6 +16,7 @@ type CoverPageProps = {
   issue?: string;
   hasHobbies?: boolean;
   projects?: CoverProject[];
+  portraitUrl?: string | null;
 };
 
 export default function CoverPage({
@@ -25,6 +26,7 @@ export default function CoverPage({
   issue = "VOL. 01",
   hasHobbies = false,
   projects = [],
+  portraitUrl,
 }: CoverPageProps) {
   const [firstName = name, ...lastNameParts] = name.trim().split(/\s+/);
   const lastName = lastNameParts.join(" ");
@@ -67,11 +69,28 @@ export default function CoverPage({
           threshold={0.02}
         >
           <figure className={styles.portraitCard}>
-            <div className={styles.portraitPlaceholder} aria-hidden>
-              <span>JD</span>
-              <i />
-            </div>
-            <figcaption>Portrait study · asset pending</figcaption>
+            {portraitUrl ? (
+              <div className={styles.portraitMedia}>
+                <Image
+                  src={portraitUrl}
+                  alt={`${name} editorial portrait`}
+                  fill
+                  sizes="(max-width: 900px) 70vw, 35vw"
+                  className={styles.portraitImage}
+                  priority
+                />
+              </div>
+            ) : (
+              <div className={styles.portraitPlaceholder} aria-hidden>
+                <span>JD</span>
+                <i />
+              </div>
+            )}
+            <figcaption>
+              {portraitUrl
+                ? "Editorial portrait · James Duong"
+                : "Portrait study · asset pending"}
+            </figcaption>
           </figure>
 
           {projects.slice(0, 2).map((project, index) => (

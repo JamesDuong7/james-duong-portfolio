@@ -56,6 +56,21 @@
   background: var(--folio-pink);
 }
 
+.photoFrame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--editorial-ratio-landscape);
+  overflow: hidden;
+  background: var(--editorial-paper-deep);
+  margin-top: 0.25rem;
+  box-shadow: 0 0.5rem 1.25rem rgba(9, 10, 18, 0.08);
+}
+
+.photo {
+  object-fit: cover;
+  filter: contrast(1.05);
+}
+
 .copy {
   font-size: 0.9rem;
   line-height: 1.6;

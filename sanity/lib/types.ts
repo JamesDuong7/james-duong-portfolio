@@ -4,6 +4,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 export type Hobby = {
   title: string | null;
   description: string | null;
+  imageUrl?: string | null;
 };
 
 /** GROQ result shape for PERSONAL_INFO_QUERY */
@@ -17,6 +18,7 @@ export type PersonalInfo = {
   github: string | null;
   linkedin: string | null;
   resumeUrl: string | null;
+  portraitUrl?: string | null;
   hobbies: Hobby[] | null;
   skills: {
     languages: string[] | null;

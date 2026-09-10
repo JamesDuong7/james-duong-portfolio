@@ -172,6 +172,7 @@ export default async function FolioHome() {
       id: `hobby-${slugify(title)}`,
       title,
       description: hobby.description,
+      imageUrl: hobby.imageUrl,
       page: nextPage(),
     };
   });
@@ -238,6 +239,7 @@ export default async function FolioHome() {
         page={meta.page}
         title={meta.title}
         description={meta.description}
+        imageUrl={meta.imageUrl}
         index={index + 1}
         total={hobbyMeta.length}
         flipBack={side === "left"}
@@ -435,6 +437,7 @@ export default async function FolioHome() {
                 location={location}
                 hasHobbies={hobbyMeta.length > 0}
                 projects={coverProjects}
+                portraitUrl={info?.portraitUrl ?? null}
               />
             </FolioPage>
           }
