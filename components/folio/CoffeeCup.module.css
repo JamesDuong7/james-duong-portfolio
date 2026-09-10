@@ -1,0 +1,195 @@
+.cupContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Matching circular cork coaster under the mug */
+.coasterBase {
+  position: relative;
+  width: 154px;
+  height: 154px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 40% 35%, rgba(255, 235, 205, 0.2) 0%, transparent 60%),
+    radial-gradient(circle at 75% 75%, rgba(65, 40, 15, 0.28) 0%, transparent 65%),
+    #c49a62;
+  box-shadow:
+    0 2px 4px rgba(35, 20, 10, 0.35),
+    6px 10px 22px rgba(35, 20, 10, 0.22),
+    inset 0 1px 2px rgba(255, 255, 255, 0.3),
+    inset 0 -2px 3px rgba(50, 30, 15, 0.4);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corkGrain {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-image:
+    repeating-radial-gradient(
+      circle at 45% 45%,
+      rgba(85, 50, 20, 0.16) 0px,
+      rgba(85, 50, 20, 0.16) 1.5px,
+      transparent 1.5px,
+      transparent 5px
+    ),
+    repeating-radial-gradient(
+      circle at 75% 25%,
+      rgba(55, 30, 10, 0.22) 0px,
+      rgba(55, 30, 10, 0.22) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+  mix-blend-mode: multiply;
+}
+
+/* Ceramic mug resting on top */
+.mugWrapper {
+  position: absolute;
+  width: 108px;
+  height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mug handle extending to the right */
+.mugHandle {
+  position: absolute;
+  right: -18px;
+  top: 36px;
+  width: 22px;
+  height: 36px;
+  border-radius: 0 16px 16px 0;
+  border: 7px solid #ece4d8;
+  border-left: none;
+  box-shadow:
+    4px 5px 10px rgba(35, 20, 10, 0.38),
+    inset 0 1px 2px rgba(255, 255, 255, 0.6);
+  z-index: 1;
+}
+
+/* Outer porcelain rim */
+.mugBody {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff 0%, #f4ede4 55%, #e2d7c9 100%);
+  box-shadow:
+    /* Deep contact shadow onto the cork coaster */
+    0 4px 12px rgba(40, 25, 12, 0.45),
+    4px 10px 24px rgba(40, 25, 12, 0.3),
+    /* Rim highlight */
+    inset 0 2px 4px rgba(255, 255, 255, 0.9),
+    /* Inner rim bevel */
+    inset 0 -2px 4px rgba(120, 100, 80, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* Glossy rim reflection arc */
+.rimGlare {
+  position: absolute;
+  top: 2px;
+  left: 12px;
+  width: 52px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at 50% 50%, rgba(255, 255, 255, 0.85) 0%, transparent 80%);
+  transform: rotate(-35deg);
+  pointer-events: none;
+}
+
+/* Liquid coffee interior */
+.coffeeSurface {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #522d14 0%, #361b0a 65%, #231005 100%);
+  box-shadow:
+    /* Inner wall shadow */
+    inset 2px 3px 6px rgba(0, 0, 0, 0.65),
+    inset -1px -2px 4px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Espresso crema swirl and latte art */
+.latteArtSvg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Subtle rising steam effect */
+.steamWisp {
+  position: absolute;
+  top: -12px;
+  left: 36px;
+  width: 32px;
+  height: 48px;
+  opacity: 0.18;
+  filter: blur(4px);
+  animation: gentleSteam 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes gentleSteam {
+  0% {
+    transform: translateY(0) scaleX(1);
+    opacity: 0.12;
+  }
+  50% {
+    transform: translateY(-8px) scaleX(1.15);
+    opacity: 0.22;
+  }
+  100% {
+    transform: translateY(-16px) scaleX(0.9);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .steamWisp {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .coasterBase {
+    width: 118px;
+    height: 118px;
+  }
+  .mugWrapper {
+    width: 84px;
+    height: 84px;
+  }
+  .mugBody {
+    width: 80px;
+    height: 80px;
+  }
+  .mugHandle {
+    right: -14px;
+    top: 28px;
+    width: 16px;
+    height: 28px;
+    border-width: 5px;
+  }
+  .coffeeSurface {
+    width: 62px;
+    height: 62px;
+  }
+}

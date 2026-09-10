@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import FolioBook from "./FolioBook";
 import FolioSpread, { FolioPage } from "./FolioSpread";
 import FolioTocNav from "./FolioTocNav";
-import WoodTablePage from "./WoodTablePage";
 import CoverPage from "./CoverPage";
+import CoverDeskSpread from "./CoverDeskSpread";
 import TableOfContentsPage, {
   type TocEntry,
   type TocSection,
@@ -425,23 +425,16 @@ export default async function FolioHome() {
   return (
     <>
       <FolioBook>
-        <FolioSpread
-          label="Cover"
-          hideGutter
-          left={<WoodTablePage />}
-          right={
-            <FolioPage tone="ink" label="Cover" pageId="cover">
-              <CoverPage
-                name={name}
-                headline={headline}
-                location={location}
-                hasHobbies={hobbyMeta.length > 0}
-                projects={coverProjects}
-                portraitUrl={info?.portraitUrl ?? null}
-              />
-            </FolioPage>
-          }
-        />
+        <CoverDeskSpread>
+          <CoverPage
+            name={name}
+            headline={headline}
+            location={location}
+            hasHobbies={hobbyMeta.length > 0}
+            projects={coverProjects}
+            portraitUrl={info?.portraitUrl ?? null}
+          />
+        </CoverDeskSpread>
 
         {spreads.map((spread) => (
           <FolioSpread
