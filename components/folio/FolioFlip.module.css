@@ -19,6 +19,14 @@
   opacity: 0.85;
 }
 
+.inner {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+  height: 100%;
+}
+
 .label {
   /* Sit on the bottom margin, clear of the curl tip */
   padding-bottom: 0.85rem;
@@ -27,59 +35,121 @@
 }
 
 .curl {
+  position: relative;
   width: 3.25rem;
   height: 3.25rem;
   flex-shrink: 0;
-  background: var(--folio-pink);
-  clip-path: polygon(100% 0, 100% 100%, 0 100%);
-  transform-origin: 100% 100%;
-  transition: transform 0.28s ease;
+  perspective: 450px;
+  transform-style: preserve-3d;
 }
 
 .curlBack {
-  clip-path: polygon(0 0, 0 100%, 100% 100%);
   transform-origin: 0 100%;
 }
 
-.flip:hover .curl,
-.flip:focus-visible .curl {
-  transform: scale(1.08) translate(-2px, -2px);
+.curlShadow {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  background: radial-gradient(
+    circle at 100% 100%,
+    rgba(12, 10, 9, 0.45) 0%,
+    rgba(12, 10, 9, 0.18) 55%,
+    transparent 80%
+  );
+  opacity: 0.35;
+  transform-origin: 100% 100%;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.28s ease;
+  pointer-events: none;
 }
 
-.flip:hover .curlBack,
-.flip:focus-visible .curlBack {
-  transform: scale(1.08) translate(2px, -2px);
+.curlBack .curlShadow {
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+  transform-origin: 0 100%;
+  background: radial-gradient(
+    circle at 0 100%,
+    rgba(12, 10, 9, 0.45) 0%,
+    rgba(12, 10, 9, 0.18) 55%,
+    transparent 80%
+  );
 }
 
-.flip:active .curl {
-  animation: folioCurlTurn 0.35s ease-out;
+.curlFold {
+  position: absolute;
+  inset: 0;
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    135deg,
+    var(--folio-pink) 0%,
+    #d45974 48%,
+    #a8364e 100%
+  );
+  transform-origin: 100% 100%;
+  transition: transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.28s ease;
+  filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.18));
 }
 
-.flip:active .curlBack {
-  animation: folioCurlTurnBack 0.35s ease-out;
+.curlBack .curlFold {
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+  transform-origin: 0 100%;
+  background: linear-gradient(
+    225deg,
+    var(--folio-pink) 0%,
+    #d45974 48%,
+    #a8364e 100%
+  );
+  filter: drop-shadow(2px -2px 3px rgba(0, 0, 0, 0.18));
 }
 
-@keyframes folioCurlTurn {
-  0% {
-    transform: scale(1);
-  }
-  45% {
-    transform: scale(1.14) translate(-4px, -4px) skewX(-4deg);
-  }
-  100% {
-    transform: scale(1);
-  }
+.flip:hover .curlFold,
+.flip:focus-visible .curlFold {
+  transform: rotateY(-16deg) rotateX(14deg) translate3d(-3px, -3px, 8px) scale(1.08);
+  filter: drop-shadow(-4px -4px 7px rgba(0, 0, 0, 0.32));
 }
 
-@keyframes folioCurlTurnBack {
-  0% {
-    transform: scale(1);
+.flip:hover .curlBack .curlFold,
+.flip:focus-visible .curlBack .curlFold {
+  transform: rotateY(16deg) rotateX(14deg) translate3d(3px, -3px, 8px) scale(1.08);
+  filter: drop-shadow(4px -4px 7px rgba(0, 0, 0, 0.32));
+}
+
+.flip:hover .curlShadow,
+.flip:focus-visible .curlShadow {
+  opacity: 0.65;
+  transform: translate(2px, 2px) scale(1.06);
+}
+
+.flip:hover .curlBack .curlShadow,
+.flip:focus-visible .curlBack .curlShadow {
+  opacity: 0.65;
+  transform: translate(-2px, 2px) scale(1.06);
+}
+
+.flip:active .curlFold {
+  transform: rotateY(-26deg) rotateX(22deg) translate3d(-6px, -6px, 14px) scale(1.14);
+  transition-duration: 0.12s;
+}
+
+.flip:active .curlBack .curlFold {
+  transform: rotateY(26deg) rotateX(22deg) translate3d(6px, -6px, 14px) scale(1.14);
+  transition-duration: 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .curlFold,
+  .curlShadow {
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
   }
-  45% {
-    transform: scale(1.14) translate(4px, -4px) skewX(4deg);
-  }
-  100% {
-    transform: scale(1);
+  .flip:hover .curlFold,
+  .flip:focus-visible .curlFold,
+  .flip:hover .curlBack .curlFold,
+  .flip:focus-visible .curlBack .curlFold,
+  .flip:active .curlFold,
+  .flip:active .curlBack .curlFold {
+    transform: none !important;
+    filter: none !important;
   }
 }
 

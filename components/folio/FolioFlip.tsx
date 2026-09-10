@@ -1,6 +1,7 @@
 "use client";
 
 import { flipFolioStep, flipFolioTo } from "./FolioBook";
+import Magnetic from "@/components/motion-primitives/Magnetic";
 import styles from "./FolioFlip.module.css";
 
 type FolioFlipProps = {
@@ -23,11 +24,22 @@ export default function FolioFlip({ direction, label, target }: FolioFlipProps) 
       }
       aria-label={label}
     >
-      {direction === "back" && (
-        <span className={`${styles.curl} ${styles.curlBack}`} aria-hidden />
-      )}
-      <span className={styles.label}>{label}</span>
-      {direction === "forward" && <span className={styles.curl} aria-hidden />}
+      <Magnetic intensity={0.24} className={styles.inner}>
+        {direction === "back" && (
+          <span className={`${styles.curl} ${styles.curlBack}`} aria-hidden>
+            <span className={styles.curlShadow} />
+            <span className={styles.curlFold} />
+          </span>
+        )}
+        <span className={styles.label}>{label}</span>
+        {direction === "forward" && (
+          <span className={styles.curl} aria-hidden>
+            <span className={styles.curlShadow} />
+            <span className={styles.curlFold} />
+          </span>
+        )}
+      </Magnetic>
     </button>
   );
 }
+

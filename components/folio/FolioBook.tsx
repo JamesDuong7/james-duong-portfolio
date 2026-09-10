@@ -12,9 +12,9 @@ import {
 import styles from "./FolioBook.module.css";
 
 /** Two-sided page turn — completion comes from WAAPI, not timers. */
-const FLIP_DURATION_MS = 760;
+const FLIP_DURATION_MS = 780;
 /** Soft crossfade after the leaf lands so teardown does not click. */
-const FLIP_SETTLE_MS = 140;
+const FLIP_SETTLE_MS = 120;
 
 type FlipPhase =
   | "idle"
@@ -397,19 +397,83 @@ export default function FolioBook({ children }: FolioBookProps) {
     const turnKeyframes =
       session.dir === "forward"
         ? [
-            { transform: "rotateY(0deg) scaleX(1)" },
-            { transform: "rotateY(-90deg) scaleX(0.985)", offset: 0.45 },
-            { transform: "rotateY(-180deg) scaleX(1)" },
+            {
+              transform:
+                "rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
+              offset: 0,
+            },
+            {
+              transform:
+                "rotateY(-24deg) rotateZ(-1.8deg) skewY(-1.2deg) scaleX(0.988) translateZ(18px)",
+              offset: 0.15,
+            },
+            {
+              transform:
+                "rotateY(-56deg) rotateZ(-2.8deg) skewY(-2.2deg) scaleX(0.96) translateZ(42px)",
+              offset: 0.32,
+            },
+            {
+              transform:
+                "rotateY(-90deg) rotateZ(-1.2deg) skewY(-0.6deg) scaleX(0.942) translateZ(54px)",
+              offset: 0.5,
+            },
+            {
+              transform:
+                "rotateY(-124deg) rotateZ(1.4deg) skewY(1.4deg) scaleX(0.962) translateZ(38px)",
+              offset: 0.68,
+            },
+            {
+              transform:
+                "rotateY(-156deg) rotateZ(1.6deg) skewY(1.0deg) scaleX(0.988) translateZ(14px)",
+              offset: 0.85,
+            },
+            {
+              transform:
+                "rotateY(-180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
+              offset: 1,
+            },
           ]
         : [
-            { transform: "rotateY(0deg) scaleX(1)" },
-            { transform: "rotateY(90deg) scaleX(0.985)", offset: 0.45 },
-            { transform: "rotateY(180deg) scaleX(1)" },
+            {
+              transform:
+                "rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
+              offset: 0,
+            },
+            {
+              transform:
+                "rotateY(24deg) rotateZ(1.8deg) skewY(1.2deg) scaleX(0.988) translateZ(18px)",
+              offset: 0.15,
+            },
+            {
+              transform:
+                "rotateY(56deg) rotateZ(2.8deg) skewY(2.2deg) scaleX(0.96) translateZ(42px)",
+              offset: 0.32,
+            },
+            {
+              transform:
+                "rotateY(90deg) rotateZ(1.2deg) skewY(0.6deg) scaleX(0.942) translateZ(54px)",
+              offset: 0.5,
+            },
+            {
+              transform:
+                "rotateY(126deg) rotateZ(-1.4deg) skewY(-1.4deg) scaleX(0.962) translateZ(38px)",
+              offset: 0.68,
+            },
+            {
+              transform:
+                "rotateY(156deg) rotateZ(-1.8deg) skewY(-1.0deg) scaleX(0.988) translateZ(14px)",
+              offset: 0.85,
+            },
+            {
+              transform:
+                "rotateY(180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
+              offset: 1,
+            },
           ];
 
     const turn = leaf.animate(turnKeyframes, {
       duration: FLIP_DURATION_MS,
-      easing: "cubic-bezier(0.45, 0.05, 0.2, 1)",
+      easing: "cubic-bezier(0.38, 0.04, 0.18, 0.98)",
       fill: "forwards",
     });
 
@@ -666,6 +730,14 @@ export default function FolioBook({ children }: FolioBookProps) {
           <div
             ref={staticRightRef}
             className={`${styles.stageStatic} ${styles.stageStaticRight}`}
+          />
+          <div
+            className={`${styles.castShadow} ${
+              flipDir === "forward"
+                ? styles.castShadowForward
+                : styles.castShadowBack
+            }`}
+            aria-hidden
           />
           <div
             ref={leafRef}

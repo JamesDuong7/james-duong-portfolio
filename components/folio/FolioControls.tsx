@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
+import Magnetic from "@/components/motion-primitives/Magnetic";
 import styles from "./FolioControls.module.css";
 
 type LinkButtonProps = {
@@ -20,19 +21,21 @@ export function FolioLinkButton({
   ariaLabel,
 }: LinkButtonProps) {
   return (
-    <a
-      href={href}
-      className={`${styles.ghost} ${onInk ? styles.onInk : ""}`}
-      {...(external
-        ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
-      aria-label={ariaLabel}
-    >
-      <span>{children}</span>
-      <span className={styles.arrow} aria-hidden>
-        {arrow}
-      </span>
-    </a>
+    <Magnetic intensity={0.18}>
+      <a
+        href={href}
+        className={`${styles.ghost} ${onInk ? styles.onInk : ""}`}
+        {...(external
+          ? { target: "_blank", rel: "noopener noreferrer" }
+          : {})}
+        aria-label={ariaLabel}
+      >
+        <span>{children}</span>
+        <span className={styles.arrow} aria-hidden>
+          {arrow}
+        </span>
+      </a>
+    </Magnetic>
   );
 }
 
@@ -53,39 +56,43 @@ export function FolioPrimaryButton({
   ariaLabel,
   external = false,
 }: PrimaryButtonProps) {
-  if (href) {
-    if (external || href.startsWith("http")) {
+  const content = (() => {
+    if (href) {
+      if (external || href.startsWith("http")) {
+        return (
+          <a
+            href={href}
+            className={styles.primary}
+            aria-label={ariaLabel}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {children}
+          </a>
+        );
+      }
+
       return (
-        <a
-          href={href}
-          className={styles.primary}
-          aria-label={ariaLabel}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Link href={href} className={styles.primary} aria-label={ariaLabel}>
           {children}
-        </a>
+        </Link>
       );
     }
 
     return (
-      <Link href={href} className={styles.primary} aria-label={ariaLabel}>
+      <button
+        type={type}
+        className={styles.primary}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        aria-disabled={disabled}
+      >
         {children}
-      </Link>
+      </button>
     );
-  }
+  })();
 
-  return (
-    <button
-      type={type}
-      className={styles.primary}
-      disabled={disabled}
-      aria-label={ariaLabel}
-      aria-disabled={disabled}
-    >
-      {children}
-    </button>
-  );
+  return <Magnetic intensity={0.22}>{content}</Magnetic>;
 }
 
 export function FolioTechTag({
