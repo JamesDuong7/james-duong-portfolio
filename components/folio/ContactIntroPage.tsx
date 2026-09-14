@@ -29,14 +29,19 @@ export default function ContactIntroPage({
       <div className={styles.introBody}>
         <h2 className={styles.title}>Let&apos;s talk</h2>
         <p className={styles.lead}>
-          Have a role, a project, or just want to say hi? Send a note using the
-          form — or reach out directly through any of the channels below.
+          Have an internship, part-time role, or project in mind? Send me a
+          note. I&apos;m open to remote opportunities and San Diego-based hybrid
+          or in-person work.
         </p>
+
+        <a className={styles.formCta} href="#contact-form">
+          Email James <span aria-hidden>→</span>
+        </a>
 
         <div className={styles.contactList}>
           {email && (
             <div className={styles.contactRow}>
-              <span className={styles.contactLabel}>Email</span>
+              <span className={styles.contactLabel}>Direct fallback</span>
               <span className={styles.contactValue}>
                 <a href={`mailto:${email}`}>{email}</a>
               </span>

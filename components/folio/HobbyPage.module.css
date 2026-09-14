@@ -71,6 +71,52 @@
   filter: contrast(1.05);
 }
 
+.photoPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr auto;
+  align-items: end;
+  gap: 0.35rem 0.75rem;
+  padding: 1rem;
+  color: var(--editorial-copy);
+  background:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 0.7rem,
+      color-mix(in srgb, var(--folio-pink) 12%, transparent) 0.7rem 0.76rem
+    ),
+    var(--editorial-paper-deep);
+}
+
+.photoPlaceholder span {
+  align-self: start;
+  font-family: var(--folio-font-mono);
+  font-size: 2.5rem;
+  color: var(--folio-pink);
+}
+
+.photoPlaceholder strong {
+  grid-column: 1 / -1;
+  font-family: var(--folio-font-display);
+  font-size: clamp(1.5rem, 3vw, 2.35rem);
+  font-weight: 600;
+  line-height: 0.95;
+}
+
+.photoPlaceholder i {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+  font-family: var(--folio-font-mono);
+  font-size: 0.55rem;
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
 .copy {
   font-size: 0.9rem;
   line-height: 1.6;

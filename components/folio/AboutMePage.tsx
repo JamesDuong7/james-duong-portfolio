@@ -4,7 +4,9 @@ import styles from "./AboutMePage.module.css";
 
 type AboutMePageProps = {
   page: string;
-  about: string;
+  about: string[];
+  education: string;
+  availability: string;
   languages: string[];
   frameworks: string[];
   tools: string[];
@@ -28,6 +30,8 @@ function SkillLine({ label, values }: { label: string; values: string[] }) {
 export default function AboutMePage({
   page,
   about,
+  education,
+  availability,
   languages,
   frameworks,
   tools,
@@ -49,7 +53,24 @@ export default function AboutMePage({
 
       <div className={styles.scroll}>
         <h2 className={styles.title}>About</h2>
-        {about && <p className={styles.copy}>{about}</p>}
+        <div className={styles.profileFacts} aria-label="Profile details">
+          <p>
+            <span>Education</span>
+            {education}
+          </p>
+          <p>
+            <span>Available for</span>
+            {availability}
+          </p>
+        </div>
+
+        <div className={styles.story}>
+          {about.map((paragraph) => (
+            <p className={styles.copy} key={paragraph}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         {hasSkills && (
           <section className={styles.skills} aria-label="Skills">

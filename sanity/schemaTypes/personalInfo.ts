@@ -16,7 +16,7 @@ export const personalInfo = defineType({
       title: "Headline",
       type: "string",
       description:
-        'Short tagline shown under your name (e.g. "Computer Science Student & Software Engineer")',
+        'Short professional tagline shown under your name (e.g. "Software Engineer building full-stack, cloud, and automation systems")',
       validation: (rule) => rule.required(),
     }),
     defineField({

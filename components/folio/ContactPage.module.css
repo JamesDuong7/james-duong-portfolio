@@ -61,6 +61,28 @@
   max-width: 24rem;
 }
 
+.formCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  width: min(100%, 18rem);
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--folio-pink);
+  font-family: var(--folio-font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--folio-on-ink);
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.formCta:hover {
+  color: var(--folio-ink);
+  background: var(--folio-pink);
+}
+
 .contactList {
   display: flex;
   flex-direction: column;

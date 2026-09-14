@@ -12,6 +12,7 @@ export type CoverProject = {
 type CoverPageProps = {
   name: string;
   headline: string;
+  supportingLine?: string;
   location?: string | null;
   issue?: string;
   hasHobbies?: boolean;
@@ -22,6 +23,7 @@ type CoverPageProps = {
 export default function CoverPage({
   name,
   headline,
+  supportingLine,
   location,
   issue = "VOL. 01",
   hasHobbies = false,
@@ -130,6 +132,9 @@ export default function CoverPage({
         <div className={styles.heroCopy}>
           <p className={styles.kicker}>{name} · Portfolio / Field Notes</p>
           <p className={styles.headline}>{headline}</p>
+          {supportingLine && (
+            <p className={styles.supportingLine}>{supportingLine}</p>
+          )}
         </div>
       </div>
 

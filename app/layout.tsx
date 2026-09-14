@@ -40,13 +40,14 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://jamesduong.dev"),
   title: "James Duong | Software Engineer",
   description:
-    "James Duong's software engineering portfolio, featuring full-stack systems, product work, and practical AI-driven tools.",
+    "James Duong is a software engineer and M.S. Computer Science student building full-stack, cloud, and automation systems.",
   alternates: {
     canonical: "https://jamesduong.dev"
   },
   openGraph: {
     title: "James Duong | Software Engineer",
-    description: "Personal portfolio of James Duong, showcasing software engineering projects.",
+    description:
+      "An editorial portfolio of full-stack, cloud, and automation systems by James Duong.",
     url: "https://jamesduong.dev",
     siteName: "James Duong Portfolio",
     locale: "en_US",
@@ -56,7 +57,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "James Duong | Software Engineer",
     description:
-      "James Duong's software engineering portfolio, featuring full-stack systems, product work, and practical AI-driven tools.",
+      "An editorial portfolio of full-stack, cloud, and automation systems by James Duong.",
   }
 };
 
@@ -89,7 +90,7 @@ export default async function RootLayout({
       },
     }),
     ...(sameAs.length > 0 && { sameAs }),
-    alumniOf: {
+    affiliation: {
       "@type": "CollegeOrUniversity",
       name: "San Diego State University",
     },

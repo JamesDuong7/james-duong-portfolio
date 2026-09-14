@@ -36,8 +36,8 @@ export default function HobbyPage({
         <span className={styles.kicker}>Off the clock</span>
         <h2 className={styles.title}>{title}</h2>
         <hr className={styles.rule} />
-        {imageUrl && (
-          <div className={styles.photoFrame}>
+        <div className={styles.photoFrame}>
+          {imageUrl ? (
             <Image
               src={imageUrl}
               alt={title}
@@ -45,8 +45,14 @@ export default function HobbyPage({
               sizes="(max-width: 900px) 100vw, 45vw"
               className={styles.photo}
             />
-          </div>
-        )}
+          ) : (
+            <div className={styles.photoPlaceholder} aria-hidden>
+              <span>{String(index).padStart(2, "0")}</span>
+              <strong>{title}</strong>
+              <i>Image study forthcoming</i>
+            </div>
+          )}
+        </div>
         {description && <p className={styles.copy}>{description}</p>}
       </div>
 

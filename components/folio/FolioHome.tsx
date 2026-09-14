@@ -28,7 +28,6 @@ import {
   fetchPersonalInfo,
 } from "@/sanity/lib/fetch";
 import { primaryScreenshot } from "@/sanity/lib/types";
-import { portableTextToPlain } from "@/lib/portableText";
 import { parseYouTubeVideoId, youtubePosterUrl } from "@/lib/youtube";
 
 type LeafPage = {
@@ -101,9 +100,18 @@ export default async function FolioHome() {
   ]);
 
   const name = info?.name ?? "James Duong";
-  const headline =
-    info?.headline ?? "Computer Science Student & Software Engineer";
-  const about = portableTextToPlain(info?.aboutMe, " ");
+  const coverHeadline =
+    "Software Engineer building full-stack, cloud, and automation systems";
+  const coverSupportingLine = "M.S. Computer Science · SDSU · Dec. 2027";
+  const about = [
+    "I’m a software engineer and M.S. Computer Science student at San Diego State University, graduating in December 2027. I enjoy full-stack development because it lets me turn ideas into complete products that people can actually use.",
+    "I’m drawn to cloud engineering because it brings together software development, system architecture, and real-world operations. I naturally notice repetitive processes and look for ways to simplify them, using automation to save time and make work more efficient.",
+    "I value organization because it keeps projects efficient and priorities clear. I’m detail-oriented about doing work correctly, and I enjoy collaborating because exchanging perspectives often leads to stronger ideas and unexpected solutions.",
+  ];
+  const education =
+    "M.S. Computer Science · San Diego State University · Expected December 2027";
+  const availability =
+    "Internship or part-time · Remote, hybrid, or in person in San Diego";
   const location = info?.location;
   const email = info?.email;
   const github = info?.github;
@@ -113,7 +121,38 @@ export default async function FolioHome() {
   const frameworks = info?.skills?.frameworks ?? [];
   const tools = info?.skills?.tools ?? [];
 
-  const hobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
+  const sourceHobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
+  const editorialHobbies = [
+    {
+      title: "Training",
+      description:
+        "Training helps me stay healthy while reinforcing discipline and consistency. I enjoy the gradual, measurable progress that comes from sustained effort.",
+      keywords: ["gym", "fitness", "training", "lifting"],
+    },
+    {
+      title: "Manga & Anime",
+      description:
+        "I’m drawn to expressive artwork, imaginative storytelling, detailed world-building, fantasy settings, and memorable characters. Current shelf: Attack on Titan, Jujutsu Kaisen, and Frieren: Beyond Journey’s End.",
+      keywords: ["anime", "manga"],
+    },
+    {
+      title: "Personal Experiments",
+      description:
+        "I build small tools around problems I encounter. One workflow batches job listings into Google Sheets—cutting tracking from about 15 seconds per listing to five seconds per batch—and helps me tailor each resume while keeping the final review in my hands.",
+      keywords: ["automation", "coding", "programming", "experiment"],
+    },
+  ];
+  const hobbies = editorialHobbies.map((hobby) => {
+    const source = sourceHobbies.find((candidate) => {
+      const title = stegaClean(candidate.title ?? "").toLowerCase();
+      return hobby.keywords.some((keyword) => title.includes(keyword));
+    });
+    return {
+      title: hobby.title,
+      description: hobby.description,
+      imageUrl: source?.imageUrl ?? null,
+    };
+  });
 
   const orderedProjects = (projects ?? [])
     .map((project) => {
@@ -253,6 +292,8 @@ export default async function FolioHome() {
         <AboutMePage
           page={aboutPage}
           about={about}
+          education={education}
+          availability={availability}
           languages={languages}
           frameworks={frameworks}
           tools={tools}
@@ -420,11 +461,14 @@ export default async function FolioHome() {
             <FolioPage tone="ink" label="Cover" pageId="cover">
               <CoverPage
                 name={name}
-                headline={headline}
+                headline={coverHeadline}
+                supportingLine={coverSupportingLine}
                 location={location}
                 hasHobbies={hobbyMeta.length > 0}
                 projects={coverProjects}
-                portraitUrl={info?.portraitUrl ?? null}
+                portraitUrl={
+                  info?.portraitUrl ?? "/james-duong-editorial-portrait.webp"
+                }
               />
             </FolioPage>
           }

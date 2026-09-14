@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "James Duong | Software Engineer",
     short_name: "James Duong",
-    description: "Computer Science student at SDSU and aspiring software engineer.",
+    description:
+      "Software engineer and M.S. Computer Science student building full-stack, cloud, and automation systems.",
     start_url: "/",
     display: "standalone",
     background_color: "#1f2438",
