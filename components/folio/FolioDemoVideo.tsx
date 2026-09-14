@@ -14,14 +14,12 @@ type FolioDemoVideoProps = {
   url: string | null | undefined;
   title: string;
   caption: string;
-  priority?: boolean;
 };
 
 export default function FolioDemoVideo({
   url,
   title,
   caption,
-  priority = false,
 }: FolioDemoVideoProps) {
   const videoId = parseYouTubeVideoId(url);
   const [playing, setPlaying] = useState(false);
@@ -60,8 +58,6 @@ export default function FolioDemoVideo({
             height={720}
             className={styles.poster}
             sizes="(max-width: 900px) 100vw, min(50vw, 36rem)"
-            priority={priority}
-            loading={priority ? "eager" : "lazy"}
             onLoad={(event) => {
               // Missing maxres often 200s a ~120px placeholder instead of 404.
               if (event.currentTarget.naturalWidth <= 120) {

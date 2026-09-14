@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import FolioBook from "./FolioBook";
 import FolioSpread, { FolioPage } from "./FolioSpread";
 import FolioTocNav from "./FolioTocNav";
+import WoodTablePage from "./WoodTablePage";
 import CoverPage from "./CoverPage";
-import CoverDeskSpread from "./CoverDeskSpread";
 import TableOfContentsPage, {
   type TocEntry,
   type TocSection,
@@ -115,14 +115,6 @@ export default async function FolioHome() {
 
   const hobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
 
-  const CANONICAL_PROJECT_PRIORITY: Record<string, number> = {
-    "harbor-risk": 1,
-    "aztec-assess": 2,
-    nextgame: 3,
-    "job-posting-notifier": 4,
-    portfolio: 5,
-  };
-
   const orderedProjects = (projects ?? [])
     .map((project) => {
       const slug =
@@ -130,12 +122,7 @@ export default async function FolioHome() {
         slugify(project.title ?? "project");
       return { ...project, slug };
     })
-    .filter((project) => Boolean(project.slug))
-    .sort((a, b) => {
-      const rankA = CANONICAL_PROJECT_PRIORITY[a.slug] ?? 99;
-      const rankB = CANONICAL_PROJECT_PRIORITY[b.slug] ?? 99;
-      return rankA - rankB;
-    });
+    .filter((project) => Boolean(project.slug));
 
   const toCatalogItem = (project: (typeof orderedProjects)[number]) => {
     const shot = primaryScreenshot(project.screenshots);
@@ -425,16 +412,23 @@ export default async function FolioHome() {
   return (
     <>
       <FolioBook>
-        <CoverDeskSpread>
-          <CoverPage
-            name={name}
-            headline={headline}
-            location={location}
-            hasHobbies={hobbyMeta.length > 0}
-            projects={coverProjects}
-            portraitUrl={info?.portraitUrl ?? null}
-          />
-        </CoverDeskSpread>
+        <FolioSpread
+          label="Cover"
+          hideGutter
+          left={<WoodTablePage />}
+          right={
+            <FolioPage tone="ink" label="Cover" pageId="cover">
+              <CoverPage
+                name={name}
+                headline={headline}
+                location={location}
+                hasHobbies={hobbyMeta.length > 0}
+                projects={coverProjects}
+                portraitUrl={info?.portraitUrl ?? null}
+              />
+            </FolioPage>
+          }
+        />
 
         {spreads.map((spread) => (
           <FolioSpread

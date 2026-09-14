@@ -46,40 +46,8 @@ type EditorialProfile = {
 };
 
 const editorialProfiles: Record<string, EditorialProfile> = {
-  "harbor-risk": {
-    caseNumber: "01",
-    category: "Product / Finance",
-    openerEyebrow: "Quantitative risk, explained plainly",
-    assignment: "Turn portfolio risk into a story people can use.",
-    readTime: "04 min",
-    signals: [
-      { label: "Risk engine", value: "VaR, Expected Shortfall and Monte Carlo" },
-      { label: "Plain language", value: "Every technical term earns an explanation" },
-      { label: "Takeaway", value: "Downloadable PDF with math-sourced figures" },
-    ],
-    roleSummary: "Solo full-stack engineer",
-    surface: "Risk dashboard",
-    status: "Demo available",
-    systemEyebrow: "From holdings to evidence",
-    systemTitle: "Serious math, calm interface.",
-    architecture: [
-      { label: "React dashboard", detail: "Holdings · charts · plain-language narrative" },
-      { label: "FastAPI + Python", detail: "Market data · orchestration · reports" },
-      { label: "C++ quant core", detail: "VaR · ES · Monte Carlo simulation" },
-    ],
-    systemNotes: ["JSON CLI contract", "Numbers stay math-sourced"],
-    flowTitle: "One request, three languages, no invented numbers.",
-    flowSteps: ["Holdings entered", "Prices assembled", "Risk computed", "Report returned"],
-    implementationTitle: "Each layer has one honest job.",
-    fieldTitle: "Risk, without the black box.",
-    visual: "risk",
-    visualMeta: "Portfolio / 04 holdings",
-    visualTitle: "Risk range",
-    visualStates: ["VaR", "Drawdown", "ES"],
-    visualMark: "HR",
-  },
   "aztec-assess": {
-    caseNumber: "02",
+    caseNumber: "01",
     category: "Product / Education",
     openerEyebrow: "Adaptive learning, role-aware delivery",
     assignment: "Make one platform feel native to every role.",
@@ -109,6 +77,38 @@ const editorialProfiles: Record<string, EditorialProfile> = {
     visualTitle: "Adaptive assessment",
     visualStates: ["Easy", "Medium", "Hard"],
     visualMark: "AA",
+  },
+  "harbor-risk": {
+    caseNumber: "02",
+    category: "Product / Finance",
+    openerEyebrow: "Quantitative risk, explained plainly",
+    assignment: "Turn portfolio risk into a story people can use.",
+    readTime: "04 min",
+    signals: [
+      { label: "Risk engine", value: "VaR, Expected Shortfall and Monte Carlo" },
+      { label: "Plain language", value: "Every technical term earns an explanation" },
+      { label: "Takeaway", value: "Downloadable PDF with math-sourced figures" },
+    ],
+    roleSummary: "Solo full-stack engineer",
+    surface: "Risk dashboard",
+    status: "Demo available",
+    systemEyebrow: "From holdings to evidence",
+    systemTitle: "Serious math, calm interface.",
+    architecture: [
+      { label: "React dashboard", detail: "Holdings · charts · plain-language narrative" },
+      { label: "FastAPI + Python", detail: "Market data · orchestration · reports" },
+      { label: "C++ quant core", detail: "VaR · ES · Monte Carlo simulation" },
+    ],
+    systemNotes: ["JSON CLI contract", "Numbers stay math-sourced"],
+    flowTitle: "One request, three languages, no invented numbers.",
+    flowSteps: ["Holdings entered", "Prices assembled", "Risk computed", "Report returned"],
+    implementationTitle: "Each layer has one honest job.",
+    fieldTitle: "Risk, without the black box.",
+    visual: "risk",
+    visualMeta: "Portfolio / 04 holdings",
+    visualTitle: "Risk range",
+    visualStates: ["VaR", "Drawdown", "ES"],
+    visualMark: "HR",
   },
   nextgame: {
     caseNumber: "03",
@@ -309,7 +309,6 @@ function ProjectPlate({
           url={project.demoVideoUrl}
           title={project.title}
           caption={`Demo film — ${project.title}`}
-          priority={profile.caseNumber === "01"}
         />
       </div>
     );

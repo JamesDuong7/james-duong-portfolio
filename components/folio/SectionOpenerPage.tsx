@@ -1,4 +1,3 @@
-import SplitText from "../react-bits/SplitText";
 import FolioFlip from "./FolioFlip";
 import styles from "./SectionOpenerPage.module.css";
 
@@ -40,9 +39,7 @@ export default function SectionOpenerPage({
         <span className={styles.bigNumber} aria-hidden>
           {number}
         </span>
-        <h2 className={styles.title}>
-          <SplitText text={title} />
-        </h2>
+        <h2 className={styles.title}>{title}</h2>
         <hr className={styles.rule} />
         <p className={styles.blurb}>{blurb}</p>
       </div>

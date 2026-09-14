@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import BlurFade from "@/components/magicui/BlurFade";
-import TextRoll from "@/components/motion-primitives/TextRoll";
 import { flipFolioTo } from "./FolioBook";
 import FolioFlip from "./FolioFlip";
 import styles from "./TableOfContentsPage.module.css";
@@ -62,32 +60,24 @@ export default function TableOfContentsPage({
 
       <nav className={styles.table} aria-label="Magazine contents">
         {sections.map((section, sectionIndex) => (
-          <BlurFade
-            key={section.id}
-            as="section"
-            className={styles.group}
-            delay={0.08 * sectionIndex}
-            duration={0.5}
-          >
+          <section key={section.id} className={styles.group}>
             <button
-                type="button"
-                className={styles.sectionRow}
-                onClick={() => flipFolioTo(section.id)}
-                aria-label={`Go to ${section.title}, page ${section.page}`}
-              >
-                <span className={styles.sectionOrdinal} aria-hidden>
-                  {String(sectionIndex + 1).padStart(2, "0")}
+              type="button"
+              className={styles.sectionRow}
+              onClick={() => flipFolioTo(section.id)}
+              aria-label={`Go to ${section.title}, page ${section.page}`}
+            >
+              <span className={styles.sectionOrdinal} aria-hidden>
+                {String(sectionIndex + 1).padStart(2, "0")}
+              </span>
+              <span className={styles.sectionCopy}>
+                <span className={styles.sectionTitle}>{section.title}</span>
+                <span className={styles.sectionNote}>
+                  {sectionNotes[section.id] ?? "Open this section."}
                 </span>
-                <span className={styles.sectionCopy}>
-                  <span className={styles.sectionTitle}>
-                    <TextRoll>{section.title}</TextRoll>
-                  </span>
-                  <span className={styles.sectionNote}>
-                    {sectionNotes[section.id] ?? "Open this section."}
-                  </span>
-                </span>
-                <span className={styles.sectionPage}>{section.page}</span>
-              </button>
+              </span>
+              <span className={styles.sectionPage}>{section.page}</span>
+            </button>
 
             {section.items.length > 0 && (
               <ol className={styles.itemList}>
@@ -141,7 +131,7 @@ export default function TableOfContentsPage({
                 })}
               </ol>
             )}
-          </BlurFade>
+          </section>
         ))}
       </nav>
 

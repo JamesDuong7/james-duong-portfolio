@@ -12,9 +12,9 @@ import {
 import styles from "./FolioBook.module.css";
 
 /** Two-sided page turn — completion comes from WAAPI, not timers. */
-const FLIP_DURATION_MS = 780;
+const FLIP_DURATION_MS = 760;
 /** Soft crossfade after the leaf lands so teardown does not click. */
-const FLIP_SETTLE_MS = 120;
+const FLIP_SETTLE_MS = 140;
 
 type FlipPhase =
   | "idle"
@@ -85,6 +85,23 @@ function isNarrowViewport() {
 }
 
 function currentSpreadIndex(book: HTMLDivElement) {
+  if (isNarrowViewport()) {
+    const spreads = spreadEls(book);
+    if (spreads.length === 0) return 0;
+
+    // Pick the spread whose top edge is closest to the viewport top.
+    let best = 0;
+    let bestDist = Infinity;
+    for (let i = 0; i < spreads.length; i += 1) {
+      const dist = Math.abs(spreads[i].getBoundingClientRect().top);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = i;
+      }
+    }
+    return best;
+  }
+
   return Math.round(book.scrollLeft / Math.max(book.clientWidth, 1));
 }
 
@@ -108,9 +125,6 @@ function canonicalHashId(spread: HTMLElement, preferred?: string) {
   const ids = pageIdsInSpread(spread);
   // Keep deep links stable (e.g. /#works, /#featured-slug) when present.
   if (preferred && ids.includes(preferred)) return preferred;
-  const currentHash =
-    typeof window !== "undefined" ? window.location.hash.slice(1) : "";
-  if (currentHash && ids.includes(currentHash)) return currentHash;
   for (const id of ids) {
     if (SECTION_IDS.has(id)) return id;
   }
@@ -176,26 +190,19 @@ function scrollBookTo(
   index?: number,
 ) {
   if (isNarrowViewport()) {
-    const spreads = spreadEls(book);
-    const targetSpread = (target.dataset.folioSpread !== undefined
-      ? target
-      : target.closest("[data-folio-spread]")) as HTMLElement ?? target;
-
-    const spreadIdx =
-      typeof index === "number"
-        ? index
-        : Math.max(spreads.indexOf(targetSpread), 0);
-
-    const previousBehavior = book.style.scrollBehavior;
-    book.style.scrollBehavior = "auto";
-    book.scrollLeft = spreadIdx * book.clientWidth;
-    book.style.scrollBehavior = previousBehavior;
-
-    if (target !== targetSpread && targetSpread.contains(target)) {
-      targetSpread.scrollTop = target.offsetTop;
-    } else {
-      targetSpread.scrollTop = 0;
-    }
+    const root = document.documentElement;
+    const previousBehavior = root.style.scrollBehavior;
+    root.style.scrollBehavior = "auto";
+    target.scrollIntoView({
+      // A mobile issue is a tall stack of leaves. Smooth scrolling to a
+      // distant chapter makes every unrelated page flash past and lets
+      // scroll observers temporarily select the wrong spread. Chapter
+      // navigation is therefore an immediate page jump; motion stays local
+      // to the desktop leaf turn.
+      behavior: "auto",
+      block: "start",
+    });
+    root.style.scrollBehavior = previousBehavior;
     return;
   }
 
@@ -397,93 +404,19 @@ export default function FolioBook({ children }: FolioBookProps) {
     const turnKeyframes =
       session.dir === "forward"
         ? [
-            {
-              transform:
-                "rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
-              offset: 0,
-            },
-            {
-              transform:
-                "rotateY(-24deg) rotateZ(-1.8deg) skewY(-1.2deg) scaleX(0.988) translateZ(18px)",
-              offset: 0.15,
-            },
-            {
-              transform:
-                "rotateY(-56deg) rotateZ(-2.8deg) skewY(-2.2deg) scaleX(0.96) translateZ(42px)",
-              offset: 0.32,
-            },
-            {
-              transform:
-                "rotateY(-90deg) rotateZ(-1.2deg) skewY(-0.6deg) scaleX(0.942) translateZ(54px)",
-              offset: 0.5,
-            },
-            {
-              transform:
-                "rotateY(-124deg) rotateZ(1.4deg) skewY(1.4deg) scaleX(0.962) translateZ(38px)",
-              offset: 0.68,
-            },
-            {
-              transform:
-                "rotateY(-156deg) rotateZ(1.6deg) skewY(1.0deg) scaleX(0.988) translateZ(14px)",
-              offset: 0.85,
-            },
-            {
-              transform:
-                "rotateY(-178.6deg) rotateZ(0.4deg) skewY(0.3deg) scaleX(0.995) translateZ(4px)",
-              offset: 0.94,
-            },
-            {
-              transform:
-                "rotateY(-180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
-              offset: 1,
-            },
+            { transform: "rotateY(0deg) scaleX(1)" },
+            { transform: "rotateY(-90deg) scaleX(0.985)", offset: 0.45 },
+            { transform: "rotateY(-180deg) scaleX(1)" },
           ]
         : [
-            {
-              transform:
-                "rotateY(0deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
-              offset: 0,
-            },
-            {
-              transform:
-                "rotateY(24deg) rotateZ(1.8deg) skewY(1.2deg) scaleX(0.988) translateZ(18px)",
-              offset: 0.15,
-            },
-            {
-              transform:
-                "rotateY(56deg) rotateZ(2.8deg) skewY(2.2deg) scaleX(0.96) translateZ(42px)",
-              offset: 0.32,
-            },
-            {
-              transform:
-                "rotateY(90deg) rotateZ(1.2deg) skewY(0.6deg) scaleX(0.942) translateZ(54px)",
-              offset: 0.5,
-            },
-            {
-              transform:
-                "rotateY(126deg) rotateZ(-1.4deg) skewY(-1.4deg) scaleX(0.962) translateZ(38px)",
-              offset: 0.68,
-            },
-            {
-              transform:
-                "rotateY(156deg) rotateZ(-1.8deg) skewY(-1.0deg) scaleX(0.988) translateZ(14px)",
-              offset: 0.85,
-            },
-            {
-              transform:
-                "rotateY(178.6deg) rotateZ(-0.4deg) skewY(-0.3deg) scaleX(0.995) translateZ(4px)",
-              offset: 0.94,
-            },
-            {
-              transform:
-                "rotateY(180deg) rotateZ(0deg) skewY(0deg) scaleX(1) translateZ(0px)",
-              offset: 1,
-            },
+            { transform: "rotateY(0deg) scaleX(1)" },
+            { transform: "rotateY(90deg) scaleX(0.985)", offset: 0.45 },
+            { transform: "rotateY(180deg) scaleX(1)" },
           ];
 
     const turn = leaf.animate(turnKeyframes, {
       duration: FLIP_DURATION_MS,
-      easing: "cubic-bezier(0.38, 0.04, 0.18, 0.98)",
+      easing: "cubic-bezier(0.45, 0.05, 0.2, 1)",
       fill: "forwards",
     });
 
@@ -639,17 +572,14 @@ export default function FolioBook({ children }: FolioBookProps) {
       }
     };
 
-    let initialSyncDone = false;
     const syncFromHash = (animate: boolean) => {
       const id = window.location.hash.slice(1);
       const index = indexFromHash(book, id);
       if (index === null) {
         syncSpreadInteractivity(currentSpreadIndex(book));
-        initialSyncDone = true;
         return;
       }
-      goToSpread(index, { syncHash: false, animate, hashId: id });
-      initialSyncDone = true;
+      goToSpread(index, { syncHash: false, animate });
     };
 
     const onHashChange = () => {
@@ -659,19 +589,11 @@ export default function FolioBook({ children }: FolioBookProps) {
 
     let scrollSyncRaf = 0;
     const onScroll = () => {
-      if (flippingRef.current || !initialSyncDone) return;
+      if (flippingRef.current) return;
       cancelAnimationFrame(scrollSyncRaf);
       scrollSyncRaf = requestAnimationFrame(() => {
-        if (flippingRef.current || !initialSyncDone) return;
-        const idx = currentSpreadIndex(book);
-        syncSpreadInteractivity(idx);
-        if (isNarrowViewport()) {
-          const spreads = spreadEls(book);
-          const activeSpread = spreads[idx];
-          if (activeSpread) {
-            syncHashForSpread(activeSpread, idx);
-          }
-        }
+        if (flippingRef.current) return;
+        syncSpreadInteractivity(currentSpreadIndex(book));
       });
     };
 
@@ -743,14 +665,6 @@ export default function FolioBook({ children }: FolioBookProps) {
           <div
             ref={staticRightRef}
             className={`${styles.stageStatic} ${styles.stageStaticRight}`}
-          />
-          <div
-            className={`${styles.castShadow} ${
-              flipDir === "forward"
-                ? styles.castShadowForward
-                : styles.castShadowBack
-            }`}
-            aria-hidden
           />
           <div
             ref={leafRef}
