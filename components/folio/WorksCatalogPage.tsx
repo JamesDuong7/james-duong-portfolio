@@ -24,11 +24,9 @@ type WorksCatalogPageProps = {
 function ProjectVisual({
   item,
   number,
-  priority = false,
 }: {
   item: WorksCatalogItem;
   number: number;
-  priority?: boolean;
 }) {
   const ordinal = String(number).padStart(2, "0");
 
@@ -41,8 +39,7 @@ function ProjectVisual({
           fill
           sizes="(max-width: 900px) 100vw, 34vw"
           className={styles.image}
-          loading={priority ? "eager" : "lazy"}
-          fetchPriority={priority ? "high" : "auto"}
+          loading="lazy"
         />
       ) : (
         <div className={styles.placeholder} aria-hidden>
@@ -87,12 +84,10 @@ function ProjectButton({
   item,
   number,
   variant,
-  priority = false,
 }: {
   item: WorksCatalogItem;
   number: number;
   variant: "lead" | "support" | "contact";
-  priority?: boolean;
 }) {
   return (
     <button
@@ -101,7 +96,7 @@ function ProjectButton({
       onClick={() => flipFolioTo(`project-${item.slug}`)}
       aria-label={`Flip to case study for ${item.title}`}
     >
-      <ProjectVisual item={item} number={number} priority={priority} />
+      <ProjectVisual item={item} number={number} />
       <span className={styles.caption} aria-hidden>
         Fig. {String(number).padStart(2, "0")} / Product study
       </span>
@@ -147,7 +142,7 @@ export default function WorksCatalogPage({
               className={`${styles.featureLayout}${support.length === 0 ? ` ${styles.leadOnly}` : ""}`}
               aria-label="Featured work"
             >
-              <ProjectButton item={lead} number={1} variant="lead" priority />
+              <ProjectButton item={lead} number={1} variant="lead" />
 
               {support.length > 0 && (
                 <div className={styles.supportRail}>
@@ -157,7 +152,6 @@ export default function WorksCatalogPage({
                       item={item}
                       number={index + 2}
                       variant="support"
-                      priority
                     />
                   ))}
                 </div>

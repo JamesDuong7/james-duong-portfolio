@@ -30,6 +30,9 @@ export default function CoverPage({
 }: CoverPageProps) {
   const [firstName = name, ...lastNameParts] = name.trim().split(/\s+/);
   const lastName = lastNameParts.join(" ");
+  const firstProjectImageIndex = projects
+    .slice(0, 2)
+    .findIndex((project) => Boolean(project.imageUrl));
 
   return (
     <div className={styles.cover}>
@@ -106,8 +109,8 @@ export default function CoverPage({
                     fill
                     sizes="(max-width: 900px) 58vw, 28vw"
                     className={styles.projectImage}
-                    loading="eager"
-                    fetchPriority="high"
+                    loading={index === firstProjectImageIndex ? "eager" : "lazy"}
+                    fetchPriority={index === firstProjectImageIndex ? "high" : "auto"}
                   />
                 ) : (
                   <div className={styles.projectPlaceholder} aria-hidden>

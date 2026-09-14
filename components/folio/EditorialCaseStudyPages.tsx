@@ -324,7 +324,7 @@ function ProjectPlate({
             fill
             sizes="(max-width: 900px) 100vw, 50vw"
             className={styles.projectImage}
-            priority
+            loading="lazy"
             placeholder={screenshot.lqip ? "blur" : "empty"}
             blurDataURL={screenshot.lqip ?? undefined}
           />

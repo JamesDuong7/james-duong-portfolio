@@ -18,8 +18,8 @@ test.describe("Portfolio E2E", () => {
   });
 
   test("works index flips to an in-book case study", async ({ page }) => {
-    await page.goto("/#works");
     await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/#works");
 
     const indexRow = page
       .getByRole("button", { name: /Flip to case study/i })
@@ -130,6 +130,41 @@ test.describe("Portfolio E2E", () => {
         { exact: true },
       ),
     ).toBeVisible();
+  });
+
+  test("accessibility structure and image priority stay intentional", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    await expect(page.locator("img:not([alt])")).toHaveCount(0);
+
+    const duplicateIds = await page.locator("[id]").evaluateAll((elements) => {
+      const counts = new Map<string, number>();
+      for (const element of elements) {
+        counts.set(element.id, (counts.get(element.id) ?? 0) + 1);
+      }
+      return [...counts.entries()].filter(([, count]) => count > 1);
+    });
+    expect(duplicateIds).toEqual([]);
+
+    const unnamedControls = await page
+      .locator("button, a[href]")
+      .evaluateAll((elements) =>
+        elements.filter(
+          (element) =>
+            !(element.getAttribute("aria-label") || element.textContent || "").trim(),
+        ).length,
+      );
+    expect(unnamedControls).toBe(0);
+
+    const priorityImages = page.locator('img[fetchpriority="high"]');
+    expect(await priorityImages.count()).toBeLessThanOrEqual(2);
+    for (const image of await priorityImages.all()) {
+      await expect(image).toBeAttached();
+      expect(await image.evaluate((element) => Boolean(element.closest("#cover")))).toBe(true);
+    }
   });
 
   test("flipping advances from works index into case studies", async ({ page }) => {

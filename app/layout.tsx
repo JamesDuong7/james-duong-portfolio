@@ -39,7 +39,8 @@ const bodoniModa = Bodoni_Moda({
 export const metadata: Metadata = {
   metadataBase: new URL("https://jamesduong.dev"),
   title: "James Duong | Software Engineer",
-  description: "Computer Science student at SDSU and aspiring software engineer focused on building performant web experiences.",
+  description:
+    "James Duong's software engineering portfolio, featuring full-stack systems, product work, and practical AI-driven tools.",
   alternates: {
     canonical: "https://jamesduong.dev"
   },
@@ -54,7 +55,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "James Duong | Software Engineer",
-    description: "Computer Science student at SDSU and aspiring software engineer focused on building performant web experiences.",
+    description:
+      "James Duong's software engineering portfolio, featuring full-stack systems, product work, and practical AI-driven tools.",
   }
 };
 
