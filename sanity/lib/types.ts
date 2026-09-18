@@ -61,6 +61,10 @@ export type ProjectDetail = {
   live: string | null;
   /** Unlisted YouTube screen-recording URL, if set in Studio */
   demoVideoUrl: string | null;
+  /** Repository-owned demo fallback used when a CMS video is unavailable. */
+  localDemoVideoUrl?: string | null;
+  /** Poster image for a repository-owned demo fallback. */
+  localDemoPosterUrl?: string | null;
   featured: boolean | null;
   screenshots: FolioScreenshot[] | null;
   overview: PortableTextBlock[] | null;

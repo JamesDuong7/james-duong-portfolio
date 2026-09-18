@@ -300,13 +300,17 @@ function ProjectPlate({
   project: ProjectDetail;
   profile: EditorialProfile;
 }) {
-  const hasDemo = Boolean(parseYouTubeVideoId(project.demoVideoUrl));
+  const hasDemo = Boolean(
+    project.localDemoVideoUrl || parseYouTubeVideoId(project.demoVideoUrl),
+  );
 
-  if (!screenshot?.url && hasDemo) {
+  if (hasDemo) {
     return (
       <div className={styles.demoPlate}>
         <FolioDemoVideo
           url={project.demoVideoUrl}
+          localUrl={project.localDemoVideoUrl}
+          posterUrl={project.localDemoPosterUrl}
           title={project.title}
           caption={`Demo film — ${project.title}`}
         />

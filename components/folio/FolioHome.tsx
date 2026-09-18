@@ -27,7 +27,8 @@ import {
   fetchAllProjectsDetail,
   fetchPersonalInfo,
 } from "@/sanity/lib/fetch";
-import { primaryScreenshot } from "@/sanity/lib/types";
+import { primaryScreenshot, usableScreenshots } from "@/sanity/lib/types";
+import { localProjectMedia } from "@/lib/projectMedia";
 import { parseYouTubeVideoId, youtubePosterUrl } from "@/lib/youtube";
 
 type LeafPage = {
@@ -159,7 +160,17 @@ export default async function FolioHome() {
       const slug =
         stegaClean(project.id ?? "") ||
         slugify(project.title ?? "project");
-      return { ...project, slug };
+      const localMedia = localProjectMedia[slug];
+      const screenshots = usableScreenshots(project.screenshots).length
+        ? project.screenshots
+        : localMedia?.screenshots ?? project.screenshots;
+      return {
+        ...project,
+        screenshots,
+        localDemoVideoUrl: localMedia?.demoVideoUrl,
+        localDemoPosterUrl: localMedia?.demoPosterUrl,
+        slug,
+      };
     })
     .filter((project) => Boolean(project.slug));
 
