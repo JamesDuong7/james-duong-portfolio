@@ -76,7 +76,7 @@ test.describe("Portfolio E2E", () => {
     await expect(page).toHaveURL(/#contents/);
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeInViewport();
 
-    await page.getByRole("button", { name: /Turn the page.*Works/i }).click();
+    await page.getByRole("button", { name: /Go to Works, page/i }).click();
     await expect(page).toHaveURL(/#works$/);
     await expect(page.locator("#works")).toBeInViewport();
 
@@ -112,6 +112,16 @@ test.describe("Portfolio E2E", () => {
     await page.waitForTimeout(1100);
 
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#hobby-training$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#hobby-personal-experiments$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+
     await magazine.focus();
     await page.keyboard.press("ArrowRight");
     await expect(page).toHaveURL(/#works$/);
@@ -212,8 +222,13 @@ test.describe("Portfolio E2E", () => {
     await expect(
       page
         .locator("#project-aztec-assess")
-        .getByText(/Product capture pending/i),
+        .getByRole("button", { name: /Play demo video: Aztec Assess/i }),
     ).toBeVisible();
+    await expect(
+      page
+        .locator("#project-aztec-assess")
+        .getByText(/Product capture pending/i),
+    ).toHaveCount(0);
 
     await page
       .locator("#project-aztec-assess-brief")
@@ -225,6 +240,11 @@ test.describe("Portfolio E2E", () => {
     ).toBeVisible();
     await expect(
       page.getByRole("list", { name: /Aztec Assess system architecture/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("img", {
+        name: /Aztec Assess question-bank manager/i,
+      }),
     ).toBeVisible();
 
     await page
