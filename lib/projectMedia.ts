@@ -65,4 +65,31 @@ export const localProjectMedia: Record<string, LocalProjectMedia> = {
       },
     ],
   },
+  nextgame: {
+    demoVideoUrl: "/project-media/nextgame/product-tour.webm",
+    demoPosterUrl: "/project-media/nextgame/player-forecast.webp",
+    screenshots: [
+      {
+        url: "/project-media/nextgame/player-forecast.webp",
+        alt: "NextGame matchup forecast showing a low, typical, and high scoring range with the model signals behind the prediction",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/nextgame/model-evaluation.webp",
+        alt: "NextGame backtesting dashboard reporting model error, coverage, calibration, directional accuracy, and largest misses",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/nextgame/model-insights.webp",
+        alt: "NextGame model-insights page showing the active quantile model and the signals with the greatest recent importance",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+    ],
+  },
 };
