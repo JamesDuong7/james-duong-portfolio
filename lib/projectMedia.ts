@@ -119,4 +119,31 @@ export const localProjectMedia: Record<string, LocalProjectMedia> = {
       },
     ],
   },
+  "personal-developer-portfolio": {
+    demoVideoUrl: "/project-media/personal-developer-portfolio/product-tour.webm",
+    demoPosterUrl: "/project-media/personal-developer-portfolio/magazine-cover.webp",
+    screenshots: [
+      {
+        url: "/project-media/personal-developer-portfolio/magazine-cover.webp",
+        alt: "The Folio magazine cover combining James Duong's editorial portrait, project clippings, software-engineering focus, and issue navigation",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/personal-developer-portfolio/table-of-contents.webp",
+        alt: "The Folio table of contents organizing profile, interests, selected work, and contact information as a readable magazine issue",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/personal-developer-portfolio/works-catalog.webp",
+        alt: "The Folio image-led works catalog presenting five software projects in an editorial index",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+    ],
+  },
 };
