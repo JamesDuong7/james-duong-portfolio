@@ -38,4 +38,31 @@ export const localProjectMedia: Record<string, LocalProjectMedia> = {
       },
     ],
   },
+  "harbor-risk": {
+    demoVideoUrl: "/project-media/harbor-risk/product-tour.webm",
+    demoPosterUrl: "/project-media/harbor-risk/risk-snapshot.webp",
+    screenshots: [
+      {
+        url: "/project-media/harbor-risk/risk-snapshot.webp",
+        alt: "Harbor Risk analysis dashboard translating portfolio data into a plain-English risk summary and four key metrics",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/harbor-risk/portfolio-builder.webp",
+        alt: "Harbor Risk portfolio builder with weighted SPY, QQQ, and AAPL holdings ready for analysis",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+      {
+        url: "/project-media/harbor-risk/risk-breakdown.webp",
+        alt: "Harbor Risk results showing the historical portfolio path, simulation range, stress windows, benchmark comparison, and risk contribution",
+        width: 1440,
+        height: 900,
+        lqip: null,
+      },
+    ],
+  },
 };
