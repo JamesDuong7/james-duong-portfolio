@@ -29,6 +29,7 @@ test.describe("Portfolio E2E", () => {
 
     await expect(page).toHaveURL(/#project-/);
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(page.locator("[data-folio-flip-stage]")).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: /Previous page/i }).first(),
     ).toBeVisible();

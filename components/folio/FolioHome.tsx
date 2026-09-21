@@ -161,14 +161,15 @@ export default async function FolioHome() {
         stegaClean(project.id ?? "") ||
         slugify(project.title ?? "project");
       const localMedia = localProjectMedia[slug];
+      const hasCmsDemo = Boolean(parseYouTubeVideoId(project.demoVideoUrl));
       const screenshots = usableScreenshots(project.screenshots).length
         ? project.screenshots
         : localMedia?.screenshots ?? project.screenshots;
       return {
         ...project,
         screenshots,
-        localDemoVideoUrl: localMedia?.demoVideoUrl,
-        localDemoPosterUrl: localMedia?.demoPosterUrl,
+        localDemoVideoUrl: hasCmsDemo ? undefined : localMedia?.demoVideoUrl,
+        localDemoPosterUrl: hasCmsDemo ? undefined : localMedia?.demoPosterUrl,
         slug,
       };
     })

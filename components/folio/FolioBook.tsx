@@ -654,6 +654,7 @@ export default function FolioBook({ children }: FolioBookProps) {
         <div
           ref={flipStageRef}
           className={styles.flipStage}
+          data-folio-flip-stage
           aria-hidden
           style={{ ["--folio-flip-ms" as string]: `${FLIP_DURATION_MS}ms` }}
         >
