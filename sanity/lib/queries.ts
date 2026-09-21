@@ -124,9 +124,11 @@ export const PERSONAL_INFO_QUERY = defineQuery(
     github,
     linkedin,
     resumeUrl,
+    "portraitUrl": portrait.asset->url,
     hobbies[]{
       title,
-      description
+      description,
+      "imageUrl": image.asset->url
     },
     skills {
       languages,

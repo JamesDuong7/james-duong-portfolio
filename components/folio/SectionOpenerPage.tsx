@@ -9,7 +9,9 @@ type SectionOpenerPageProps = {
   meta?: string;
   tone?: "paper" | "ink";
   backLabel?: string;
+  backTarget?: string;
   forwardLabel?: string;
+  forwardTarget?: string;
 };
 
 export default function SectionOpenerPage({
@@ -20,7 +22,9 @@ export default function SectionOpenerPage({
   meta,
   tone = "paper",
   backLabel,
+  backTarget,
   forwardLabel,
+  forwardTarget,
 }: SectionOpenerPageProps) {
   return (
     <div className={`${styles.page} ${tone === "ink" ? styles.ink : ""}`}>
@@ -40,8 +44,16 @@ export default function SectionOpenerPage({
         <p className={styles.blurb}>{blurb}</p>
       </div>
 
-      {backLabel && <FolioFlip direction="back" label={backLabel} />}
-      {forwardLabel && <FolioFlip direction="forward" label={forwardLabel} />}
+      {backLabel && (
+        <FolioFlip direction="back" label={backLabel} target={backTarget} />
+      )}
+      {forwardLabel && (
+        <FolioFlip
+          direction="forward"
+          label={forwardLabel}
+          target={forwardTarget}
+        />
+      )}
     </div>
   );
 }

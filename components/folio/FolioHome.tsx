@@ -13,8 +13,12 @@ import AboutMePage from "./AboutMePage";
 import HobbyPage from "./HobbyPage";
 import SectionOpenerPage from "./SectionOpenerPage";
 import WorksCatalogPage from "./WorksCatalogPage";
-import CaseStudyInkPage from "./CaseStudyInkPage";
-import CaseStudyPaperPage from "./CaseStudyPaperPage";
+import {
+  EditorialCaseStudyBriefPage,
+  EditorialCaseStudyFieldNotesPage,
+  EditorialCaseStudyOpenerPage,
+  EditorialCaseStudySystemPage,
+} from "./EditorialCaseStudyPages";
 import FolioSpineMark from "./FolioSpineMark";
 import BlankPage from "./BlankPage";
 import ContactIntroPage from "./ContactIntroPage";
@@ -23,7 +27,9 @@ import {
   fetchAllProjectsDetail,
   fetchPersonalInfo,
 } from "@/sanity/lib/fetch";
-import { portableTextToPlain } from "@/lib/portableText";
+import { primaryScreenshot, usableScreenshots } from "@/sanity/lib/types";
+import { localProjectMedia } from "@/lib/projectMedia";
+import { parseYouTubeVideoId, youtubePosterUrl } from "@/lib/youtube";
 
 type LeafPage = {
   id: string;
@@ -95,9 +101,18 @@ export default async function FolioHome() {
   ]);
 
   const name = info?.name ?? "James Duong";
-  const headline =
-    info?.headline ?? "Computer Science Student & Software Engineer";
-  const about = portableTextToPlain(info?.aboutMe, " ");
+  const coverHeadline =
+    "Software Engineer building full-stack, cloud, and automation systems";
+  const coverSupportingLine = "M.S. Computer Science · SDSU · Dec. 2027";
+  const about = [
+    "I’m a software engineer and M.S. Computer Science student at San Diego State University, graduating in December 2027. I enjoy full-stack development because it lets me turn ideas into complete products that people can actually use.",
+    "I’m drawn to cloud engineering because it brings together software development, system architecture, and real-world operations. I naturally notice repetitive processes and look for ways to simplify them, using automation to save time and make work more efficient.",
+    "I value organization because it keeps projects efficient and priorities clear. I’m detail-oriented about doing work correctly, and I enjoy collaborating because exchanging perspectives often leads to stronger ideas and unexpected solutions.",
+  ];
+  const education =
+    "M.S. Computer Science · San Diego State University · Expected December 2027";
+  const availability =
+    "Internship or part-time · Remote, hybrid, or in person in San Diego";
   const location = info?.location;
   const email = info?.email;
   const github = info?.github;
@@ -107,32 +122,84 @@ export default async function FolioHome() {
   const frameworks = info?.skills?.frameworks ?? [];
   const tools = info?.skills?.tools ?? [];
 
-  const hobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
+  const sourceHobbies = (info?.hobbies ?? []).filter((h) => Boolean(h?.title));
+  const editorialHobbies = [
+    {
+      title: "Training",
+      description:
+        "Training helps me stay healthy while reinforcing discipline and consistency. I enjoy the gradual, measurable progress that comes from sustained effort.",
+      keywords: ["gym", "fitness", "training", "lifting"],
+    },
+    {
+      title: "Manga & Anime",
+      description:
+        "I’m drawn to expressive artwork, imaginative storytelling, detailed world-building, fantasy settings, and memorable characters. Current shelf: Attack on Titan, Jujutsu Kaisen, and Frieren: Beyond Journey’s End.",
+      keywords: ["anime", "manga"],
+    },
+    {
+      title: "Personal Experiments",
+      description:
+        "I build small tools around problems I encounter. One workflow batches job listings into Google Sheets—cutting tracking from about 15 seconds per listing to five seconds per batch—and helps me tailor each resume while keeping the final review in my hands.",
+      keywords: ["automation", "coding", "programming", "experiment"],
+    },
+  ];
+  const hobbies = editorialHobbies.map((hobby) => {
+    const source = sourceHobbies.find((candidate) => {
+      const title = stegaClean(candidate.title ?? "").toLowerCase();
+      return hobby.keywords.some((keyword) => title.includes(keyword));
+    });
+    return {
+      title: hobby.title,
+      description: hobby.description,
+      imageUrl: source?.imageUrl ?? null,
+    };
+  });
 
   const orderedProjects = (projects ?? [])
     .map((project) => {
       const slug =
         stegaClean(project.id ?? "") ||
         slugify(project.title ?? "project");
-      return { ...project, slug };
+      const localMedia = localProjectMedia[slug];
+      const hasCmsDemo = Boolean(parseYouTubeVideoId(project.demoVideoUrl));
+      const screenshots = usableScreenshots(project.screenshots).length
+        ? project.screenshots
+        : localMedia?.screenshots ?? project.screenshots;
+      return {
+        ...project,
+        screenshots,
+        localDemoVideoUrl: hasCmsDemo ? undefined : localMedia?.demoVideoUrl,
+        localDemoPosterUrl: hasCmsDemo ? undefined : localMedia?.demoPosterUrl,
+        slug,
+      };
     })
     .filter((project) => Boolean(project.slug));
 
+  const toCatalogItem = (project: (typeof orderedProjects)[number]) => {
+    const shot = primaryScreenshot(project.screenshots);
+    const videoId = parseYouTubeVideoId(project.demoVideoUrl);
+    return {
+      slug: project.slug,
+      title: stegaClean(project.title ?? "Untitled"),
+      description: project.description ?? "",
+      imageUrl: shot?.url ?? (videoId ? youtubePosterUrl(videoId) : null),
+      imageAlt: shot?.alt,
+      tech: project.tech?.filter(Boolean).slice(0, 3) ?? [],
+    };
+  };
+
   const featuredItems = orderedProjects
     .filter((p) => p.featured)
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title ?? "Untitled",
-      description: p.description ?? "",
-    }));
+    .map(toCatalogItem);
 
   const restItems = orderedProjects
     .filter((p) => !p.featured)
-    .map((p) => ({
-      slug: p.slug,
-      title: p.title ?? "Untitled",
-      description: p.description ?? "",
-    }));
+    .map(toCatalogItem);
+
+  const coverProjects = [...orderedProjects]
+    .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
+    .slice(0, 2)
+    .map(toCatalogItem);
 
   const nextPage = createPageAllocator();
 
@@ -143,6 +210,7 @@ export default async function FolioHome() {
       id: `hobby-${slugify(title)}`,
       title,
       description: hobby.description,
+      imageUrl: hobby.imageUrl,
       page: nextPage(),
     };
   });
@@ -156,6 +224,8 @@ export default async function FolioHome() {
       id: `project-${project.slug}`,
       page: pageLeft,
       pageRight,
+      systemPage: nextPage(),
+      fieldNotesPage: nextPage(),
     };
   });
 
@@ -184,6 +254,7 @@ export default async function FolioHome() {
           label: stegaClean(item.title ?? "Untitled"),
           target: item.id,
           page: item.page,
+          featured: Boolean(item.featured),
         }),
       ),
     },
@@ -206,6 +277,7 @@ export default async function FolioHome() {
         page={meta.page}
         title={meta.title}
         description={meta.description}
+        imageUrl={meta.imageUrl}
         index={index + 1}
         total={hobbyMeta.length}
         flipBack={side === "left"}
@@ -232,6 +304,8 @@ export default async function FolioHome() {
         <AboutMePage
           page={aboutPage}
           about={about}
+          education={education}
+          availability={availability}
           languages={languages}
           frameworks={frameworks}
           tools={tools}
@@ -243,6 +317,7 @@ export default async function FolioHome() {
               ? "Turn the page → Hobbies"
               : "Turn the page → Works"
           }
+          flipForwardTarget={hobbyMeta[0]?.id ?? "works"}
         />
       ),
     },
@@ -274,6 +349,7 @@ export default async function FolioHome() {
           meta="Index"
           tone="paper"
           backLabel="← Previous page"
+          backTarget={hobbyMeta.at(-1)?.id ?? "contents"}
           forwardLabel={undefined}
         />
       ),
@@ -287,38 +363,78 @@ export default async function FolioHome() {
           page={worksSectionPage}
           featured={featuredItems}
           rest={restItems}
+          firstProjectTarget={projectMeta[0]?.id}
         />
       ),
     },
   });
 
-  // Each project owns one ink | paper case study spread
+  // Every project uses the approved two-spread editorial case-study system.
   projectMeta.forEach((project, index) => {
+    const previousTarget =
+      index === 0 ? "works" : `${projectMeta[index - 1].id}-system`;
     const nextTitle = projectMeta[index + 1]
       ? stegaClean(projectMeta[index + 1].title ?? "Next")
       : null;
+    const nextTarget = projectMeta[index + 1]?.id ?? "contact";
 
-    spreads.push({
-      label: `${stegaClean(project.title ?? "Project")} case study`,
-      left: {
-        id: project.id,
-        label: stegaClean(project.title ?? "Case study"),
-        tone: "ink",
-        node: <CaseStudyInkPage page={project.page} project={project} />,
+    spreads.push(
+      {
+        label: `${stegaClean(project.title ?? "Project")} opener and brief`,
+        left: {
+          id: project.id,
+          label: stegaClean(project.title ?? "Case study"),
+          tone: "ink",
+          node: (
+            <EditorialCaseStudyOpenerPage
+              page={project.page}
+              project={project}
+              previousTarget={previousTarget}
+            />
+          ),
+        },
+        right: {
+          id: `${project.id}-brief`,
+          label: `${stegaClean(project.title ?? "Project")} brief`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudyBriefPage
+              page={project.pageRight}
+              project={project}
+              nextTarget={`${project.id}-system`}
+            />
+          ),
+        },
       },
-      right: {
-        id: `${project.id}-article`,
-        label: `${stegaClean(project.title ?? "Project")} article`,
-        tone: "paper",
-        node: (
-          <CaseStudyPaperPage
-            page={project.pageRight}
-            project={project}
-            nextTitle={nextTitle}
-          />
-        ),
+      {
+        label: `${stegaClean(project.title ?? "Project")} system and field notes`,
+        left: {
+          id: `${project.id}-system`,
+          label: `${stegaClean(project.title ?? "Project")} system map`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudySystemPage
+              page={project.systemPage}
+              project={project}
+              previousTarget={project.id}
+            />
+          ),
+        },
+        right: {
+          id: `${project.id}-article`,
+          label: `${stegaClean(project.title ?? "Project")} field notes`,
+          tone: "paper",
+          node: (
+            <EditorialCaseStudyFieldNotesPage
+              page={project.fieldNotesPage}
+              project={project}
+              nextTarget={nextTarget}
+              nextTitle={nextTitle}
+            />
+          ),
+        },
       },
-    });
+    );
   });
 
   spreads.push({
@@ -355,7 +471,17 @@ export default async function FolioHome() {
           left={<WoodTablePage />}
           right={
             <FolioPage tone="ink" label="Cover" pageId="cover">
-              <CoverPage name={name} headline={headline} location={location} />
+              <CoverPage
+                name={name}
+                headline={coverHeadline}
+                supportingLine={coverSupportingLine}
+                location={location}
+                hasHobbies={hobbyMeta.length > 0}
+                projects={coverProjects}
+                portraitUrl={
+                  info?.portraitUrl ?? "/james-duong-editorial-portrait.webp"
+                }
+              />
             </FolioPage>
           }
         />

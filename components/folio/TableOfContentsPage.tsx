@@ -7,12 +7,10 @@ import styles from "./TableOfContentsPage.module.css";
 
 export type TocEntry = {
   label: string;
-  /** External/route link (e.g. a case study opened from outside the book). */
   href?: string;
-  /** Page id to flip to when there is no `href`. */
   target?: string;
-  /** Running page number shown on the right. */
   page?: string;
+  featured?: boolean;
 };
 
 export type TocSection = {
@@ -26,89 +24,122 @@ type TableOfContentsPageProps = {
   sections: TocSection[];
 };
 
+const sectionNotes: Record<string, string> = {
+  contents: "Profile, toolkit and the interests behind the work.",
+  works: "Selected systems, product experiments and shipped builds.",
+  contact: "Availability, links and a direct line to say hello.",
+};
+
 export default function TableOfContentsPage({
   sections,
 }: TableOfContentsPageProps) {
+  const itemCount = sections.reduce(
+    (total, section) => total + section.items.length,
+    0,
+  );
+
   return (
     <div className={styles.page}>
       <header className={styles.masthead}>
-        <span className={styles.mastPink}>CONTENTS</span>
-        <span className={styles.mastMuted}>Vol. 01</span>
+        <span className={styles.mastPink}>01 · Contents</span>
+        <span className={styles.mastMuted}>The Folio / Vol. 01</span>
       </header>
 
-      <h2 className={styles.title}>In this issue</h2>
-
-      <div className={styles.tableHead} aria-hidden>
-        <span>Section</span>
-        <span>Page</span>
+      <div className={styles.titleBlock}>
+        <p>Editor&apos;s index</p>
+        <h2>
+          Inside
+          <br />
+          the issue.
+        </h2>
+        <span>
+          {String(sections.length).padStart(2, "0")} sections ·{" "}
+          {String(itemCount).padStart(2, "0")} stories
+        </span>
       </div>
 
-      <div className={styles.table}>
-        {sections.map((section) => (
-          <div key={section.id} className={styles.group}>
+      <nav className={styles.table} aria-label="Magazine contents">
+        {sections.map((section, sectionIndex) => (
+          <section key={section.id} className={styles.group}>
             <button
               type="button"
               className={styles.sectionRow}
               onClick={() => flipFolioTo(section.id)}
               aria-label={`Go to ${section.title}, page ${section.page}`}
             >
-              <span className={styles.sectionTitle}>{section.title}</span>
-              <span className={styles.leader} aria-hidden />
+              <span className={styles.sectionOrdinal} aria-hidden>
+                {String(sectionIndex + 1).padStart(2, "0")}
+              </span>
+              <span className={styles.sectionCopy}>
+                <span className={styles.sectionTitle}>{section.title}</span>
+                <span className={styles.sectionNote}>
+                  {sectionNotes[section.id] ?? "Open this section."}
+                </span>
+              </span>
               <span className={styles.sectionPage}>{section.page}</span>
             </button>
 
-            {section.items.map((item) => {
-              const itemPage = item.page ?? section.page;
-              const content = (
-                <>
-                  <span className={styles.itemTitle}>{item.label}</span>
-                  <span className={styles.leader} aria-hidden />
-                  <span className={styles.itemPage}>{itemPage}</span>
-                </>
-              );
+            {section.items.length > 0 && (
+              <ol className={styles.itemList}>
+                {section.items.map((item) => {
+                  const itemPage = item.page ?? section.page;
+                  const content = (
+                    <>
+                      <span className={styles.itemMarker} aria-hidden>
+                        {item.featured ? "Feature" : "Story"}
+                      </span>
+                      <span className={styles.itemTitle}>{item.label}</span>
+                      <span className={styles.leader} aria-hidden />
+                      <span className={styles.itemPage}>{itemPage}</span>
+                    </>
+                  );
+                  const rowClass = `${styles.itemRow}${
+                    item.featured ? ` ${styles.itemFeatured}` : ""
+                  }`;
 
-              if (item.target) {
-                return (
-                  <button
-                    key={`${section.id}-${item.label}`}
-                    type="button"
-                    className={styles.itemRow}
-                    onClick={() => flipFolioTo(item.target!)}
-                    aria-label={`${item.label}, page ${itemPage}`}
-                  >
-                    {content}
-                  </button>
-                );
-              }
-
-              if (item.href) {
-                return (
-                  <Link
-                    key={`${section.id}-${item.label}`}
-                    href={item.href}
-                    className={styles.itemRow}
-                    aria-label={`${item.label}, page ${itemPage}`}
-                  >
-                    {content}
-                  </Link>
-                );
-              }
-
-              return (
-                <button
-                  key={`${section.id}-${item.label}`}
-                  type="button"
-                  className={styles.itemRow}
-                  onClick={() => flipFolioTo(section.id)}
-                  aria-label={`${item.label}, page ${itemPage}`}
-                >
-                  {content}
-                </button>
-              );
-            })}
-          </div>
+                  return (
+                    <li key={`${section.id}-${item.label}`}>
+                      {item.target ? (
+                        <button
+                          type="button"
+                          className={rowClass}
+                          onClick={() => flipFolioTo(item.target!)}
+                          aria-label={`${item.label}, page ${itemPage}`}
+                        >
+                          {content}
+                        </button>
+                      ) : item.href ? (
+                        <Link
+                          href={item.href}
+                          className={rowClass}
+                          aria-label={`${item.label}, page ${itemPage}`}
+                        >
+                          {content}
+                        </Link>
+                      ) : (
+                        <button
+                          type="button"
+                          className={rowClass}
+                          onClick={() => flipFolioTo(section.id)}
+                          aria-label={`${item.label}, page ${itemPage}`}
+                        >
+                          {content}
+                        </button>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            )}
+          </section>
         ))}
-      </div>
+      </nav>
+
+      <footer className={styles.folio} aria-hidden>
+        <span>Start anywhere</span>
+        <span>The Folio</span>
+        <span>01</span>
+      </footer>
 
       <FolioFlip direction="back" label="← Back to cover" />
     </div>

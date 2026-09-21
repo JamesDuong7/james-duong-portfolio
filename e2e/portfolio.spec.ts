@@ -11,13 +11,15 @@ test.describe("Portfolio E2E", () => {
     await expect(page.getByRole("heading", { name: /James Duong/i })).toBeVisible();
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page.getByRole("heading", { name: /^About$/ })).toBeVisible();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(
+      page.getByRole("heading", { name: /Inside the issue/i }),
+    ).toBeVisible();
+    await expect(page).toHaveURL(/#toc/);
   });
 
   test("works index flips to an in-book case study", async ({ page }) => {
-    await page.goto("/#works");
     await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/#works");
 
     const indexRow = page
       .getByRole("button", { name: /Flip to case study/i })
@@ -27,9 +29,18 @@ test.describe("Portfolio E2E", () => {
 
     await expect(page).toHaveURL(/#project-/);
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await expect(page.locator("[data-folio-flip-stage]")).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: /Previous page/i }).first(),
     ).toBeVisible();
+
+    const projectHash = new URL(page.url()).hash;
+    await page
+      .locator(projectHash)
+      .getByRole("button", { name: /Previous page/i })
+      .click();
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works-catalog")).toBeInViewport();
   });
 
   test("invalid project slug renders Folio not-found page", async ({ page }) => {
@@ -59,8 +70,112 @@ test.describe("Portfolio E2E", () => {
     ).toBeVisible();
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
+    await expect(page).toHaveURL(/#toc/);
+    await expect(page.locator("#toc")).toBeInViewport();
+
+    await page.getByRole("button", { name: /Go to About Me/i }).click();
     await expect(page).toHaveURL(/#contents/);
     await expect(page.getByRole("heading", { name: /^About$/ })).toBeInViewport();
+
+    await page.getByRole("button", { name: /Go to Works, page/i }).click();
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works")).toBeInViewport();
+
+    // The URL must remain stable after the old smooth-scroll duration; it
+    // previously overshot into the first project while the page was moving.
+    await page.waitForTimeout(1200);
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator("#works")).toBeInViewport();
+  });
+
+  test("mobile direct hashes land on the requested leaf", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+
+    await page.goto("/#project-harbor-risk");
+    await expect(page).toHaveURL(/#project-harbor-risk$/);
+    await expect(page.locator("#project-harbor-risk")).toBeInViewport();
+
+    await page.goto("/#contact");
+    await expect(page).toHaveURL(/#contact$/);
+    await expect(page.locator("#contact")).toBeInViewport();
+  });
+
+  test("desktop keyboard navigation and reduced motion stay functional", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    const magazine = page.getByRole("region", { name: /Portfolio magazine/i });
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#contents$/);
+    await page.waitForTimeout(1100);
+
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#hobby-training$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#hobby-personal-experiments$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+
+    await magazine.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page).toHaveURL(/#works$/);
+    await expect(page.locator('[class*="flipStage"]')).toHaveCount(0);
+  });
+
+  test("cover promises only content that is available", async ({ page }) => {
+    await page.goto("/");
+    const hasHobbyPage = (await page.locator('[id^="hobby-"]').count()) > 0;
+
+    await expect(
+      page.getByText(
+        hasHobbyPage
+          ? "About, skills & off-hours"
+          : "About & technical practice",
+        { exact: true },
+      ),
+    ).toBeVisible();
+  });
+
+  test("accessibility structure and image priority stay intentional", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/");
+
+    await expect(page.locator("img:not([alt])")).toHaveCount(0);
+
+    const duplicateIds = await page.locator("[id]").evaluateAll((elements) => {
+      const counts = new Map<string, number>();
+      for (const element of elements) {
+        counts.set(element.id, (counts.get(element.id) ?? 0) + 1);
+      }
+      return [...counts.entries()].filter(([, count]) => count > 1);
+    });
+    expect(duplicateIds).toEqual([]);
+
+    const unnamedControls = await page
+      .locator("button, a[href]")
+      .evaluateAll((elements) =>
+        elements.filter(
+          (element) =>
+            !(element.getAttribute("aria-label") || element.textContent || "").trim(),
+        ).length,
+      );
+    expect(unnamedControls).toBe(0);
+
+    const priorityImages = page.locator('img[fetchpriority="high"]');
+    expect(await priorityImages.count()).toBeLessThanOrEqual(2);
+    for (const image of await priorityImages.all()) {
+      await expect(image).toBeAttached();
+      expect(await image.evaluate((element) => Boolean(element.closest("#cover")))).toBe(true);
+    }
   });
 
   test("flipping advances from works index into case studies", async ({ page }) => {
@@ -68,7 +183,7 @@ test.describe("Portfolio E2E", () => {
     await page.setViewportSize({ width: 1280, height: 800 });
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(page).toHaveURL(/#toc/);
 
     for (let i = 0; i < 16; i += 1) {
       const catalog = page.getByRole("button", {
@@ -94,5 +209,87 @@ test.describe("Portfolio E2E", () => {
 
     await expect(page).toHaveURL(/#project-/);
     await expect(page.getByText(/CASE STUDY/i).first()).toBeVisible();
+  });
+
+  test("featured case study preserves its editorial reading path", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/#project-aztec-assess");
+
+    await expect(
+      page.getByRole("heading", { level: 1, name: /Aztec Assess/i }),
+    ).toBeVisible();
+    await expect(
+      page
+        .locator("#project-aztec-assess")
+        .getByRole("button", { name: /Play demo video: Aztec Assess/i }),
+    ).toBeVisible();
+    await expect(
+      page
+        .locator("#project-aztec-assess")
+        .getByText(/Product capture pending/i),
+    ).toHaveCount(0);
+
+    await page
+      .locator("#project-aztec-assess-brief")
+      .getByRole("button", { name: /Continue.*System/i })
+      .click();
+    await expect(page).toHaveURL(/#project-aztec-assess-system$/);
+    await expect(
+      page.getByRole("heading", { name: /A campus quiz, end to end/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("list", { name: /Aztec Assess system architecture/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("img", {
+        name: /Aztec Assess question-bank manager/i,
+      }),
+    ).toBeVisible();
+
+    await page
+      .locator("#project-aztec-assess-system")
+      .getByRole("button", { name: /Case opener/i })
+      .click();
+    await expect(page).toHaveURL(/#project-aztec-assess$/);
+  });
+
+  test("every project uses the approved editorial case-study system", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 800 });
+
+    const projects = [
+      { slug: "aztec-assess", title: "Aztec Assess" },
+      { slug: "harbor-risk", title: "Harbor Risk" },
+      { slug: "nextgame", title: "NextGame" },
+      { slug: "job-posting-notifier", title: "Job Posting Notifier" },
+      {
+        slug: "personal-developer-portfolio",
+        title: "Personal Developer Portfolio",
+      },
+    ];
+
+    for (const project of projects) {
+      const openerId = `project-${project.slug}`;
+
+      await page.goto(`/#${openerId}`);
+      await expect(
+        page.locator(`#${openerId}`).getByRole("heading", {
+          level: 1,
+          name: project.title,
+        }),
+      ).toBeVisible();
+      await expect(page.locator(`#${openerId}-brief`)).toBeAttached();
+
+      await page.goto(`/#${openerId}-system`);
+      await expect(
+        page.getByRole("list", {
+          name: `${project.title} system architecture`,
+        }),
+      ).toBeVisible();
+      await expect(page.locator(`#${openerId}-article`)).toBeAttached();
+    }
   });
 });

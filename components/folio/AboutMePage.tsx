@@ -4,7 +4,9 @@ import styles from "./AboutMePage.module.css";
 
 type AboutMePageProps = {
   page: string;
-  about: string;
+  about: string[];
+  education: string;
+  availability: string;
   languages: string[];
   frameworks: string[];
   tools: string[];
@@ -12,6 +14,7 @@ type AboutMePageProps = {
   linkedin?: string | null;
   resumeUrl?: string | null;
   flipForwardLabel?: string;
+  flipForwardTarget?: string;
 };
 
 function SkillLine({ label, values }: { label: string; values: string[] }) {
@@ -27,6 +30,8 @@ function SkillLine({ label, values }: { label: string; values: string[] }) {
 export default function AboutMePage({
   page,
   about,
+  education,
+  availability,
   languages,
   frameworks,
   tools,
@@ -34,6 +39,7 @@ export default function AboutMePage({
   linkedin,
   resumeUrl,
   flipForwardLabel,
+  flipForwardTarget,
 }: AboutMePageProps) {
   const hasSkills =
     languages.length > 0 || frameworks.length > 0 || tools.length > 0;
@@ -47,7 +53,24 @@ export default function AboutMePage({
 
       <div className={styles.scroll}>
         <h2 className={styles.title}>About</h2>
-        {about && <p className={styles.copy}>{about}</p>}
+        <div className={styles.profileFacts} aria-label="Profile details">
+          <p>
+            <span>Education</span>
+            {education}
+          </p>
+          <p>
+            <span>Available for</span>
+            {availability}
+          </p>
+        </div>
+
+        <div className={styles.story}>
+          {about.map((paragraph) => (
+            <p className={styles.copy} key={paragraph}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
 
         {hasSkills && (
           <section className={styles.skills} aria-label="Skills">
@@ -78,7 +101,11 @@ export default function AboutMePage({
       </div>
 
       {flipForwardLabel && (
-        <FolioFlip direction="forward" label={flipForwardLabel} />
+        <FolioFlip
+          direction="forward"
+          label={flipForwardLabel}
+          target={flipForwardTarget}
+        />
       )}
     </div>
   );

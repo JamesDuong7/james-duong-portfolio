@@ -1,5 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Archivo_Black, IBM_Plex_Mono } from "next/font/google";
+import {
+  Archivo,
+  Archivo_Black,
+  Bodoni_Moda,
+  IBM_Plex_Mono,
+} from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { draftMode } from "next/headers";
 import { VisualEditing } from "next-sanity/visual-editing";
@@ -26,16 +31,23 @@ const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
+const bodoniModa = Bodoni_Moda({
+  variable: "--font-bodoni-moda",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://jamesduong.dev"),
   title: "James Duong | Software Engineer",
-  description: "Computer Science student at SDSU and aspiring software engineer focused on building performant web experiences.",
+  description:
+    "James Duong is a software engineer and M.S. Computer Science student building full-stack, cloud, and automation systems.",
   alternates: {
     canonical: "https://jamesduong.dev"
   },
   openGraph: {
     title: "James Duong | Software Engineer",
-    description: "Personal portfolio of James Duong, showcasing software engineering projects.",
+    description:
+      "An editorial portfolio of full-stack, cloud, and automation systems by James Duong.",
     url: "https://jamesduong.dev",
     siteName: "James Duong Portfolio",
     locale: "en_US",
@@ -44,7 +56,8 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "James Duong | Software Engineer",
-    description: "Computer Science student at SDSU and aspiring software engineer focused on building performant web experiences.",
+    description:
+      "An editorial portfolio of full-stack, cloud, and automation systems by James Duong.",
   }
 };
 
@@ -77,7 +90,7 @@ export default async function RootLayout({
       },
     }),
     ...(sameAs.length > 0 && { sameAs }),
-    alumniOf: {
+    affiliation: {
       "@type": "CollegeOrUniversity",
       name: "San Diego State University",
     },
@@ -86,7 +99,7 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className={`${archivo.variable} ${archivoBlack.variable} ${ibmPlexMono.variable}`}
+      className={`${archivo.variable} ${archivoBlack.variable} ${ibmPlexMono.variable} ${bodoniModa.variable}`}
       data-scroll-behavior="smooth"
     >
       <body>

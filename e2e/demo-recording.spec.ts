@@ -20,7 +20,7 @@ test.describe("Folio demo recording", () => {
     await page.waitForTimeout(1200);
 
     await page.getByRole("button", { name: /Open the issue/i }).first().click();
-    await expect(page).toHaveURL(/#contents/);
+    await expect(page).toHaveURL(/#toc/);
     await page.waitForTimeout(1200);
 
     await page.getByRole("button", { name: /Go to Works/i }).click();
@@ -36,7 +36,11 @@ test.describe("Folio demo recording", () => {
     await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
     await page.waitForTimeout(1500);
 
-    await page.getByRole("button", { name: /Previous page/i }).first().click();
+    const projectHash = new URL(page.url()).hash;
+    await page
+      .locator(projectHash)
+      .getByRole("button", { name: /Previous page/i })
+      .click();
     await expect(page).toHaveURL(/\/?#works/);
     await page.waitForTimeout(1000);
 

@@ -12,12 +12,16 @@ import styles from "./FolioDemoVideo.module.css";
 
 type FolioDemoVideoProps = {
   url: string | null | undefined;
+  localUrl?: string | null;
+  posterUrl?: string | null;
   title: string;
   caption: string;
 };
 
 export default function FolioDemoVideo({
   url,
+  localUrl,
+  posterUrl,
   title,
   caption,
 }: FolioDemoVideoProps) {
@@ -28,22 +32,34 @@ export default function FolioDemoVideo({
   );
   const labelId = useId();
 
-  if (!videoId) return null;
+  if (!videoId && !localUrl) return null;
 
   const playLabel = `Play demo video: ${title}`;
 
   return (
     <figure className={styles.figure} aria-labelledby={labelId}>
       {playing ? (
-        <iframe
-          className={styles.frame}
-          src={youtubeEmbedUrl(videoId)}
-          title={playLabel}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
+        localUrl ? (
+          <video
+            className={styles.frame}
+            src={localUrl}
+            controls
+            autoPlay
+            muted
+            playsInline
+            aria-label={playLabel}
+          />
+        ) : (
+          <iframe
+            className={styles.frame}
+            src={youtubeEmbedUrl(videoId!)}
+            title={playLabel}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        )
       ) : (
         <button
           type="button"
@@ -52,13 +68,14 @@ export default function FolioDemoVideo({
           aria-label={playLabel}
         >
           <Image
-            src={posterSrc}
+            src={posterUrl || posterSrc}
             alt=""
             width={1280}
             height={720}
             className={styles.poster}
             sizes="(max-width: 900px) 100vw, min(50vw, 36rem)"
             onLoad={(event) => {
+              if (localUrl || !videoId) return;
               // Missing maxres often 200s a ~120px placeholder instead of 404.
               if (event.currentTarget.naturalWidth <= 120) {
                 const fallback = youtubePosterFallbackUrl(videoId);
@@ -66,6 +83,7 @@ export default function FolioDemoVideo({
               }
             }}
             onError={() => {
+              if (localUrl || !videoId) return;
               const fallback = youtubePosterFallbackUrl(videoId);
               if (posterSrc !== fallback) setPosterSrc(fallback);
             }}

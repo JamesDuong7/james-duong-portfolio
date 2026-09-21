@@ -48,6 +48,38 @@
   color: var(--folio-on-paper-muted);
 }
 
+.profileFacts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding-block: 0.8rem;
+  border-block: 1px solid var(--folio-border);
+}
+
+.profileFacts p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--folio-on-paper);
+}
+
+.profileFacts span {
+  font-family: var(--folio-font-mono);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--folio-pink);
+}
+
+.story {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
 .subhead {
   font-family: var(--folio-font-mono);
   font-size: 0.68rem;
@@ -147,5 +179,9 @@
   .skillLine {
     grid-template-columns: 1fr;
     gap: 0.15rem;
+  }
+
+  .profileFacts {
+    grid-template-columns: 1fr;
   }
 }

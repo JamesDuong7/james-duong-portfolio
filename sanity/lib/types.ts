@@ -4,6 +4,7 @@ import type { PortableTextBlock } from "@portabletext/types";
 export type Hobby = {
   title: string | null;
   description: string | null;
+  imageUrl?: string | null;
 };
 
 /** GROQ result shape for PERSONAL_INFO_QUERY */
@@ -17,6 +18,7 @@ export type PersonalInfo = {
   github: string | null;
   linkedin: string | null;
   resumeUrl: string | null;
+  portraitUrl?: string | null;
   hobbies: Hobby[] | null;
   skills: {
     languages: string[] | null;
@@ -59,6 +61,10 @@ export type ProjectDetail = {
   live: string | null;
   /** Unlisted YouTube screen-recording URL, if set in Studio */
   demoVideoUrl: string | null;
+  /** Repository-owned demo fallback used when a CMS video is unavailable. */
+  localDemoVideoUrl?: string | null;
+  /** Poster image for a repository-owned demo fallback. */
+  localDemoPosterUrl?: string | null;
   featured: boolean | null;
   screenshots: FolioScreenshot[] | null;
   overview: PortableTextBlock[] | null;

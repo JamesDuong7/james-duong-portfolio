@@ -3,9 +3,14 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { flipFolioTo } from "@/components/folio/FolioBook";
-import { scrollToSection } from "@/lib/anchorNavigation";
 
-/** Sync URL hashes with Folio spreads on desktop; scroll sections on mobile stack. */
+/**
+ * Replays a hash after an App Router navigation on desktop.
+ *
+ * FolioBook owns mobile positioning. Having both components call
+ * scrollIntoView caused two competing smooth-scroll journeys through the
+ * stacked magazine and could leave the reader on an unrelated leaf.
+ */
 export default function HashScrollHandler() {
   const pathname = usePathname();
 
@@ -17,10 +22,7 @@ export default function HashScrollHandler() {
 
     requestAnimationFrame(() => {
       const isNarrow = window.matchMedia("(max-width: 900px)").matches;
-      if (isNarrow) {
-        scrollToSection(id);
-        return;
-      }
+      if (isNarrow) return;
 
       // Silent — FolioBook also syncs on mount. Animating here made
       // project → /#works look like a forward flip through the cover.

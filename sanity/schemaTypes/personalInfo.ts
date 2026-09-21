@@ -16,7 +16,7 @@ export const personalInfo = defineType({
       title: "Headline",
       type: "string",
       description:
-        'Short tagline shown under your name (e.g. "Computer Science Student & Software Engineer")',
+        'Short professional tagline shown under your name (e.g. "Software Engineer building full-stack, cloud, and automation systems")',
       validation: (rule) => rule.required(),
     }),
     defineField({
@@ -61,6 +61,13 @@ export const personalInfo = defineType({
         'Path to the resume file (e.g. "/James_Duong_CS_Resume_2026.pdf") or an external link.',
     }),
     defineField({
+      name: "portrait",
+      title: "Cover Portrait",
+      type: "image",
+      description: "Editorial portrait photograph for the magazine cover.",
+      options: { hotspot: true },
+    }),
+    defineField({
       name: "hobbies",
       title: "Hobbies & Activities",
       type: "array",
@@ -85,9 +92,16 @@ export const personalInfo = defineType({
               rows: 2,
               description: "Optional one-liner about this hobby or activity.",
             }),
+            defineField({
+              name: "image",
+              title: "Hobby Photo",
+              type: "image",
+              description: "Editorial or activity photo for this hobby spread.",
+              options: { hotspot: true },
+            }),
           ],
           preview: {
-            select: { title: "title", subtitle: "description" },
+            select: { title: "title", subtitle: "description", media: "image" },
           },
         }),
       ],

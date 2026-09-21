@@ -47,7 +47,7 @@ export default function Image() {
             James Duong
           </div>
           <div style={{ fontSize: 32, color: "#a8adb8", fontWeight: 500 }}>
-            Computer Science Student & Software Engineer
+            Full-stack · Cloud · Automation
           </div>
           <div
             style={{
